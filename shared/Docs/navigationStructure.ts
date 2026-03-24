@@ -61,72 +61,72 @@ const sectionReference: (NavGroup | NavLink)[] = [
     title: "TypeScript SDK v3",
     links: [
       {
-        title: "Introduction",
+        title: "Введение",
         href: tsRef("v3", "intro"),
       },
       {
-        title: "Create the client",
+        title: "Создание клиента",
         href: tsRef("v3", "client/create"),
       },
       {
-        title: "Create a function",
+        title: "Создание функции",
         href: tsRef("v3", "functions/create"),
       },
       {
-        title: "Send events",
+        title: "Отправка событий",
         href: tsRef("v3", "events/send"),
       },
       {
-        title: "Errors",
+        title: "Ошибки",
         href: `/docs/reference/typescript/functions/errors`,
       },
       {
-        title: "Handling failures",
+        title: "Обработка сбоев",
         href: tsRef("v3", "functions/handling-failures"),
       },
       {
-        title: "Cancel on",
+        title: "Отмена по условию",
         href: tsRef("v3", "functions/cancel-on"),
       },
       {
-        title: "Concurrency",
+        title: "Конкурентность",
         href: `/docs/functions/concurrency`,
       },
       {
-        title: "Rate limit",
+        title: "Ограничение частоты",
         href: tsRef("v3", "functions/rate-limit"),
       },
       {
-        title: "Singleton",
+        title: "Синглтон",
         href: tsRef("v3", "functions/singleton"),
       },
       {
-        title: "Debounce",
+        title: "Дебаунс",
         href: tsRef("v3", "functions/debounce"),
       },
       {
-        title: "Function run priority",
+        title: "Приоритет запуска функции",
         href: tsRef("v3", "functions/run-priority"),
       },
       {
-        title: "Extended Traces",
+        title: "Расширенные трассировки",
         href: tsRef("v3", "extended-traces"),
       },
       {
-        title: "Referencing functions",
+        title: "Ссылки на функции",
         href: `/docs/functions/references`,
       },
       {
-        title: "Testing",
+        title: "Тестирование",
         href: tsRef("v3", "testing"),
       },
       {
-        title: "Durable Endpoints",
+        title: "Устойчивые конечные точки",
         href: tsRef("v3", "durable-endpoints"),
         tag: "new",
       },
       {
-        title: "Steps",
+        title: "Шаги",
         links: [
           {
             title: "step.run()",
@@ -166,18 +166,18 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Serve",
+        title: "Обслуживание",
         links: [
           {
-            title: "Framework handlers",
+            title: "Обработчики фреймворков",
             href: `/docs/learn/serving-inngest-functions`,
           },
           {
-            title: "Configuration",
+            title: "Конфигурация",
             href: tsRef("v3", "serve"),
           },
           {
-            title: "Streaming",
+            title: "Потоковая передача",
             href: `/docs/streaming`,
           },
         ],
@@ -186,11 +186,11 @@ const sectionReference: (NavGroup | NavLink)[] = [
         title: "Middleware",
         links: [
           {
-            title: "Lifecycle",
+            title: "Жизненный цикл",
             href: tsRef("v3", "middleware/lifecycle"),
           },
           {
-            title: "Examples",
+            title: "Примеры",
             href: tsRef("v3", "middleware/examples"),
           },
           {
@@ -200,14 +200,14 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Using the SDK",
+        title: "Использование SDK",
         links: [
           {
-            title: "Environment variables",
+            title: "Переменные окружения",
             href: `/docs/sdk/environment-variables`,
           },
           {
-            title: "Using TypeScript",
+            title: "Использование TypeScript",
             href: `/docs/typescript`,
           },
           {
@@ -215,7 +215,7 @@ const sectionReference: (NavGroup | NavLink)[] = [
             href: `/docs/sdk/eslint`,
           },
           {
-            title: "Upgrading to v3",
+            title: "Обновление до v3",
             href: tsRef("v3", "migrations/v2-to-v3"),
           },
         ],
@@ -227,80 +227,80 @@ const sectionReference: (NavGroup | NavLink)[] = [
     tag: "new",
     links: [
       {
-        title: "Introduction",
+        title: "Введение",
         href: tsRef("v4", "intro"),
       },
       {
-        title: "Create the client",
+        title: "Создание клиента",
         href: tsRef("v4", "client/create"),
       },
       {
-        title: "Create a function",
+        title: "Создание функции",
         href: tsRef("v4", "functions/create"),
       },
       {
-        title: "Trigger helpers",
+        title: "Вспомогательные триггеры",
         href: tsRef("v4", "functions/triggers"),
       },
       {
-        title: "Send events",
+        title: "Отправка событий",
         href: tsRef("v4", "events/send"),
       },
       {
-        title: "Errors",
+        title: "Ошибки",
         href: `/docs/reference/typescript/functions/errors`,
       },
       {
-        title: "Handling failures",
+        title: "Обработка сбоев",
         href: tsRef("v4", "functions/handling-failures"),
       },
       {
-        title: "Cancel on",
+        title: "Отмена по условию",
         href: tsRef("v4", "functions/cancel-on"),
       },
       {
-        title: "Concurrency",
+        title: "Конкурентность",
         href: tsRef("v4", "functions/concurrency"),
       },
       {
-        title: "Rate limit",
+        title: "Ограничение частоты",
         href: tsRef("v4", "functions/rate-limit"),
       },
       {
-        title: "Singleton",
+        title: "Синглтон",
         href: tsRef("v4", "functions/singleton"),
       },
       {
-        title: "Debounce",
+        title: "Дебаунс",
         href: tsRef("v4", "functions/debounce"),
       },
       {
-        title: "Function run priority",
+        title: "Приоритет запуска функции",
         href: tsRef("v4", "functions/run-priority"),
       },
       {
-        title: "Logging",
+        title: "Логирование",
         href: tsRef("v4", "logging"),
       },
       {
-        title: "Extended Traces",
+        title: "Расширенные трассировки",
         href: tsRef("v4", "extended-traces"),
       },
       {
-        title: "Referencing functions",
+        title: "Ссылки на функции",
         href: tsRef("v4", "functions/references"),
       },
       {
-        title: "Testing",
+        title: "Тестирование",
         href: tsRef("v4", "testing"),
       },
       {
-        title: "Durable Endpoints",
+        title: "Устойчивые конечные точки",
         href: tsRef("v4", "durable-endpoints"),
         tag: "new",
       },
       {
-        title: "Steps",
+        title: "Шаги",
         links: [
           {
             title: "step.run()",
@@ -340,18 +340,18 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Serve",
+        title: "Обслуживание",
         links: [
           {
-            title: "Framework handlers",
+            title: "Обработчики фреймворков",
             href: `/docs/learn/serving-inngest-functions`,
           },
           {
-            title: "Configuration",
+            title: "Конфигурация",
             href: tsRef("v4", "serve"),
           },
           {
-            title: "Streaming",
+            title: "Потоковая передача",
             href: tsRef("v4", "serve/streaming"),
           },
         ],
@@ -360,19 +360,19 @@ const sectionReference: (NavGroup | NavLink)[] = [
         title: "Middleware",
         links: [
           {
-            title: "Lifecycle",
+            title: "Жизненный цикл",
             href: tsRef("v4", "middleware/lifecycle"),
           },
           {
-            title: "Examples",
+            title: "Примеры",
             href: tsRef("v4", "middleware/examples"),
           },
           {
-            title: "Custom serialization",
+            title: "Настраиваемая сериализация",
             href: tsRef("v4", "middleware/serialization"),
           },
           {
-            title: "Encryption",
+            title: "Шифрование",
             href: tsRef("v4", "middleware/encryption"),
           },
           {
@@ -382,7 +382,7 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Migrations",
+        title: "Миграции",
         links: [
           {
             title: "v3 to v4",
@@ -391,14 +391,14 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Using the SDK",
+        title: "Использование SDK",
         links: [
           {
-            title: "Environment variables",
+            title: "Переменные окружения",
             href: `/docs/sdk/environment-variables`,
           },
           {
-            title: "Using TypeScript",
+            title: "Использование TypeScript",
             href: `/docs/typescript`,
           },
           {
@@ -413,11 +413,11 @@ const sectionReference: (NavGroup | NavLink)[] = [
     title: "Python SDK",
     links: [
       {
-        title: "Introduction",
+        title: "Введение",
         href: `/docs/reference/python`,
       },
       {
-        title: "Quick start",
+        title: "Быстрый старт",
         href: `/docs/reference/python/overview/quick-start`,
       },
       {
@@ -425,23 +425,23 @@ const sectionReference: (NavGroup | NavLink)[] = [
         href: `/docs/reference/python/client/overview`,
       },
       {
-        title: "Create function",
+        title: "Создание функции",
         href: `/docs/reference/python/functions/create`,
       },
       {
-        title: "Send events",
+        title: "Отправка событий",
         href: `/docs/reference/python/client/send`,
       },
       {
-        title: "Environment variables",
+        title: "Переменные окружения",
         href: `/docs/reference/python/overview/env-vars`,
       },
       {
-        title: "Production mode",
+        title: "Режим продакшена",
         href: `/docs/reference/python/overview/prod-mode`,
       },
       {
-        title: "Steps",
+        title: "Шаги",
         links: [
           {
             title: "invoke",
@@ -481,20 +481,20 @@ const sectionReference: (NavGroup | NavLink)[] = [
         title: "Middleware",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/reference/python/middleware/overview`,
           },
           {
-            title: "Lifecycle",
+            title: "Жизненный цикл",
             href: `/docs/reference/python/middleware/lifecycle`,
           },
         ],
       },
       {
-        title: "Guides",
+        title: "Руководства",
         links: [
           {
-            title: "Testing",
+            title: "Тестирование",
             href: `/docs/reference/python/guides/testing`,
           },
           {
@@ -508,7 +508,7 @@ const sectionReference: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Migrations",
+        title: "Миграции",
         links: [
           {
             title: "v0.4 to v0.5",
@@ -526,11 +526,11 @@ const sectionReference: (NavGroup | NavLink)[] = [
     title: "Go SDK",
     links: [
       {
-        title: "Reference",
+        title: "Справочник",
         href: "https://pkg.go.dev/github.com/inngest/inngestgo",
       },
       {
-        title: "Migrations",
+        title: "Миграции",
         links: [
           {
             title: "v0.8 to v0.11",
@@ -549,7 +549,7 @@ const sectionReference: (NavGroup | NavLink)[] = [
     href: "https://api-docs.inngest.com/docs/inngest-api/1j9i5603g5768-introduction",
   },
   {
-    title: "System events",
+    title: "Системные события",
     links: [
       {
         title: "function.failed",
@@ -564,7 +564,7 @@ const sectionReference: (NavGroup | NavLink)[] = [
     ],
   },
   {
-    title: "Self-hosting",
+    title: "Самостоятельный хостинг",
     href: `/docs/self-hosting`,
   },
 ];
@@ -573,9 +573,9 @@ const sectionReference: (NavGroup | NavLink)[] = [
 // LEARN SECTION
 // =============================================================================
 const sectionLearn: (NavGroup | NavLink)[] = [
-  { title: "Home", href: "/docs" },
+  { title: "Главная", href: "/docs" },
   {
-    title: "Quick starts",
+    title: "Быстрый старт",
     defaultOpen: true,
     links: [
       {
@@ -606,7 +606,7 @@ const sectionLearn: (NavGroup | NavLink)[] = [
             href: "/docs/getting-started/tanstack-start-quick-start",
           },
           {
-            title: "Other frameworks",
+            title: "Другие фреймворки",
             href: "/docs/getting-started/nodejs-quick-start",
           },
         ],
@@ -618,161 +618,161 @@ const sectionLearn: (NavGroup | NavLink)[] = [
     ],
   },
   {
-    title: "Concepts",
+    title: "Концепции",
     defaultOpen: true,
     links: [
       {
-        title: "How Durable execution works",
+        title: "Как работает устойчивое выполнение",
         href: `/docs/learn/how-functions-are-executed`,
       },
       {
-        title: "Durable Functions",
+        title: "Устойчивые функции",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/learn/inngest-functions`,
           },
           {
-            title: "Serve Inngest Functions",
+            title: "Обслуживание функций Inngest",
             href: "/docs/learn/serving-inngest-functions",
           },
           {
-            title: "Triggering functions",
+            title: "Запуск функций",
             href: `/docs/features/events-triggers`,
           },
           {
-            title: "Idempotency",
+            title: "Идемпотентность",
             href: `/docs/guides/handling-idempotency`,
           },
         ],
       },
       {
-        title: "Durable Endpoints",
+        title: "Устойчивые конечные точки",
         href: `/docs/learn/durable-endpoints`,
         tag: "new",
       },
       {
-        title: "Steps",
+        title: "Шаги",
         links: [
           {
-            title: "Building with steps",
+            title: "Построение с использованием шагов",
             href: `/docs/learn/inngest-steps`,
           },
           {
-            title: "Sleeping",
+            title: "Ожидание (sleep)",
             href: "/docs/features/inngest-functions/steps-workflows/sleeps",
           },
           {
-            title: "Wait for event",
+            title: "Ожидание события",
             href: "/docs/features/inngest-functions/steps-workflows/wait-for-event",
           },
           {
-            title: "Wait for signal",
+            title: "Ожидание сигнала",
             href: "/docs/features/inngest-functions/steps-workflows/wait-for-signal",
           },
           {
-            title: "Invoke other functions",
+            title: "Вызов других функций",
             href: `/docs/guides/invoking-functions-directly`,
           },
           {
-            title: "AI steps (LLM calls)",
+            title: "AI-шаги (вызовы LLM)",
             href: "/docs/features/inngest-functions/steps-workflows/step-ai-orchestration",
           },
           {
-            title: "Durable Fetch",
+            title: "Устойчивый Fetch",
             href: "/docs/features/inngest-functions/steps-workflows/fetch",
           },
         ],
       },
       {
-        title: "Error handling",
+        title: "Обработка ошибок",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/guides/error-handling`,
           },
           {
-            title: "Retries",
+            title: "Повторные попытки",
             href: "/docs/features/inngest-functions/error-retries/retries",
           },
           {
-            title: "Rollbacks",
+            title: "Откаты",
             href: "/docs/features/inngest-functions/error-retries/rollbacks",
           },
           {
-            title: "Failure handlers",
+            title: "Обработчики сбоев",
             href: "/docs/features/inngest-functions/error-retries/failure-handlers",
           },
           {
-            title: "Inngest errors",
+            title: "Ошибки Inngest",
             href: "/docs/features/inngest-functions/error-retries/inngest-errors",
           },
         ],
       },
       {
-        title: "Flow control",
+        title: "Управление потоком",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/guides/flow-control`,
           },
           {
-            title: "Concurrency",
+            title: "Конкурентность",
             href: `/docs/guides/concurrency`,
           },
           {
-            title: "Throttling",
+            title: "Дросселирование",
             href: `/docs/guides/throttling`,
           },
           {
-            title: "Batching",
+            title: "Пакетная обработка",
             href: `/docs/guides/batching`,
           },
           {
-            title: "Rate limit",
+            title: "Ограничение частоты",
             href: `/docs/guides/rate-limiting`,
           },
           {
-            title: "Singleton",
+            title: "Синглтон",
             href: `/docs/guides/singleton`,
           },
           {
-            title: "Debounce",
+            title: "Дебаунс",
             href: `/docs/guides/debounce`,
           },
           {
-            title: "Priority",
+            title: "Приоритет",
             href: `/docs/guides/priority`,
           },
         ],
       },
       {
-        title: "Cancellation",
+        title: "Отмена",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/features/inngest-functions/cancellation`,
           },
           {
-            title: "Cancel on timeouts",
+            title: "Отмена по таймауту",
             href: `/docs/features/inngest-functions/cancellation/cancel-on-timeouts`,
           },
           {
-            title: "Cancel on events",
+            title: "Отмена по событию",
             href: `/docs/features/inngest-functions/cancellation/cancel-on-events`,
           },
           {
-            title: "Bulk cancellation",
+            title: "Массовая отмена",
             href: `/docs/guides/cancel-running-functions`,
           },
         ],
       },
       {
-        title: "Realtime",
+        title: "В реальном времени",
         tag: "new",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: "/docs/features/realtime",
           },
           {
@@ -782,27 +782,27 @@ const sectionLearn: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Environments and Apps",
+        title: "Окружения и приложения",
         href: "/docs/apps",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: "/docs/apps",
           },
           {
-            title: "Environments",
+            title: "Окружения",
             href: `/docs/platform/environments`,
           },
           {
-            title: "Apps",
+            title: "Приложения",
             href: `/docs/platform/manage/apps`,
           },
           {
-            title: "Event keys",
+            title: "Ключи событий",
             href: `/docs/events/creating-an-event-key`,
           },
           {
-            title: "Signing keys",
+            title: "Ключи подписи",
             href: `/docs/platform/signing-keys`,
           },
         ],
@@ -810,81 +810,81 @@ const sectionLearn: (NavGroup | NavLink)[] = [
     ],
   },
   {
-    title: "Guides",
+    title: "Руководства",
     defaultOpen: true,
     links: [
       {
-        title: "Local development",
+        title: "Локальная разработка",
         href: `/docs/local-development`,
       },
       {
-        title: "Patterns",
+        title: "Паттерны",
         links: [
           {
-            title: "Multi-step functions",
+            title: "Многошаговые функции",
             href: "/docs/guides/multi-step-functions",
           },
           {
-            title: "Parallel steps",
+            title: "Параллельные шаги",
             href: "/docs/guides/step-parallelism",
           },
           {
-            title: "Fan-out",
+            title: "Разветвление (Fan-out)",
             href: `/docs/guides/fan-out-jobs`,
           },
           {
-            title: "Working with loops",
+            title: "Работа с циклами",
             href: "/docs/guides/working-with-loops",
           },
           {
-            title: "Delayed functions",
+            title: "Отложенные функции",
             href: `/docs/guides/delayed-functions`,
           },
           {
-            title: "Cron functions",
+            title: "Cron-функции",
             href: `/docs/guides/scheduled-functions`,
           },
           {
-            title: "Background jobs",
+            title: "Фоновые задачи",
             href: `/docs/guides/background-jobs`,
           },
           {
-            title: "Multiple triggers & wildcards",
+            title: "Множественные триггеры и шаблоны",
             href: `/docs/guides/multiple-triggers`,
           },
           {
-            title: "Sending events from functions",
+            title: "Отправка событий из функций",
             href: `/docs/guides/sending-events-from-functions`,
           },
           {
-            title: "User-defined Workflows",
+            title: "Пользовательские рабочие процессы",
             href: `/docs/guides/user-defined-workflows`,
           },
           {
-            title: "Mergent migration guide",
+            title: "Руководство по миграции с Mergent",
             href: `/docs/guides/mergent-migration`,
           },
           {
             title: "Workflow Kit",
             links: [
               {
-                title: "Introduction",
+                title: "Введение",
                 href: `/docs/reference/workflow-kit`,
               },
               {
-                title: "Creating Workflow Actions",
+                title: "Создание действий рабочего процесса",
                 href: `/docs/reference/workflow-kit/actions`,
               },
               {
-                title: "Using the Workflow Engine",
+                title: "Использование движка рабочих процессов",
                 href: `/docs/reference/workflow-kit/engine`,
               },
               {
-                title: "Workflow instance format",
+                title: "Формат экземпляра рабочего процесса",
                 href: `/docs/reference/workflow-kit/workflow-instance`,
               },
               {
-                title: "Components API (React)",
+                title: "API компонентов (React)",
                 href: `/docs/reference/workflow-kit/components-api`,
               },
             ],
@@ -892,46 +892,46 @@ const sectionLearn: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "AI Patterns",
+        title: "AI-паттерны",
         links: [
           {
-            title: "Agent tool loops",
+            title: "Циклы инструментов агента",
             href: `/docs/ai-patterns/agent-tool-loops`,
           },
           {
-            title: "Human-in-the-loop",
+            title: "Человек в контуре",
             href: `/docs/ai-patterns/human-in-the-loop`,
           },
           {
-            title: "Sub-agents",
+            title: "Вспомогательные агенты",
             href: `/docs/ai-patterns/sub-agent-delegation`,
           },
         ],
       },
       {
-        title: "Deploying",
+        title: "Развёртывание",
         defaultOpen: true,
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/platform/deployment`,
           },
           {
-            title: "Sync your app",
+            title: "Синхронизация приложения",
             href: `/docs/apps/cloud`,
           },
           {
-            title: "Connect",
+            title: "Подключение",
             href: `/docs/setup/connect`,
             tag: "beta",
           },
           {
-            title: "Checkpointing",
+            title: "Контрольные точки",
             href: `/docs/setup/checkpointing`,
             tag: "new",
           },
           {
-            title: "Cloud providers",
+            title: "Облачные провайдеры",
             links: [
               {
                 title: "Vercel",
@@ -955,7 +955,7 @@ const sectionLearn: (NavGroup | NavLink)[] = [
                 href: `/docs/deploy/render`,
               },
               {
-                title: "Cloud Provider Usage Limits",
+                title: "Лимиты использования облачных провайдеров",
                 href: `/docs/usage-limits/providers`,
               },
             ],
@@ -963,63 +963,63 @@ const sectionLearn: (NavGroup | NavLink)[] = [
         ],
       },
       {
-        title: "Events & Triggers",
+        title: "События и триггеры",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/features/events-triggers`,
           },
           {
-            title: "Sending events",
+            title: "Отправка событий",
             href: `/docs/events`,
           },
           {
-            title: "Event payload format",
+            title: "Формат полезной нагрузки события",
             href: `/docs/features/events-triggers/event-format`,
           },
           {
-            title: "Writing expressions",
+            title: "Написание выражений",
             href: `/docs/guides/writing-expressions`,
           },
           {
-            title: "Consuming webhook events",
+            title: "Обработка событий вебхуков",
             href: `/docs/platform/webhooks`,
           },
         ],
       },
       {
-        title: "Optimizing Performance",
+        title: "Оптимизация производительности",
         href: `/docs/improve-performance`,
       },
       {
-        title: "Versioning",
+        title: "Версионирование",
         href: `/docs/learn/versioning`,
       },
       {
-        title: "Logging",
+        title: "Логирование",
         href: "/docs/guides/logging",
       },
       {
         title: "Middleware",
         links: [
           {
-            title: "Overview",
+            title: "Обзор",
             href: `/docs/features/middleware`,
           },
           {
-            title: "Creating middleware",
+            title: "Создание middleware",
             href: `/docs/features/middleware/create`,
           },
           {
-            title: "Dependency Injection",
+            title: "Внедрение зависимостей",
             href: "/docs/features/middleware/dependency-injection",
           },
           {
-            title: "Encryption Middleware",
+            title: "Middleware шифрования",
             href: "/docs/features/middleware/encryption-middleware",
           },
           {
-            title: "Sentry Middleware",
+            title: "Middleware Sentry",
             href: "/docs/features/middleware/sentry-middleware",
           },
         ],
@@ -1027,54 +1027,54 @@ const sectionLearn: (NavGroup | NavLink)[] = [
     ],
   },
   {
-    title: "Platform",
+    title: "Платформа",
     links: [
       {
-        title: "Manage",
+        title: "Управление",
         links: [
           {
-            title: "Bulk replay",
+            title: "Массовый повтор",
             href: "/docs/platform/replay",
           },
           {
-            title: "Bulk cancel",
+            title: "Массовая отмена",
             href: "/docs/platform/manage/bulk-cancellation",
           },
           {
-            title: "Pausing",
+            title: "Приостановка",
             href: "/docs/guides/pause-functions",
           },
         ],
       },
       {
-        title: "Monitor",
+        title: "Мониторинг",
         links: [
           {
-            title: "Inspecting runs",
+            title: "Просмотр запусков",
             href: "/docs/platform/monitor/inspecting-function-runs",
           },
           {
-            title: "Traces",
+            title: "Трассировки",
             href: "/docs/platform/monitor/traces",
             tag: "new",
           },
           {
-            title: "Observability and metrics",
+            title: "Наблюдаемость и метрики",
             href: "/docs/platform/monitor/observability-metrics",
           },
           {
-            title: "Insights",
+            title: "Аналитика",
             href: "/docs/platform/monitor/insights",
             tag: "new",
           },
           {
-            title: "Events",
+            title: "События",
             href: "/docs/platform/monitor/inspecting-events",
           },
         ],
       },
       {
-        title: "Integrations",
+        title: "Интеграции",
         links: [
           {
             title: "Neon",
@@ -1107,18 +1107,18 @@ const sectionLearn: (NavGroup | NavLink)[] = [
     ],
   },
   {
-    title: "Resources",
+    title: "Ресурсы",
     links: [
       {
-        title: "Security",
+        title: "Безопасность",
         href: "/docs/learn/security",
       },
       {
-        title: "Glossary",
+        title: "Глоссарий",
         href: `/docs/learn/glossary`,
       },
       {
-        title: "Release phases",
+        title: "Фазы релиза",
         href: `/docs/release-phases`,
       },
       {
@@ -1126,7 +1126,7 @@ const sectionLearn: (NavGroup | NavLink)[] = [
         href: `/docs/faq`,
       },
       {
-        title: "Limitations",
+        title: "Ограничения",
         href: `/docs/usage-limits/inngest`,
       },
     ],
@@ -1138,64 +1138,64 @@ const sectionLearn: (NavGroup | NavLink)[] = [
 // =============================================================================
 const sectionExamples: NavGroup[] = [
   {
-    title: "Examples",
+    title: "Примеры",
     defaultOpen: true,
     links: [
-      { title: "All examples", href: `/docs/examples/` },
+      { title: "Все примеры", href: `/docs/examples/` },
       {
-        title: "AI Agents and RAG",
+        title: "AI-агенты и RAG",
         href: `/docs/examples/ai-agents-and-rag`,
       },
       {
-        title: "Email Sequence",
+        title: "Серия email-писем",
         href: `/docs/examples/email-sequence`,
       },
       {
-        title: "Scheduling a one-off function",
+        title: "Планирование разовой функции",
         href: `/docs/examples/scheduling-one-off-function`,
       },
       {
-        title: "Fetch run status and output",
+        title: "Получение статуса и вывода запуска",
         href: `/docs/examples/fetch-run-status-and-output`,
       },
       {
-        title: "Track all function failures in Datadog",
+        title: "Отслеживание сбоев функций в Datadog",
         href: `/docs/examples/track-failures-in-datadog`,
       },
       {
-        title: "Cleanup after function cancellation",
+        title: "Очистка после отмены функции",
         href: `/docs/examples/cleanup-after-function-cancellation`,
       },
       {
-        title: "Fetch: Durable HTTP requests",
+        title: "Fetch: Устойчивые HTTP-запросы",
         href: `/docs/examples/fetch`,
       },
       {
-        title: "Stream updates from functions",
+        title: "Потоковые обновления из функций",
         href: `/docs/examples/realtime`,
       },
       {
-        title: "Setup OpenTelemetry with Inngest",
+        title: "Настройка OpenTelemetry с Inngest",
         href: `/docs/examples/open-telemetry`,
       },
       {
-        title: "Durable Endpoints",
+        title: "Устойчивые конечные точки",
         href: `/docs/examples/durable-endpoints`,
       },
       {
-        title: "Trigger workflows from Retool",
+        title: "Запуск рабочих процессов из Retool",
         href: `/docs/guides/trigger-your-code-from-retool`,
       },
       {
-        title: "Instrumenting GraphQL",
+        title: "Инструментирование GraphQL",
         href: `/docs/guides/instrumenting-graphql`,
       },
       {
-        title: "Handle Clerk webhooks",
+        title: "Обработка вебхуков Clerk",
         href: `/docs/guides/clerk-webhook-events`,
       },
       {
-        title: "Handle Resend webhooks",
+        title: "Обработка вебхуков Resend",
         href: `/docs/guides/resend-webhook-events`,
       },
     ],
@@ -1205,7 +1205,7 @@ const sectionExamples: NavGroup[] = [
     defaultOpen: true,
     links: [
       {
-        title: "Cloudflare Workers & Hono environment variables",
+        title: "Переменные окружения Cloudflare Workers и Hono",
         href: `/docs/examples/middleware/cloudflare-workers-environment-variables`,
       },
     ],
@@ -1277,13 +1277,13 @@ matchers.default = matchers.learn;
 // =============================================================================
 export const menuTabs = [
   {
-    title: "Documentation",
+    title: "Документация",
     icon: PlayIcon,
     href: "/docs",
     matcher: matchers.default,
   },
   {
-    title: "Examples",
+    title: "Примеры",
     icon: LightBulbIcon,
     href: "/docs/examples/",
     matcher: matchers.examples,
@@ -1295,13 +1295,13 @@ export const menuTabs = [
 // =============================================================================
 export const sidebarMenuTabs = [
   {
-    title: "Learn",
+    title: "Изучение",
     icon: BookOpenIcon,
     href: "/docs",
     matcher: matchers.learn,
   },
   {
-    title: "Reference",
+    title: "Справочник",
     icon: CodeBracketIcon,
     href: "/docs/reference/typescript",
     matcher: matchers.reference,
@@ -1313,21 +1313,21 @@ export const sidebarMenuTabs = [
 // =============================================================================
 export const topLevelNav = [
   {
-    title: "Learn",
+    title: "Изучение",
     icon: BookOpenIcon,
     href: `/docs`,
     sectionLinks: sectionLearn,
     matcher: matchers.learn,
   },
   {
-    title: "Reference",
+    title: "Справочник",
     icon: CodeBracketIcon,
     href: "/docs/reference/typescript",
     matcher: matchers.reference,
     sectionLinks: sectionReference,
   },
   {
-    title: "Examples",
+    title: "Примеры",
     icon: LightBulbIcon,
     href: "/docs/examples/",
     sectionLinks: sectionExamples,
