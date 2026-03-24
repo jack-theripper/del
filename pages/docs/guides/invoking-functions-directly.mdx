@@ -1,69 +1,68 @@
 import { Callout, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-# Invoking functions directly
+# Прямой вызов функций
 
-Inngest's `step.invoke()` function provides a powerful tool for calling functions directly within your event-driven system. It differs from traditional event-driven triggers, offering a more direct, RPC-like approach. This encourages a few key benefits:
+Функция Inngest `step.invoke()` предоставляет мощный инструмент для прямого вызова функций внутри вашей событийно-ориентированной системы. Она отличается от традиционных триггеров событий, предлагая более прямой подход, подобный RPC (удаленному вызову процедур). Это дает несколько ключевых преимуществ:
 
-- Allows functions to call and receive the result of other functions
-- Naturally separates your system into reusable functions that can spread across process boundaries
-- Allows use of synchronous interaction between functions in an otherwise-asynchronous event-driven architecture, making it much easier to manage functions that require immediate outcomes
-- Enables [synchronous sub-agent delegation](/docs/ai-patterns/sub-agent-delegation#delegate-synchronously-with-stepinvoke) in AI agent systems
+- Позволяет функциям вызывать другие функции и получать их результат.
+- Естественным образом разделяет вашу систему на переиспользуемые функции, которые могут быть распределены между различными процессами.
+- Позволяет использовать синхронное взаимодействие между функциями в архитектуре, которая в остальном является асинхронной и событийно-ориентированной, что значительно упрощает управление функциями, требующими немедленных результатов.
+- Включает [синхронное делегирование субагентам](/docs/ai-patterns/sub-agent-delegation#delegate-synchronously-with-stepinvoke) в системах ИИ-агентов.
 
 
-## Invoking another function
+## Вызов другой функции
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
 <Callout>
-### When should I invoke?
+### Когда следует использовать вызов?
 
-Use `step.invoke()` in tasks that need specific settings like concurrency limits. Because it runs with its own configuration,
-distinct from the invoker's, you can provide a tailored configuration for each function.
+Используйте `step.invoke()` для задач, требующих специфических настроек, таких как лимиты конкурентности. Поскольку такая функция запускается со своей собственной конфигурацией, отличной от вызывающей стороны, вы можете предоставить индивидуальные настройки для каждой функции.
 
-If you don't need to define granular configuration or if your function won't be reused across app boundaries, use `step.run()` for simplicity.
+Если вам не нужно определять детализированную конфигурацию или если ваша функция не будет переиспользоваться за пределами приложения, используйте `step.run()` для простоты.
 </Callout>
 
 ```ts
-// Some function we'll call
+// Какая-то функция, которую мы будем вызывать
 const computeSquare = inngest.createFunction(
   { id: "compute-square", triggers: { event: "calculate/square" } },
   async ({ event }) => {
-    return { result: event.data.number * event.data.number }; // Result typed as { result: number }
+    return { result: event.data.number * event.data.number }; // Результат типизирован как { result: number }
   }
 );
 
-// In this function, we'll call `computeSquare`
+// В этой функции мы вызовем `computeSquare`
 const mainFunction = inngest.createFunction(
   { id: "main-function", triggers: { event: "main/event" } },
   async ({ step }) => {
     const square = await step.invoke("compute-square-value", {
       function: computeSquare,
-      data: { number: 4 }, // input data is typed, requiring input if it's needed
+      data: { number: 4 }, // входные данные типизированы
     });
 
-    return `Square of 4 is ${square.result}.`; // square.result is typed as number
+    return `Квадрат 4 равен ${square.result}.`; // square.result типизирован как число
   }
 );
 ```
 
-In the above example, our `mainFunction` calls `computeSquare` to retrieve the resulting value. `computeSquare` can now be called from here or any other process connected to Inngest.
+В приведенном выше примере наша `mainFunction` вызывает `computeSquare` для получения вычисленного значения. Теперь `computeSquare` можно вызывать отсюда или из любого другого процесса, подключенного к Inngest.
 
-## Referencing another Inngest function
+## Ссылка на другую функцию Inngest
 
-If a function exists in another app, you can create a reference that can be invoked in the same manner as the local `computeSquare` function above.
+Если функция существует в другом приложении, вы можете создать ссылку (reference), которую можно будет вызвать таким же образом, как и локальную функцию `computeSquare` выше.
 
 ```ts
 // @/inngest/computeSquare.ts
 import { referenceFunction } from "inngest";
 import { z } from "zod";
 
-// Create a reference to a function in another application.
+// Создаем ссылку на функцию в другом приложении.
 export const computeSquare = referenceFunction({
   appId: "my-python-app",
   functionId: "compute-square",
-  // Schemas are optional, but provide types for your call if specified
+  // Схемы необязательны, но обеспечивают типизацию вашего вызова
   schemas: {
     data: z.object({
       number: z.number(),
@@ -78,18 +77,18 @@ export const computeSquare = referenceFunction({
 ```ts
 import { computeSquare } from "@/inngest/computeSquare";
 
-// square.result is typed as a number
+// square.result типизирован как число
 const square = await step.invoke("compute-square-value", {
   function: computeSquare,
-  data: { number: 4 }, // input data is typed, requiring input if it's needed
+  data: { number: 4 },
 });
 ```
 
-References can also be used to invoke local functions without needing to import them (and their dependencies) directly. This can be useful for frameworks like Next.js where edge and serverless handlers can be mixed together and require different sets of dependencies.
+Ссылки также можно использовать для вызова локальных функций без необходимости импортировать их (и их зависимости) напрямую. Это может быть полезно для таких фреймворков, как Next.js, где обработчики edge и serverless могут быть смешаны и требовать разных наборов зависимостей.
 
 ```ts
 import { inngest, referenceFunction } from "inngest";
-import { type computeSquare } from "@/inngest/computeSquare"; // Import only the type
+import { type computeSquare } from "@/inngest/computeSquare"; // Импортируем только тип
 
 const mainFunction = inngest.createFunction(
   { id: "main-function", triggers: { event: "main/event" } },
@@ -98,27 +97,26 @@ const mainFunction = inngest.createFunction(
       function: referenceFunction<typeof computeSquare>({
         functionId: "compute-square",
       }),
-      data: { number: 4 }, // input data is still typed
+      data: { number: 4 }, // входные данные все еще типизированы
     });
 
-    return `Square of 4 is ${square.result}.`; // square.result is typed as number
+    return `Квадрат 4 равен ${square.result}.`;
   }
 );
 ```
 
-For more information on referencing functions, see [TypeScript -> Referencing Functions](/docs/functions/references).
+Для получения дополнительной информации о ссылках на функции см. [TypeScript -> Referencing Functions](/docs/functions/references).
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
 <Callout>
-### When should I invoke?
+### Когда следует использовать вызов?
 
-Use `step.Invoke()` in tasks that need specific settings like concurrency limits. Because it runs with its own configuration,
-distinct from the invoker's, you can provide a tailored configuration for each function.
+Используйте `step.Invoke()` для задач, требующих специфических настроек, таких как лимиты конкурентности. Поскольку такая функция запускается со своей собственной конфигурацией, отличной от вызывающей стороны, вы можете предоставить индивидуальные настройки для каждой функции.
 
-If you don't need to define granular configuration or if your function won't be reused across app boundaries, use `step.Run()` for simplicity.
+Если вам не нужно определять детализированную конфигурацию или если ваша функция не будет переиспользоваться за пределами приложения, используйте `step.Run()` для простоты.
 </Callout>
 
 ```go
@@ -130,7 +128,7 @@ import (
 	"github.com/inngest/inngestgo/step"
 )
 
-// Some function we'll call
+// Какая-то функция, которую мы будем вызывать
 inngestgo.CreateFunction(
 	client,
 	inngestgo.FunctionOpts{Name: "compute-square"},
@@ -147,7 +145,7 @@ inngestgo.CreateFunction(
 	},
 )
 
-// In this function, we'll call the compute-square function
+// В этой функции мы вызовем функцию compute-square
 inngestgo.CreateFunction(
 	client,
 	inngestgo.FunctionOpts{Name: "main-function"},
@@ -164,40 +162,39 @@ inngestgo.CreateFunction(
 		}
 
 		result := square.Data["result"].(int)
-		return fmt.Sprintf("Square of 4 is %d.", result), nil
+		return fmt.Sprintf("Квадрат 4 равен %d.", result), nil
 	},
 )
 
 ```
 
-In the above example, our `mainFunction` calls `computeSquare` to retrieve the resulting value. `computeSquare` can now be called from here or any other process connected to Inngest.
+В приведенном выше примере наша `mainFunction` вызывает `computeSquare` для получения вычисленного значения. Теперь `computeSquare` можно вызывать отсюда или из любого другого процесса, подключенного к Inngest.
 
 
 </LanguageSection>
 <LanguageSection show="python">
 
 <Callout>
-### When should I invoke?
+### Когда следует использовать вызов?
 
-Use `step.invoke()` in tasks that need specific settings like concurrency limits. Because it runs with its own configuration,
-distinct from the invoker's, you can provide a tailored configuration for each function.
+Используйте `step.invoke()` для задач, требующих специфических настроек, таких как лимиты конкурентности. Поскольку такая функция запускается со своей собственной конфигурацией, отличной от вызывающей стороны, вы можете предоставить индивидуальные настройки для каждой функции.
 
-If you don't need to define granular configuration or if your function won't be reused across app boundaries, use `step.run()` for simplicity.
+Если вам не нужно определять детализированную конфигурацию или если ваша функция не будет переиспользоваться за пределами приложения, используйте `step.run()` для простоты.
 </Callout>
 
 ```py
 import inngest
 from src.inngest.client import inngest_client
 
-# Some function we'll call
+# Какая-то функция, которую мы будем вызывать
 @inngest_client.create_function(
     fn_id="compute-square",
     trigger=inngest.TriggerEvent(event="calculate/square")
 )
 async def compute_square(ctx: inngest.Context):
-    return {"result": ctx.event.data["number"] * ctx.event.data["number"]}  # Result typed as { result: number }
+    return {"result": ctx.event.data["number"] * ctx.event.data["number"]}  # Результат типизирован как { result: number }
 
-# In this function, we'll call compute_square
+# В этой функции мы вызовем compute_square
 @inngest_client.create_function(
     fn_id="main-function",
     trigger=inngest.TriggerEvent(event="main/event")
@@ -206,13 +203,13 @@ async def main_function(ctx: inngest.Context):
     square = await ctx.step.invoke(
         "compute-square-value",
         function=compute_square,
-        data={"number": 4}  # input data is typed, requiring input if it's needed
+        data={"number": 4}  # входные данные типизированы
     )
 
-    return f"Square of 4 is {square['result']}."  # square.result is typed as number
+    return f"Квадрат 4 равен {square['result']}."
 ```
 
-In the above example, our `mainFunction` calls `compute_square` to retrieve the resulting value. `compute_square` can now be called from here or any other process connected to Inngest.
+В приведенном выше примере наша `mainFunction` вызывает `compute_square` для получения вычисленного значения. Теперь `compute_square` можно вызывать отсюда или из любого другого процесса, подключенного к Inngest.
 
 
 </LanguageSection>
@@ -220,16 +217,16 @@ In the above example, our `mainFunction` calls `compute_square` to retrieve the 
 </LanguageSelector>
 
 
-## Creating a distributed system
+## Создание распределенной системы
 
-You can invoke Inngest functions written in any language, hosted on different clouds.  For example, a TypeScript function on Vercel can invoke a Python function hosted in AWS.
+Вы можете вызывать функции Inngest, написанные на любом языке и размещенные в разных облаках. Например, функция на TypeScript на Vercel может вызвать функцию на Python, размещенную в AWS.
 
-By starting to define these blocks of functionality, you're creating a smart, distributed system with all of the benefits of event-driven architecture and without any of the hassle.
+Начиная определять такие блоки функциональности, вы создаете умную распределенную систему со всеми преимуществами событийно-ориентированной архитектуры и без лишних сложностей.
 
-## Similar pattern: Fan-Out
+## Похожий паттерн: Fan-Out
 
-A similar pattern to invoking functions directly is that of fan-out - [check out the guide here](/docs/guides/fan-out-jobs). Here are some key differences:
+Похожим на прямой вызов функций является паттерн fan-out (разветвление) — [ознакомьтесь с руководством здесь](/docs/guides/fan-out-jobs). Вот некоторые ключевые отличия:
 
-- Fan-out will trigger multiple functions simultaneously, whereas invocation will only trigger one
-- Unlike invocation, fan-out will not receive the result of the invoked function
-- Choose fan-out for parallel processing of independent tasks and invocation for coordinated, interdependent functions
+- Fan-out запускает несколько функций одновременно, в то время как вызов запускает только одну.
+- В отличие от вызова, fan-out не получает результат выполнения вызванной функции.
+- Выбирайте fan-out для параллельной обработки независимых задач и вызов (invocation) для скоординированных, взаимозависимых функций.

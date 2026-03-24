@@ -2,8 +2,7 @@ import { Info, Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge 
 
 # Serve
 
-
-The `serve()` API handler is used to serve your application's [functions](/docs/reference/typescript/v4/functions/create) via HTTP. This handler enables Inngest to remotely and securely read your functions' configuration and invoke your function code. This enables you to host your function code on any platform.
+Обработчик API `serve()` используется для обслуживания [функций](/docs/reference/typescript/v4/functions/create) вашего приложения через HTTP. Этот обработчик позволяет Inngest удалённо и безопасно читать конфигурацию ваших функций и вызывать код функций. Это позволяет размещать код функций на любой платформе.
 
 ```ts
 import { serve } from "inngest/next"; // or your preferred framework
@@ -21,7 +20,7 @@ serve({
 
 ```
 
-`serve` handlers are imported from convenient framework-specific packages like `"inngest/next"`, `"inngest/express"`, or `"inngest/lambda"`. [Click here for a full list of officially supported frameworks](/docs/learn/serving-inngest-functions). For any framework that is not support, you can [create a custom handler](#custom-frameworks).
+Обработчики `serve` импортируются из удобных пакетов для конкретных фреймворков, таких как `"inngest/next"`, `"inngest/express"` или `"inngest/lambda"`. [Нажмите здесь для полного списка официально поддерживаемых фреймворков](/docs/learn/serving-inngest-functions). Для любого неподдерживаемого фреймворка можно [создать кастомный обработчик](#custom-frameworks).
 
 ---
 
@@ -29,33 +28,33 @@ serve({
 
 <Properties>
   <Property name="client" type="Inngest client" required>
-    An Inngest client ([reference](/docs/reference/typescript/v4/client/create)).
+    Клиент Inngest ([справочник](/docs/reference/typescript/v4/client/create)).
   </Property>
   <Property name="functions" type="InngestFunctions[]" required>
-    An array of Inngest functions defined using `inngest.createFunction()` ([reference](/docs/reference/typescript/v4/functions/create)).
+    Массив функций Inngest, созданных с помощью `inngest.createFunction()` ([справочник](/docs/reference/typescript/v4/functions/create)).
   </Property>
   <Property name="serveOrigin" type="string">
-    The domain host of your application, _including_ protocol, e.g. `https://myapp.com`. The SDK attempts to infer this via HTTP headers at runtime, but this may be required when using platforms like AWS Lambda or when using a reverse proxy. See also [`INNGEST_SERVE_ORIGIN`](/docs/sdk/environment-variables#inngest-serve-origin).
+    Домен вашего приложения _с_ протоколом, например `https://myapp.com`. SDK пытается определить это через HTTP-заголовки во время выполнения, но это может быть необходимо при использовании таких платформ, как AWS Lambda, или при использовании обратного прокси. Смотрите также [`INNGEST_SERVE_ORIGIN`](/docs/sdk/environment-variables#inngest-serve-origin).
   </Property>
   <Property name="servePath" type="string">
-    The path where your `serve` handler is hosted. The SDK attempts to infer this via HTTP headers at runtime. We recommend `/api/inngest`. See also [`INNGEST_SERVE_PATH`](/docs/sdk/environment-variables#inngest-serve-path).
+    Путь, по которому размещён ваш обработчик `serve`. SDK пытается определить это через HTTP-заголовки во время выполнения. Рекомендуем `/api/inngest`. Смотрите также [`INNGEST_SERVE_PATH`](/docs/sdk/environment-variables#inngest-serve-path).
   </Property>
   <Property name="streaming" type={`true | false`}>
-    Enables streaming responses back to Inngest which can enable maximum serverless function timeouts. See [reference](/docs/streaming) for more information on the configuration.  See also [`INNGEST_STREAMING`](/docs/sdk/environment-variables#inngest-streaming).
+    Включает потоковые ответы обратно в Inngest, что может обеспечить максимальные тайм-ауты serverless-функций. Смотрите [справочник](/docs/streaming) для получения дополнительной информации о конфигурации. Смотрите также [`INNGEST_STREAMING`](/docs/sdk/environment-variables#inngest-streaming).
   </Property>
   <Property name="id" type="string">
-    The ID to use to represent this application instead of the client's ID. Useful for creating many Inngest endpoints in a single application.
+    ID для представления этого приложения вместо ID клиента. Полезно при создании многих эндпоинтов Inngest в одном приложении.
   </Property>
 </Properties>
 
 <Callout>
-  Options like `signingKey`, `signingKeyFallback`, `logger`, `baseUrl`, and `fetch` are configured on the [Inngest client](/docs/reference/typescript/v4/client/create), not on `serve()`. We always recommend setting the [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key) environment variable over using the `signingKey` option directly. As with any secret, it's not a good practice to hard-code the signing key in your codebase.
+  Опции `signingKey`, `signingKeyFallback`, `logger`, `baseUrl` и `fetch` настраиваются на [клиенте Inngest](/docs/reference/typescript/v4/client/create), а не в `serve()`. Мы всегда рекомендуем устанавливать переменную окружения [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key) вместо использования опции `signingKey` напрямую. Как и с любым секретом, хранить signing key в коде — плохая практика.
 </Callout>
 
-## How the `serve` API handler works
+## Как работает обработчик API `serve`
 
-The API works by exposing a single endpoint at `/api/inngest` which handles different actions utilizing HTTP request methods:
+API работает, предоставляя единый эндпоинт по пути `/api/inngest`, который обрабатывает различные действия с использованием HTTP-методов запросов:
 
-- `GET`: Return function metadata and render a landing page in **development only**.
-- `POST`: Invoke functions with the request body as incoming function state.
-- `PUT`: Trigger the SDK to register all functions with Inngest using the signing key.
+- `GET`: Возвращает метаданные функций и отображает страницу в **только в режиме разработки**.
+- `POST`: Вызывает функции с телом запроса в качестве входящего состояния функции.
+- `PUT`: Запускает SDK для регистрации всех функций в Inngest с использованием signing key.

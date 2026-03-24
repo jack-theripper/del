@@ -1,16 +1,16 @@
 import { Callout, CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = 'Handle high load by processing events in batches. Ideal for bulk operations.'
+export const description = 'Управляйте высокой нагрузкой, обрабатывая события пакетами. Идеально подходит для массовых операций.'
 
-# Batching events
+# Пакетная обработка событий (Batching)
 
-Batching allows a function to process multiple events in a single run. This is useful for high load systems where it's more efficient to handle a batch of events together rather than handling each event individually. Some use cases for batching include:
+Пакетная обработка позволяет функции обрабатывать несколько событий за один запуск. Это полезно для систем с высокой нагрузкой, где эффективнее обработать группу событий вместе, чем каждое событие по отдельности. Некоторые варианты использования пакетной обработки включают:
 
-* Reducing the number of requests to an external API that supports batch operations.
-* Creating a batch of database writes to reduce the number of transactions.
-* Reducing the number of requests to your [Inngest app](/docs/apps) to improve performance or serverless costs.
+* Уменьшение количества запросов к внешнему API, поддерживающему пакетные операции.
+* Создание пакета записей в базе данных для уменьшения количества транзакций.
+* Уменьшение количества запросов к вашему [приложению Inngest](/docs/apps) для повышения производительности или снижения затрат на серверлесс-инфраструктуру.
 
-## How to configure batching
+## Как настроить пакетную обработку
 
 {/* NOTE - This should be moved to an example and we can make this more succinct */}
 <CodeGroup>
@@ -21,13 +21,13 @@ inngest.createFunction(
     batchEvents: {
       maxSize: 100,
       timeout: "5s",
-      key: "event.data.user_id", // Optional: batch events by user ID
-      if: "event.data.account_type == \"free\"", // Optional: Only batch events from free accounts
+      key: "event.data.user_id", // Необязательно: группировать события в пакеты по ID пользователя
+      if: "event.data.account_type == \"free\"", // Необязательно: пакетировать только события от бесплатных аккаунтов
     },
     triggers: { event: "log/api.call" },
   },
   async ({ events, step }) => {
-    // NOTE: Use the `events` argument, which is an array of event payloads
+    // ПРИМЕЧАНИЕ: Используйте аргумент `events`, который является массивом данных событий
     const attrs = events.map((evt) => {
       return {
         user_id: evt.data.user_id,
@@ -45,7 +45,6 @@ inngest.createFunction(
   }
 );
 ```
-// TODO(lk) fix
 
 ```go {{ title: "Go" }}
 inngestgo.CreateFunction(
@@ -55,13 +54,13 @@ inngestgo.CreateFunction(
 		BatchEvents: &inngestgo.ConfigBatchEvents{
 			MaxSize: 100,
 			Timeout: "5s",
-			Key: inngestgo.StrPtr("event.data.user_id"), // Optional: batch events by user ID
-      If: inngestgo.StrPtr("event.data.account_type == \"free\""), // Optional: Only batch events from free accounts 
+			Key: inngestgo.StrPtr("event.data.user_id"), // Необязательно: группировать события в пакеты по ID пользователя
+      If: inngestgo.StrPtr("event.data.account_type == \"free\""), // Необязательно: пакетировать только события от бесплатных аккаунтов 
 		},
 	},
 	inngestgo.EventTrigger("log/api.call", nil),
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// NOTE: Use the events argument, which is an array of event payloads
+		// ПРИМЕЧАНИЕ: Используйте аргумент events, который является массивом данных событий
 		events := input.Events
 		attrs := make([]interface{}, len(events))
 		for i, evt := range events {
@@ -95,12 +94,12 @@ inngestgo.CreateFunction(
     batch_events=inngest.Batch(
         max_size=100,
         timeout=datetime.timedelta(seconds=5),
-        key="event.data.user_id"  # Optional: batch events by user ID
-        if="event.data.account_type == \"free\"" # Optional: Only batch events from free accounts 
+        key="event.data.user_id"  # Необязательно: группировать события в пакеты по ID пользователя
+        if="event.data.account_type == \"free\"" # Необязательно: пакетировать только события от бесплатных аккаунтов 
     ),
 )
 async def record_api_calls(ctx: inngest.Context):
-    # NOTE: Use the events from ctx, which is an array of event payloads
+    # ПРИМЕЧАНИЕ: Используйте events из ctx, который является массивом данных событий
     attrs = [
         {
             "user_id": evt.data.user_id,
@@ -121,55 +120,55 @@ async def record_api_calls(ctx: inngest.Context):
 
 </CodeGroup>
 
-### Configuration reference
+### Справочник по конфигурации
 
-* `maxSize` - The maximum number of events to add to a single batch.
-* `timeout` - The duration of time to wait to add events to a batch. If the batch is not full after this time, the function will be invoked with whatever events are in the current batch, regardless of size.
-* `key` - An optional [expression](/docs/guides/writing-expressions) using event data to batch events by. Each unique value of the `key` will receive its own batch, enabling you to batch events by any particular key, like a user ID.
-* `if` - An optional [boolean expression](/docs/guides/writing-expressions) using event data to conditionally batch events that evaluate to true on this expression. 
+* `maxSize` — максимальное количество событий, добавляемых в один пакет.
+* `timeout` — время ожидания для наполнения пакета событиями. Если пакет не заполнится по истечении этого времени, функция будет вызвана с теми событиями, которые уже есть в текущем пакете, независимо от его размера.
+* `key` — необязательное [выражение](/docs/guides/writing-expressions), использующее данные события для группировки в пакеты. Каждое уникальное значение `key` получит свой собственный пакет, что позволяет группировать события по любому конкретному ключу, например по ID пользователя.
+* `if` — необязательное [логическое выражение](/docs/guides/writing-expressions), использующее данные события для условного включения в пакет (событие включается, если выражение истинно).
 
 
 <Callout>
-  It is recommended to consider the overall batch size that you will need to process including the typical event payload size. Processing large batches can lead to memory or performance issues in your application.
+  Рекомендуется учитывать общий размер пакета, который вам придется обрабатывать, включая типичный размер полезной нагрузки события. Обработка больших пакетов может привести к проблемам с памятью или производительностью вашего приложения.
 
-  For system safety purposes, We also enforce a 10 MiB size limit for a batch, meaning if the size of the total number of events exceeds 10 MiB, the batch will start execution even if it's not full or has reached a timeout.
-  This limit cannot be changed at the moment.
+  В целях безопасности системы мы также применяем ограничение размера пакета в 10 МиБ. Это означает, что если общий размер всех событий превысит 10 МиБ, пакет начнет выполнение, даже если он не полон или не достигнут тайм-аут.
+  На данный момент этот лимит изменить нельзя.
 </Callout>
 
-## How batching works
+## Как работает пакетная обработка
 
-When batching is enabled, Inngest creates a new batch when the first event is received. The batch is filled with events until the `maxSize` is reached _or_ the `timeout` is up. The function is then invoked with the full list of events in the batch. When `key` is set, Inngest will maintain a batch for each unique key, which allows you to batch events belonging to a single entity, for example a customer.
+Когда пакетная обработка включена, Inngest создает новый пакет при получении первого события. Пакет наполняется событиями до тех пор, пока не будет достигнут `maxSize` _или_ не истечет `timeout`. Затем функция вызывается с полным списком событий в пакете. Если установлен `key`, Inngest будет поддерживать отдельный пакет для каждого уникального ключа, что позволяет группировать события, относящиеся к одной сущности, например к клиенту.
 
-Depending on your SDK, the `events` argument will contain the full list of events within a batch. This allows you to operate on all of them within a single function.
+В зависимости от вашего SDK, аргумент `events` будет содержать полный список событий внутри пакета. Это позволяет вам оперировать всеми ними в рамках одной функции.
 
-### Conditional Batching
-Conditional Batching can be enabled by providing a boolean expression in `if`.  If the expression cannot be evaluated to a boolean value or if the expression evaluates to `false`, batching will be skipped for this event and the event will be scheduled for execution immediately.
+### Условная пакетная обработка (Conditional Batching)
+Условную пакетную обработку можно включить, предоставив логическое выражение в `if`. Если выражение не может быть вычислено в логическое значение или если оно вычисляется в `false`, пакетная обработка для этого события будет пропущена, и событие будет запланировано к немедленному выполнению.
 
-## Combining with other flow control methods
+## Сочетание с другими методами управления потоком
 
-Batching does not work with all other flow control features.
+Пакетная обработка работает не со всеми функциями управления потоком.
 
-### Batching with concurrency limits
+### Пакетная обработка с лимитами конкурентности
 
-You _can_ combine batching with simple [concurrency](/docs/guides/concurrency) limits. For example, setting `concurrency: { limit: 1 }` will process one batch at a time.
+Вы _можете_ сочетать пакетную обработку с простыми лимитами [конкурентности](/docs/guides/concurrency). Например, установка `concurrency: { limit: 1 }` приведет к обработке одного пакета за раз.
 
-However, **the concurrency `key` option is ignored when batching is enabled**. This means:
+Однако **параметр `key` в настройках конкурентности игнорируется, когда включена пакетная обработка**. Это означает:
 
-- If you configure `concurrency: { limit: 1, key: "event.data.user_id" }` with batching, the `key` expression will have no effect
-- Batches will be processed one at a time globally (based on the `limit`), not per unique key value
-- The concurrency limit applies to all batches regardless of what key values the events contain
+- Если вы настроите `concurrency: { limit: 1, key: "event.data.user_id" }` вместе с пакетной обработкой, выражение `key` не возымеет эффекта.
+- Пакеты будут обрабатываться по одному глобально (на основе `limit`), а не для каждого уникального значения ключа.
+- Лимит конкурентности применяется ко всем пакетам, независимо от того, какие значения ключей содержат события.
 
-If you need per-key concurrency with batched events, consider processing events individually with a keyed concurrency limit instead of using batching.
+Если вам нужна конкурентность по ключам при пакетной обработке событий, рассмотрите возможность индивидуальной обработки событий с лимитом конкурентности по ключам вместо использования пакетной обработки.
 
-### Incompatible flow control features
+### Несовместимые функции управления потоком
 
-You _cannot_ use batching with [idempotency](/docs/guides/handling-idempotency), [rate limiting](/docs/guides/rate-limiting), [cancellation events](/docs/guides/cancel-running-functions#cancel-with-events), or [priority](/docs/guides/priority).
+Вы _не можете_ использовать пакетную обработку вместе с [идемпотентностью](/docs/guides/handling-idempotency), [ограничением частоты (rate limiting)](/docs/guides/rate-limiting), [событиями отмены](/docs/guides/cancel-running-functions#cancel-with-events) или [приоритетами (priority)](/docs/guides/priority).
 
-## Limitations
+## Ограничения
 
-* Check our [pricing page](https://www.inngest.com/pricing) to verify the batch size limits for each plan.
+* Посетите нашу [страницу с ценами](https://www.inngest.com/pricing), чтобы проверить лимиты размера пакетов для каждого тарифного плана.
 
-## Further reference
+## Дополнительные справочные материалы
 
-* [TypeScript SDK Reference](/docs/reference/functions/create#batchEvents)
-* [Python SDK Reference](/docs/reference/python/functions/create#batch_events)
+* [Справочник по TypeScript SDK](/docs/reference/functions/create#batchEvents)
+* [Справочник по Python SDK](/docs/reference/python/functions/create#batch_events)

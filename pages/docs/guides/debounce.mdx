@@ -1,16 +1,16 @@
 import { CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = 'Avoid unnecessary function invocations by de-duplicating events over a sliding time window. Ideal for preventing wasted work when a function might be triggered in quick succession.'
+export const description = 'Избегайте ненужных вызовов функций путем дедупликации событий в скользящем временном окне. Идеально подходит для предотвращения лишней работы, когда функция может запускаться несколько раз подряд через короткие промежутки времени.'
 
-# Debounce
+# Удаление дребезга (Debounce)
 
-Debounce delays function execution until a series of events are no longer received. This is useful for preventing wasted work when a function might be triggered in quick succession. Use cases for debounce include:
+Debounce (удаление дребезга) задерживает выполнение функции до тех пор, пока не перестанет поступать серия событий. Это полезно для предотвращения избыточной работы, когда функция может инициироваться несколько раз подряд в течение короткого периода. Сценарии использования debounce включают:
 
-* Preventing wasted work when handling events from user input that may change multiple times in a short time period.
-* Delaying processing of noisy webhook events until they are no longer received.
-* Ensuring that functions use the latest event within a series of updates (for example, synchronization).
+* Предотвращение лишней работы при обработке событий пользовательского ввода, которые могут меняться несколько раз за короткий промежуток времени.
+* Задержка обработки зашумленных событий вебхуков до тех пор, пока они не перестанут поступать.
+* Обеспечение того, чтобы функции использовали самое последнее событие из серии обновлений (например, при синхронизации).
 
-## How to configure debounce
+## Как настроить debounce
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -24,45 +24,45 @@ Debounce delays function execution until a series of events are no longer receiv
 ```
 </CodeGroup>
 
-### Configuration reference
+### Справочник по конфигурации
 
-* `period` - The time delay to delay execution. The period begins when the first matching event is received.
-* `key` - An optional [expression](/docs/guides/writing-expressions) using event data to apply each limit too. Each unique value of the `key` has its own limit, enabling you to rate limit function runs by any particular key, like a user ID.
-* `timeout` - Optional. The maximum time that a debounce can be extended before running.
+* `period` — временная задержка для откладывания выполнения. Период начинается при получении первого подходящего события.
+* `key` — необязательное [выражение](/docs/guides/writing-expressions), использующее данные события для применения лимита. Каждое уникальное значение `key` имеет свой собственный лимит, что позволяет ограничивать частоту запусков функций по любому конкретному ключу, например по ID пользователя.
+* `timeout` — необязательно. Максимальное время, на которое может быть продлен debounce перед запуском.
 
-## How it works
+## Как это работает
 
-When a function is triggered, the debounce `period` begins. If another event is received that matches the function's trigger, the debounce `period` is reset.  This continues until no events are received for the debounce `period`.  Once the `period` has passed without any new events, the function is executed using the last event received.
+При срабатывании функции начинается период `period` (удаление дребезга). Если получено другое событие, соответствующее триггеру функции, период `period` сбрасывается. Это продолжается до тех пор, пока в течение периода `period` не перестанут поступать новые события. Как только период пройдет без новых событий, функция выполняется с использованием последнего полученного события.
 
-If a `timeout` is provided, the function will always run after the `timeout` has passed even if new events are received. This ensures that the function does not continue to be debounced indefinitely if events continue to debounce the function.
+Если указан `timeout`, функция обязательно запустится по истечении этого времени, даже если продолжают поступать новые события. Это гарантирует, что выполнение функции не будет откладываться бесконечно, если события продолжают поступать.
 
 <img
   src="/assets/docs/reference/debounce.png"
   width="800"
   height={337}
   quality="95"
-  alt="Visualization of how debounce is applied"
+  alt="Визуализация того, как применяется debounce"
 />
 
-### Using a `key`
+### Использование ключа (`key`)
 
-When a `key` is added, a separate debounce period is applied for each unique value of the `key` expression. For example, if your `key` is set to `event.data.customer_id`, each customer would have their individual debounce period applied to functions run. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more information.
+При добавлении ключа `key` для каждого уникального значения выражения `key` применяется отдельный период debounce. Например, если ваш ключ `key` установлен в `event.data.customer_id`, для каждого клиента будет применяться свой индивидуальный период debounce при запуске функций. Для получения дополнительной информации прочтите [наше руководство по написанию выражений](/docs/guides/writing-expressions).
 
-## Comparison to rate limiting
+## Сравнение с ограничением частоты (Rate Limiting)
 
-If you prefer to execute a function for the _first_ event received, consider using [rate limiting](/docs/guides/rate-limiting) instead. Rate limiting ensures that a function runs once for each `key` the *first* time an event is received, while debounce uses the *last* event during a specified period.
+Если вы предпочитаете выполнять функцию для *первого* полученного события, рассмотрите возможность использования [ограничения частоты (rate limiting)](/docs/guides/rate-limiting). Ограничение частоты гарантирует, что функция запустится один раз для каждого `key` в тот момент, когда событие получено *впервые*, в то время как debounce использует *последнее* событие в течение указанного периода.
 
-## Combining with idempotency
+## Сочетание с идемпотентностью
 
-Debounce can be combined with [idempotency](/docs/guides/handling-idempotency#at-the-function-level-the-consumer) to ensure that once the debounced function has run, it does not run again.
+Debounce можно сочетать с [идемпотентностью](/docs/guides/handling-idempotency#at-the-function-level-the-consumer), чтобы гарантировать, что после того, как функция с удалением дребезга была запущена, она не запустится снова.
 
-## Limitations
+## Ограничения
 
-* The maximum debounce `period` is 7 days (168 hours).
-* The minimum debounce `period` is 1 second.
-* Debounce does not work with [batched functions](/docs/guides/batching).
+* Максимальный период debounce `period` составляет 7 дней (168 часов).
+* Минимальный период debounce `period` составляет 1 секунду.
+* Debounce не работает с [функциями с пакетной обработкой (batched functions)](/docs/guides/batching).
 
-## Further reference
+## Дополнительные справочные материалы
 
-* [TypeScript SDK Reference](/docs/reference/functions/debounce)
-* [Python SDK Reference](/docs/reference/python/functions/create#configuration)
+* [Справочник по TypeScript SDK](/docs/reference/functions/debounce)
+* [Справочник по Python SDK](/docs/reference/python/functions/create#configuration)

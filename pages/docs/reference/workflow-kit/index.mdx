@@ -4,18 +4,18 @@ import GithubIcon from "shared/Icons/Github"
 import NewspaperIcon from "shared/Icons/Newspaper"
 
 # Workflow Kit
-Workflow Kit enables you to build [user-defined workflows](/docs/guides/user-defined-workflows) with Inngest by providing a set of workflow actions to the **[Workflow Engine](/docs/reference/workflow-kit/engine)** while using the **[pre-built React components](/docs/reference/workflow-kit/components-api)** to build your Workflow Editor UI.
+Workflow Kit позволяет создавать [пользовательские рабочие процессы (user-defined workflows)](/docs/guides/user-defined-workflows) с помощью Inngest, предоставляя набор действий рабочего процесса для **[Workflow Engine](/docs/reference/workflow-kit/engine)** и используя **[готовые React-компоненты](/docs/reference/workflow-kit/components-api)** для создания интерфейса редактора рабочих процессов.
 
 
 <ImageTheme
   dark={'/assets/docs/reference/workflow-kit/workflow-kit-architecture-dark.jpg'}
   light={'/assets/docs/reference/workflow-kit/workflow-kit-architecture-light.jpg'}
   className="my-0"
-  alt={'The Workflow Kit provides a Workflow Engine to compose workflow actions on the back end and a set of pre-defined React components for the front end.'}
+  alt={'Workflow Kit предоставляет Workflow Engine для компоновки действий рабочего процесса на бэкенде и набор предопределенных React-компонентов для фронтенда.'}
 />
 
 
-## Installing
+## Установка
 
 
 <CodeGroup>
@@ -32,46 +32,46 @@ yarn add @inngest/workflow-kit inngest
 
 <Callout>
 
-**Prerequisites**
+**Предварительные условия**
 
-The Workflow Kit integrates with our [TypeScript SDK](/docs/reference/typescript).
+Workflow Kit интегрируется с нашим [TypeScript SDK](/docs/reference/typescript).
 
-To use it, you'll need an application with [Inngest set up](/docs/sdk/overview), ready to [serve Inngest functions](/docs/learn/serving-inngest-functions).
+Для его использования вам понадобится приложение с [настроенным Inngest](/docs/sdk/overview), готовое к [обработке функций Inngest](/docs/learn/serving-inngest-functions).
 
 </Callout>
 
 
-## Source code
+## Исходный код
 
 <div className="flex items-center gap-2">
 <div>
-Our Workflow Kit is open source and available on Github as [**inngest/workflow-kit**](https://github.com/inngest/workflow-kit/).
+Наш Workflow Kit имеет открытый исходный код и доступен на Github по адресу [**inngest/workflow-kit**](https://github.com/inngest/workflow-kit/).
 </div>
 <iframe src="https://ghbtns.com/github-btn.html?user=inngest&repo=workflow-kit&type=star&count=true" frameBorder="0" scrolling="0" width="150" height="20" title="GitHub"></iframe>
 </div>
 
-## Guides and examples
+## Руководства и примеры
 
-Get started with Worflow Kit by exploring our guide or cloning our Next.js template:
+Начните работу с Workflow Kit, изучив наше руководство или клонировав наш шаблон для Next.js:
 
 <CardGroup cols={2}>
 
   <Card
     href={"/docs/guides/user-defined-workflows"}
-    title={"Guide: Build workflows configurable by your users"}
+    title={"Руководство: Создание рабочих процессов, настраиваемых вашими пользователями"}
     icon={<NewspaperIcon className="text-basis h-6 w-6" />}
     iconPlacement="top"
   >
-    Follow this step-by-step tutorial to learn how to use Workflow Kit to add automations to a CMS Next.js application.
+    Следуйте этому пошаговому руководству, чтобы узнать, как использовать Workflow Kit для добавления автоматизаций в CMS-приложение на Next.js.
   </Card>
 
   <Card
     href={'https://github.com/inngest/workflow-kit/tree/main/examples/nextjs-blog-cms#readme'}
-    title={"Next.js template: CMS AI automation demo"}
+    title={"Шаблон Next.js: Демонстрация AI-автоматизации в CMS"}
     icon={<GithubIcon className="text-basis h-6 w-6" />}
     iconPlacement="top"
     >
-      This Next.js template features AI workflows helping with grammar fixes, generating Table of Contents or Tweets.
+      Этот шаблон Next.js содержит рабочие процессы с использованием ИИ, помогающие исправлять грамматику, генерировать оглавление или твиты.
   </Card>
 
 </CardGroup>

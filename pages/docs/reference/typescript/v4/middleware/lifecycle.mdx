@@ -1,31 +1,31 @@
 import { Callout, Properties, Property } from "src/shared/Docs/mdx";
 
-# Middleware lifecycle
+# Жизненный цикл промежуточного ПО
 
-Middleware lets you hook into function execution to add cross-cutting concerns like logging, error handling, and dependency injection. Middleware is class-based: you extend `Middleware.BaseMiddleware` and define hook methods.
+Промежуточное ПО позволяет встраиваться в выполнение функций для добавления сквозной функциональности: логирования, обработки ошибок и внедрения зависимостей. Промежуточное ПО основано на классах: нужно расширить `Middleware.BaseMiddleware` и определить методы-хуки.
 
-## Creating middleware
+## Создание промежуточного ПО
 
-Extend `Middleware.BaseMiddleware` and override the hooks you need:
+Расширьте `Middleware.BaseMiddleware` и переопределите нужные хуки:
 
 ```ts
 import { Middleware } from "inngest";
 
 class MyMiddleware extends Middleware.BaseMiddleware {
-  // Override hook methods here
+  // Переопределить методы-хуки здесь
 }
 ```
 
-Register middleware at the client level (applies to all functions) or the function level (applies to one function):
+Зарегистрируйте промежуточное ПО на уровне клиента (применяется ко всем функциям) или на уровне функции (применяется к одной функции):
 
 ```ts
-// Client level
+// На уровне клиента
 const inngest = new Inngest({
   id: "my-app",
   middleware: [MyMiddleware],
 });
 
-// Function level
+// На уровне функции
 inngest.createFunction({
   id: "my-fn",
   middleware: [MyMiddleware],
@@ -36,46 +36,46 @@ inngest.createFunction({
 ```
 
 <Callout>
-A fresh middleware instance is created for every request, so you can safely use instance properties (`this`) to store per-request state without worrying about leaks between runs.
+Для каждого запроса создаётся новый экземпляр промежуточного ПО, поэтому можно безопасно использовать свойства экземпляра (`this`) для хранения состояния запроса без риска утечек между запусками.
 </Callout>
 
-## Execution lifecycle
+## Жизненный цикл выполнения
 
-The following shows the order in which hooks are called during a request. This is the key mental model for understanding middleware:
+Ниже показан порядок вызова хуков во время запроса. Это ключевая модель для понимания промежуточного ПО:
 
-1. **`wrapRequest()`** - Outermost wrapper around the entire HTTP request
-2. **`transformFunctionInput()`** - Modify `ctx` before the function handler runs
-3. **`wrapFunctionHandler()`** - Wrap function execution (e.g. for `AsyncLocalStorage`)
-4. **`onMemoizationEnd()`** - After all memoized steps resolve
-5. **`onRunStart()`** - First attempt only (attempt 0, no memoized steps)
-6. Per step:
-   - `transformStepInput()` → `wrapStep()` → `onStepStart()` → `wrapStepHandler()` → execute → `onStepComplete()` / `onStepError()`
-7. **`onRunComplete()`** / **`onRunError()`** - When the function finishes
+1. **`wrapRequest()`** — Внешняя обёртка вокруг всего HTTP-запроса
+2. **`transformFunctionInput()`** — Изменение `ctx` перед запуском обработчика функции
+3. **`wrapFunctionHandler()`** — Обёртка выполнения функции (например, для `AsyncLocalStorage`)
+4. **`onMemoizationEnd()`** — После разрешения всех мемоизированных шагов
+5. **`onRunStart()`** — Только первая попытка (попытка 0, нет мемоизированных шагов)
+6. Для каждого шага:
+   - `transformStepInput()` → `wrapStep()` → `onStepStart()` → `wrapStepHandler()` → выполнение → `onStepComplete()` / `onStepError()`
+7. **`onRunComplete()`** / **`onRunError()`** — Когда функция завершается
 
-Event sending (`transformSendEvent()` → `wrapSendEvent()`) is not part of this fixed sequence. It runs whenever `inngest.send()` or `step.sendEvent()` is called.
+Отправка событий (`transformSendEvent()` → `wrapSendEvent()`) не является частью этой фиксированной последовательности. Выполняется при каждом вызове `inngest.send()` или `step.sendEvent()`.
 
 <Callout>
-Hooks you don't define have zero overhead: the SDK skips them entirely. Only override the hooks you need.
+Неопределённые хуки не создают накладных расходов: SDK полностью пропускает их. Переопределяйте только нужные хуки.
 </Callout>
 
-## Observable hooks
+## Наблюдательные хуки
 
-Observable hooks (`on*`) are call-and-forget. They receive read-only arguments and do not return a value. Use them for logging, metrics, and side effects. Errors thrown in observable hooks are caught and logged, not propagated to the run or step.
+Наблюдательные хуки (`on*`) работают по принципу "вызвал и забыл". Они получают аргументы только для чтения и не возвращают значения. Используйте их для логирования, метрик и побочных эффектов. Ошибки, выброшенные в наблюдательных хуках, перехватываются и логируются, а не распространяются на запуск или шаг.
 
 ---
 
 ### `onRunStart`
 
-Called once on the very first attempt of a run (attempt 0, no memoized steps). Not called on subsequent retries or replays.
+Вызывается один раз при первой попытке запуска (попытка 0, нет мемоизированных шагов). Не вызывается при повторных попытках или воспроизведениях.
 
-Will not call if the first attempt fails to reach the app (e.g. a network error).
+Не будет вызван, если первая попытка не достигла приложения (например, из-за сетевой ошибки).
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function being executed.
+    Метаданные о выполняемой функции.
   </Property>
 </Properties>
 
@@ -83,17 +83,17 @@ Will not call if the first attempt fails to reach the app (e.g. a network error)
 
 ### `onRunComplete`
 
-Called when a function completes successfully.
+Вызывается при успешном завершении функции.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="output">
-    The successful return value of the function.
+    Успешное возвращаемое значение функции.
   </Property>
 </Properties>
 
@@ -101,20 +101,20 @@ Called when a function completes successfully.
 
 ### `onRunError`
 
-Called each time a function throws an error.
+Вызывается каждый раз, когда функция выбрасывает ошибку.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="error">
-    The error that was thrown.
+    Выброшенная ошибка.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="isFinalAttempt">
-    Whether this is the last retry attempt before the run permanently fails.
+    Является ли это последней попыткой повтора перед окончательным сбоем запуска.
   </Property>
 </Properties>
 
@@ -122,17 +122,17 @@ Called each time a function throws an error.
 
 ### `onStepStart`
 
-Called before a step handler runs. Only called for `step.run` and `step.sendEvent`.
+Вызывается перед запуском обработчика шага. Вызывается только для `step.run` и `step.sendEvent`.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="stepInfo">
-    Metadata about the step being executed.
+    Метаданные о выполняемом шаге.
   </Property>
 </Properties>
 
@@ -140,20 +140,20 @@ Called before a step handler runs. Only called for `step.run` and `step.sendEven
 
 ### `onStepComplete`
 
-Called when a step succeeds. Only called for `step.run` and `step.sendEvent`. Never called for memoized steps.
+Вызывается при успешном завершении шага. Вызывается только для `step.run` и `step.sendEvent`. Никогда не вызывается для мемоизированных шагов.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="output">
-    The successful return value of the step.
+    Успешное возвращаемое значение шага.
   </Property>
   <Property required name="stepInfo">
-    Metadata about the step.
+    Метаданные о шаге.
   </Property>
 </Properties>
 
@@ -161,23 +161,23 @@ Called when a step succeeds. Only called for `step.run` and `step.sendEvent`. Ne
 
 ### `onStepError`
 
-Called when a step throws an error. Only called for `step.run` and `step.sendEvent`. Never called for memoized steps.
+Вызывается, когда шаг выбрасывает ошибку. Вызывается только для `step.run` и `step.sendEvent`. Никогда не вызывается для мемоизированных шагов.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="error">
-    The error that was thrown.
+    Выброшенная ошибка.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="isFinalAttempt">
-    Whether this is the last retry attempt for this step.
+    Является ли это последней попыткой повтора для данного шага.
   </Property>
   <Property required name="stepInfo">
-    Metadata about the step.
+    Метаданные о шаге.
   </Property>
 </Properties>
 
@@ -185,22 +185,22 @@ Called when a step throws an error. Only called for `step.run` and `step.sendEve
 
 ### `onMemoizationEnd`
 
-Called once per request after all memoized steps have resolved. On the first request (no memoized steps), called immediately.
+Вызывается один раз за запрос после разрешения всех мемоизированных шагов. При первом запросе (нет мемоизированных шагов) вызывается немедленно.
 
-Use cases for this hook are limited. It's primarily useful for logging or metrics that should run after all memoized steps have resolved.
+Сценарии использования этого хука ограничены. Он в первую очередь полезен для логирования или метрик, которые должны выполняться после разрешения всех мемоизированных шагов.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
 </Properties>
 
-## Wrapping hooks
+## Оборачивающие хуки
 
-Wrapping hooks (`wrap*`) follow an onion model: you **must** call `next()` to continue processing. Code before `next()` runs on the way in, code after runs on the way out.
+Оборачивающие хуки (`wrap*`) следуют модели "луковицы": **необходимо** вызвать `next()` для продолжения обработки. Код перед `next()` выполняется на входе, код после — на выходе.
 
 ```ts
 class MyMiddleware extends Middleware.BaseMiddleware {
@@ -213,28 +213,28 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 }
 ```
 
-With multiple middleware, they nest: middleware 1 wraps middleware 2 wraps the inner handler.
+При нескольких промежуточных ПО они вкладываются: промежуточное ПО 1 оборачивает промежуточное ПО 2, которое оборачивает внутренний обработчик.
 
 ---
 
 ### `wrapRequest`
 
-Wraps the entire HTTP request
+Оборачивает весь HTTP-запрос.
 
-Example use cases: auth, top-level metrics, or error boundaries.
+Примеры использования: аутентификация, метрики верхнего уровня или границы ошибок.
 
 <Properties>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="next">
-    Must call to continue processing. Returns the HTTP response.
+    Необходимо вызвать для продолжения обработки. Возвращает HTTP-ответ.
   </Property>
   <Property required name="requestInfo">
-    The incoming HTTP request metadata (headers, URL, method).
+    Метаданные входящего HTTP-запроса (заголовки, URL, метод).
   </Property>
   <Property required name="runId">
-    The ID of the current run.
+    ID текущего запуска.
   </Property>
 </Properties>
 
@@ -242,23 +242,23 @@ Example use cases: auth, top-level metrics, or error boundaries.
 
 ### `wrapFunctionHandler`
 
-Wraps function execution. `next()` resolves when the function completes.
+Оборачивает выполнение функции. `next()` разрешается при завершении функции.
 
-Example use cases: `AsyncLocalStorage`, error transformation, timing, or [inserting steps](/docs/reference/typescript/v4/middleware/examples#inserting-steps).
+Примеры использования: `AsyncLocalStorage`, преобразование ошибок, измерение времени или [вставка шагов](/docs/reference/typescript/v4/middleware/examples#inserting-steps).
 
 <Callout>
-`next()` only resolves when the function fully completes or errors. When a new step is discovered, `next()` never resolves for that request. It intentionally hangs until garbage collection deletes it.
+`next()` разрешается только при полном завершении или ошибке функции. При обнаружении нового шага `next()` не разрешается для данного запроса. Он намеренно зависает до сборки мусора.
 </Callout>
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="next">
-    Must call to execute the function handler.
+    Необходимо вызвать для выполнения обработчика функции.
   </Property>
 </Properties>
 
@@ -266,26 +266,26 @@ Example use cases: `AsyncLocalStorage`, error transformation, timing, or [insert
 
 ### `wrapStep`
 
-Wraps every step, including memoized steps and all step kinds (`step.run`, `step.sleep`, `step.invoke`, etc.).
+Оборачивает каждый шаг, включая мемоизированные шаги и все виды шагов (`step.run`, `step.sleep`, `step.invoke` и т.д.).
 
-Example use cases: deserialize memoized data, [insert steps](/docs/reference/typescript/v4/middleware/examples#inserting-steps).
+Примеры использования: десериализация мемоизированных данных, [вставка шагов](/docs/reference/typescript/v4/middleware/examples#inserting-steps).
 
 <Callout>
-If the step is not memoized, `next()` never resolves for that request. The method intentionally hangs until garbage collection deletes it.
+Если шаг не мемоизирован, `next()` не разрешается для данного запроса. Метод намеренно зависает до сборки мусора.
 </Callout>
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="next">
-    Must call to continue processing the step.
+    Необходимо вызвать для продолжения обработки шага.
   </Property>
   <Property required name="stepInfo">
-    Metadata about the step. Check `stepInfo.memoized` to differentiate memoized vs fresh.
+    Метаданные о шаге. Проверяйте `stepInfo.memoized` для различения мемоизированных и свежих шагов.
   </Property>
 </Properties>
 
@@ -293,22 +293,22 @@ If the step is not memoized, `next()` never resolves for that request. The metho
 
 ### `wrapStepHandler`
 
-Wraps step handler execution. Only called for `step.run` and `step.sendEvent`.
+Оборачивает выполнение обработчика шага. Вызывается только для `step.run` и `step.sendEvent`.
 
-Example use cases: serialize step output, [error handling](/docs/reference/typescript/v4/middleware/examples#error-handling), or timing.
+Примеры использования: сериализация вывода шага, [обработка ошибок](/docs/reference/typescript/v4/middleware/examples#error-handling) или измерение времени.
 
 <Properties>
   <Property required name="ctx">
-    The function context.
+    Контекст функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="next">
-    Must call to execute the step handler.
+    Необходимо вызвать для выполнения обработчика шага.
   </Property>
   <Property required name="stepInfo">
-    Metadata about the step.
+    Метаданные о шаге.
   </Property>
 </Properties>
 
@@ -316,43 +316,43 @@ Example use cases: serialize step output, [error handling](/docs/reference/types
 
 ### `wrapSendEvent`
 
-Wraps event sending via `inngest.send()` or `step.sendEvent()`.
+Оборачивает отправку событий через `inngest.send()` или `step.sendEvent()`.
 
-Example use cases: backup on send failure, metrics.
+Примеры использования: резервное копирование при сбое отправки, метрики.
 
 <Properties>
   <Property required name="events">
-    The events being sent.
+    Отправляемые события.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function, or `null` if called outside a function (e.g. `inngest.send()`).
+    Метаданные о функции или `null` при вызове вне функции (например, `inngest.send()`).
   </Property>
   <Property required name="next">
-    Must call to send the events.
+    Необходимо вызвать для отправки событий.
   </Property>
 </Properties>
 
-## Transform hooks
+## Хуки преобразования
 
-Transform hooks (`transform*`) receive arguments and return a modified copy. Use them to inject dependencies, modify inputs, or enrich events.
+Хуки преобразования (`transform*`) получают аргументы и возвращают изменённую копию. Используйте их для внедрения зависимостей, изменения входных данных или обогащения событий.
 
 ---
 
 ### `transformFunctionInput`
 
-Modify the function context before the handler runs.
+Изменение контекста функции перед запуском обработчика.
 
-Example use cases: dependency injection, deserialize event data.
+Примеры использования: внедрение зависимостей, десериализация данных события.
 
 <Properties>
   <Property required name="ctx">
-    The function context. Add properties here to inject them into the function handler.
+    Контекст функции. Добавляйте свойства сюда для их внедрения в обработчик функции.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="steps">
-    A record of memoized step data keyed by hashed step ID.
+    Запись мемоизированных данных шагов с ключами в виде хэшированных ID шагов.
   </Property>
 </Properties>
 
@@ -360,22 +360,22 @@ Example use cases: dependency injection, deserialize event data.
 
 ### `transformStepInput`
 
-Modify step options or input before a step runs.
+Изменение параметров или входных данных шага перед его запуском.
 
-Example use cases: serialize `step.invoke` data, bust memoization cache (i.e. change step ID).
+Примеры использования: сериализация данных `step.invoke`, сброс кэша мемоизации (изменение ID шага).
 
 <Properties>
   <Property required name="functionInfo">
-    Metadata about the function.
+    Метаданные о функции.
   </Property>
   <Property required name="stepInfo">
-    Partial step metadata.
+    Частичные метаданные шага.
   </Property>
   <Property required name="stepOptions">
-    The options passed to the step (first argument).
+    Параметры, переданные шагу (первый аргумент).
   </Property>
   <Property required name="input">
-    Arguments passed to the step function (after ID and handler).
+    Аргументы, переданные функции шага (после ID и обработчика).
   </Property>
 </Properties>
 
@@ -383,42 +383,42 @@ Example use cases: serialize `step.invoke` data, bust memoization cache (i.e. ch
 
 ### `transformSendEvent`
 
-Modify events before they are sent.
+Изменение событий перед их отправкой.
 
-Example use cases: serialize event data, add metadata.
+Примеры использования: сериализация данных событий, добавление метаданных.
 
 <Properties>
   <Property required name="events">
-    The events being sent. Return a modified copy to change them.
+    Отправляемые события. Верните изменённую копию для их модификации.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function, or `null` if called outside a function.
+    Метаданные о функции или `null` при вызове вне функции.
   </Property>
 </Properties>
 
-## Output type transforms
+## Преобразования типов вывода
 
-Output type transforms are `declare` properties that control how TypeScript types function and step return values. They have no runtime behavior — they only affect the type system.
+Преобразования типов вывода — это свойства `declare`, контролирующие способ типизации TypeScript возвращаемых значений функций и шагов. Они не имеют поведения во время выполнения — влияют только на систему типов.
 
-By default, the SDK assumes all return values are serialized to JSON, so types like `Date` become `string`. If your middleware changes serialization behavior at runtime (e.g. via [`wrapStepHandler`](#wrapstephandler)), declare a corresponding type transform so TypeScript reflects the actual runtime types.
+По умолчанию SDK предполагает, что все возвращаемые значения сериализованы в JSON, поэтому типы вроде `Date` становятся `string`. Если промежуточное ПО изменяет поведение сериализации во время выполнения (например, через [`wrapStepHandler`](#wrapstephandler)), объявите соответствующее преобразование типов, чтобы TypeScript отражал фактические типы времени выполнения.
 
 <Callout>
-Type transforms only affect types. You are responsible for ensuring the declared transform matches your runtime transformation.
+Преобразования типов влияют только на типы. Вы несёте ответственность за соответствие объявленного преобразования вашему фактическому преобразованию во время выполнения.
 </Callout>
 
-Both transforms use the `Middleware.StaticTransform` pattern to imitate higher-kinded types. For example, a normal generic type that preserves `Date` instead of Jsonifying it:
+Оба преобразования используют паттерн `Middleware.StaticTransform` для имитации типов высшего порядка. Например, обычный обобщённый тип, сохраняющий `Date` вместо его JSON-ификации:
 
 ```ts
-// A normal generic type
+// Обычный обобщённый тип
 type PreserveDate<In> = In extends Date ? Date : Jsonify<In>;
 ```
 
-As a `StaticTransform`, this becomes an interface where `this["In"]` replaces the generic parameter and `Out` is the result:
+Как `StaticTransform` это становится интерфейсом, где `this["In"]` заменяет обобщённый параметр, а `Out` — результат:
 
 ```ts
 import { Middleware } from "inngest";
 
-// The same logic as a StaticTransform
+// Та же логика в виде StaticTransform
 interface PreserveDate extends Middleware.StaticTransform {
   Out: this["In"] extends Date ? Date : Jsonify<this["In"]>;
 }
@@ -426,20 +426,20 @@ interface PreserveDate extends Middleware.StaticTransform {
 
 <Properties>
   <Property required name="In">
-    The original return type. Set automatically by the SDK — do not set this yourself.
+    Исходный возвращаемый тип. Устанавливается автоматически SDK — не устанавливайте это самостоятельно.
   </Property>
   <Property required name="Out">
-    The transformed type. Define this to compute the output type based on `In`.
+    Преобразованный тип. Определите это для вычисления выходного типа на основе `In`.
   </Property>
 </Properties>
 
-When multiple middleware declare transforms, they are chained in registration order: the `Out` of one becomes the `In` of the next.
+При нескольких промежуточных ПО с объявленными преобразованиями они соединяются в цепочку в порядке регистрации: `Out` одного становится `In` следующего.
 
 ---
 
 ### `functionOutputTransform`
 
-Declares how function return types are transformed. By default, return types are Jsonified (e.g. `Date` becomes `string`).
+Объявляет, как преобразуются возвращаемые типы функций. По умолчанию типы возврата JSON-ифицируются (например, `Date` становится `string`).
 
 ```ts
 import { Middleware } from "inngest";
@@ -457,7 +457,7 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 
 ### `stepOutputTransform`
 
-Declares how step output types are transformed. By default, output types are Jsonified (e.g. `Date` becomes `string`).
+Объявляет, как преобразуются типы вывода шагов. По умолчанию типы вывода JSON-ифицируются (например, `Date` становится `string`).
 
 ```ts
 import { Middleware } from "inngest";
@@ -473,34 +473,34 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 
 ---
 
-## Static hooks
+## Статические хуки
 
 ### `onRegister`
 
-Called once when the middleware class is registered with a client or function.
+Вызывается один раз при регистрации класса промежуточного ПО в клиенте или функции.
 
-Example use cases: one-time setup.
+Примеры использования: одноразовая настройка.
 
 ```ts
 class MyMiddleware extends Middleware.BaseMiddleware {
   static onRegister({ client, functionInfo }: Middleware.OnRegisterArgs) {
-    // One-time setup
+    // Одноразовая настройка
   }
 }
 ```
 
 <Properties>
   <Property required name="client">
-    The Inngest client instance.
+    Экземпляр клиента Inngest.
   </Property>
   <Property required name="functionInfo">
-    Metadata about the function, or `null` for client-level middleware.
+    Метаданные о функции или `null` для промежуточного ПО на уровне клиента.
   </Property>
 </Properties>
 
-## Important notes
+## Важные замечания
 
-- **Performance** - Undefined hooks have zero overhead. The SDK checks for hook presence and skips entirely if not defined.
-- **Immutability** - Observable and wrapping hook arguments are deeply read-only. Do not mutate them.
-- **`next()` is required** - Wrapping hooks must call `next()` or the request will hang.
-- **Instance per request** - A new middleware instance is created for each request, so instance state is safe to use within a single request.
+- **Производительность** — Неопределённые хуки не создают накладных расходов. SDK проверяет наличие хука и полностью пропускает его если не определён.
+- **Иммутабельность** — Аргументы наблюдательных и оборачивающих хуков строго доступны только для чтения. Не мутируйте их.
+- **`next()` обязателен** — Оборачивающие хуки должны вызывать `next()`, иначе запрос зависнет.
+- **Экземпляр на запрос** — Для каждого запроса создаётся новый экземпляр промежуточного ПО, поэтому состояние экземпляра безопасно использовать в рамках одного запроса.

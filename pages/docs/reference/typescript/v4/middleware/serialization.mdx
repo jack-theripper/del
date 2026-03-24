@@ -1,33 +1,33 @@
 import { Callout, CodeGroup } from "src/shared/Docs/mdx";
 
-# Custom serialization
+# Кастомная сериализация
 
-Inngest sends step output, function output, and event data as JSON. This means non-JSON types like `Date`, `Map`, `Set`, or custom classes are lost during serialization. Custom serializer middleware lets you preserve these types by converting them to a JSON-safe format on the way out and restoring them on the way in.
+Inngest отправляет вывод шагов, вывод функций и данные событий в формате JSON. Это означает, что не-JSON типы, такие как `Date`, `Map`, `Set` или кастомные классы, теряются при сериализации. Промежуточное ПО кастомного сериализатора позволяет сохранять эти типы, конвертируя их в JSON-совместимый формат на выходе и восстанавливая на входе.
 
-## How it works
+## Как это работает
 
-A serializer middleware hooks into multiple points in the lifecycle:
+Промежуточное ПО сериализатора встраивается в несколько точек жизненного цикла:
 
-- **`wrapStepHandler`** and **`wrapFunctionHandler`** - Serialize output before it's sent to Inngest
-- **`wrapStep`** - Deserialize memoized step data when it's returned to your function
-- **`transformFunctionInput`** - Deserialize event data before your function handler runs
-- **`transformSendEvent`** - Serialize event data before it's sent to Inngest
-- **`transformStepInput`** - Serialize invoke step input before it's sent to the server
+- **`wrapStepHandler`** и **`wrapFunctionHandler`** — Сериализуют вывод перед отправкой в Inngest
+- **`wrapStep`** — Десериализуют мемоизированные данные шага при их возврате в функцию
+- **`transformFunctionInput`** — Десериализуют данные события перед запуском обработчика функции
+- **`transformSendEvent`** — Сериализуют данные события перед отправкой в Inngest
+- **`transformStepInput`** — Сериализуют входные данные шага invoke перед отправкой на сервер
 
-This ensures that your custom types are preserved across step boundaries, event sends, and function invocations.
+Это обеспечивает сохранение кастомных типов через границы шагов, отправку событий и вызовы функций.
 
-## Building a serializer
+## Создание сериализатора
 
-In this example, we'll build a serializer that preserves `Date` objects.
+В этом примере мы создадим сериализатор, сохраняющий объекты `Date`.
 
-The recommended approach is to build an abstract base class that handles the recursive traversal and lifecycle hooks, then create concrete implementations for each type you want to serialize. `BaseSerializerMiddleware` will eventually be a first-class part of the SDK, but for now it's a pattern you can copy into your own codebase.
+Рекомендуемый подход — создать абстрактный базовый класс, который обрабатывает рекурсивный обход и хуки жизненного цикла, а затем создавать конкретные реализации для каждого типа, который нужно сериализовать. `BaseSerializerMiddleware` в итоге станет первоклассной частью SDK, но пока это паттерн, который можно скопировать в свою кодовую базу.
 
-### Base class
+### Базовый класс
 
-This base class recursively walks all data flowing through the middleware, calling your `serialize` and `deserialize` methods on matching values. You can copy-paste it into your codebase, since it works with any custom serializer.
+Этот базовый класс рекурсивно обходит все данные, проходящие через промежуточное ПО, вызывая методы `serialize` и `deserialize` на совпадающих значениях. Его можно скопировать в свою кодовую базу, так как он работает с любым кастомным сериализатором.
 
 <details>
-<summary>**`BaseSerializerMiddleware` full source**</summary>
+<summary>**Полный исходный код `BaseSerializerMiddleware`**</summary>
 
 ```ts
 import { Middleware } from "inngest";
@@ -162,9 +162,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 </details>
 
-### Date serializer
+### Сериализатор Date
 
-Here's a concrete implementation that preserves `Date` objects. It converts dates to a tagged JSON format on serialization and restores them on deserialization:
+Вот конкретная реализация, сохраняющая объекты `Date`. Она конвертирует даты в теговый JSON-формат при сериализации и восстанавливает их при десериализации:
 
 ```ts
 import { Middleware } from "inngest";
@@ -217,11 +217,11 @@ interface PreserveDate extends Middleware.StaticTransform {
 }
 ```
 
-In the above example, `_PreserveDate` looks like a normal type but `PreserveData` may look strange. The `PreserveDate` interface is a higher-kinded type that middleware uses to transform function and step return types.
+В примере выше `_PreserveDate` выглядит как обычный тип, но `PreserveDate` может показаться необычным. Интерфейс `PreserveDate` — это higher-kinded тип, который промежуточное ПО использует для преобразования возвращаемых типов функций и шагов.
 
-## Using the middleware
+## Использование промежуточного ПО
 
-Register the middleware at the client level to apply it to all functions, or at the function level for specific functions:
+Зарегистрируйте промежуточное ПО на уровне клиента для применения ко всем функциям или на уровне функции для конкретных функций:
 
 <CodeGroup>
 
@@ -271,9 +271,9 @@ inngest.createFunction(
 
 </CodeGroup>
 
-## Serializing other types
+## Сериализация других типов
 
-You can follow the same pattern for any non-JSON type. Create a new subclass of `BaseSerializerMiddleware` for each type. For example, here's a serializer that preserves `Set` objects:
+Тот же паттерн можно использовать для любого не-JSON типа. Создайте новый подкласс `BaseSerializerMiddleware` для каждого типа. Например, вот сериализатор, сохраняющий объекты `Set`:
 
 ```ts
 import { Middleware } from "inngest";
@@ -318,7 +318,7 @@ interface PreserveSet extends Middleware.StaticTransform {
 }
 ```
 
-Use multiple serializer middleware together by registering them both:
+Используйте несколько промежуточных ПО сериализаторов вместе, зарегистрировав их оба:
 
 ```ts
 const inngest = new Inngest({
@@ -328,5 +328,5 @@ const inngest = new Inngest({
 ```
 
 <Callout>
-Each serializer uses a unique marker key to tag its serialized format, so multiple serializers won't conflict with each other.
+Каждый сериализатор использует уникальный ключ-маркер для тегирования своего сериализованного формата, поэтому несколько сериализаторов не будут конфликтовать друг с другом.
 </Callout>

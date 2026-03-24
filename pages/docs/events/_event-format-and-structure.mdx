@@ -1,6 +1,6 @@
-# Event format and structure
+# Формат и структура события
 
-Inngest events are just JSON allowing them to be easily created and read. Here is a basic example of all required and optional payload fields:
+События Inngest представляют собой обычный JSON, что делает их простыми в создании и чтении. Ниже приведён базовый пример со всеми обязательными и необязательными полями полезной нагрузки:
 
 ```js
 await inngest.send({
@@ -12,28 +12,28 @@ await inngest.send({
 })
 ```
 
-## Required fields
+## Обязательные поля
 
-- `name: String` - The name of your event. We recommend names are lowercase and use dot-notation. Using prefixes (e.g. `<prefix>/some.event`) is also encouraged to help organize your events.
-- `data: Object` - All data associated with the event. You can pass any data here and it will be serialized as JSON. Nested data is accepted, but we recommend keeping the payload simple and, more importantly, consistent.
+- `name: String` — Название события. Рекомендуется использовать строчные буквы и точечную нотацию. Также рекомендуется использовать префиксы (например, `<prefix>/some.event`) для удобной организации событий.
+- `data: Object` — Все данные, связанные с событием. Вы можете передать любые данные — они будут сериализованы как JSON. Вложенные данные поддерживаются, однако рекомендуется сохранять полезную нагрузку простой и, что важнее, согласованной.
 
-## Optional fields
+## Необязательные поля
 
-- `user: Object` - Any relevant user identifying data or attributes associated with the event. All fields are upserted into a “User” in Inngest cloud to associate and group events together for easier debugging (see: “Benefits of the user object” below).
-- `ts: Number` - A **timestamp** integer representing the time (in milliseconds) at which the event occurred. NOTE - Inngest will automatically set this to the exact time the event is received so this is only needed if you want to use historic events or want exact values.
-- `v: String` - A **version** identifier for a particular event payload. Versions become useful to record when the payload format (aka event schema) was changed. We recommend the format `YYYY-MM-DD.N` where the `N` is an integer increased for every change. This is an optional, but very useful field.
+- `user: Object` — Любые данные, идентифицирующие пользователя, или атрибуты, связанные с событием. Все поля добавляются или обновляются в записи «Пользователь» в Inngest Cloud для группировки событий и упрощения отладки (см. раздел «Преимущества объекта user» ниже).
+- `ts: Number` — Целое число **временной метки**, представляющее время (в миллисекундах), когда произошло событие. ПРИМЕЧАНИЕ: Inngest автоматически устанавливает это значение равным точному времени получения события, поэтому поле нужно только при использовании исторических событий или при необходимости точных значений.
+- `v: String` — Идентификатор **версии** конкретного формата полезной нагрузки события. Версии полезны для фиксации изменений формата полезной нагрузки (схемы события). Рекомендуется формат `YYYY-MM-DD.N`, где `N` — целое число, увеличиваемое при каждом изменении. Поле необязательное, но очень полезное.
 
-### Benefits of the `user` object - User-based debugging
+### Преимущества объекта `user` — отладка на основе пользователей
 
-The `user` object is a special field in Inngest Cloud. Sending data in this object enables: **unified user-based debugging and audit trails**.
+Объект `user` — это специальное поле в Inngest Cloud. Отправка данных в этом объекте позволяет использовать **единую отладку на основе пользователей и журналы аудита**.
 
-Inngest creates and stores a unified identity (aka profile) for each unique user that you send events for. You can think of it as performing an “upsert” for any data passed in the `user` object. There are two key ways to use this feature:
+Inngest создаёт и хранит единую идентификационную запись (профиль) для каждого уникального пользователя, для которого отправляются события. Это работает как «upsert» для любых данных, переданных в объекте `user`. Есть два ключевых способа использования этой функции:
 
-- **Identifiers** - `id`, `email`, `phone`, or any field ending in `_id` will be used to match and group events together into a single identity. (Examples: `stripe_customer_id`, `zendesk_id`)
-- **Attributes** - Any non-identifier field will be stored as an attribute for your own reference. Potential uses for attributes: `billing_plan` , `signup_source`, or `last_login_at`.
+- **Идентификаторы** — `id`, `email`, `phone` или любое поле, заканчивающееся на `_id`, используются для сопоставления и группировки событий в единую идентификационную запись. (Примеры: `stripe_customer_id`, `zendesk_id`)
+- **Атрибуты** — Любое поле, не являющееся идентификатором, сохраняется как атрибут для вашего использования. Возможные варианты атрибутов: `billing_plan`, `signup_source` или `last_login_at`.
 
 <aside>
-  <p>🔐 <strong>Security</strong> - Each user's attributes is stored fully encrypted in our database using row-level encryption.  Each user gets its own encryption key which is permanently deleted when you delete the user from our system, which helps comply with GDPR and CCPA.</p>
+  <p>🔐 <strong>Безопасность</strong> — Атрибуты каждого пользователя полностью шифруются в нашей базе данных с использованием шифрования на уровне строк. Каждый пользователь получает собственный ключ шифрования, который безвозвратно удаляется при удалении пользователя из нашей системы — это помогает соблюдать требования GDPR и CCPA.</p>
 
-  <p>This user data is only accessible within the functions that you run and from your authenticated account. It is never shared or exposed to other users or Inngest staff.</p>
+  <p>Данные пользователя доступны только в рамках запускаемых вами функций и из вашей аутентифицированной учётной записи. Они никогда не передаются другим пользователям или сотрудникам Inngest.</p>
 </aside>

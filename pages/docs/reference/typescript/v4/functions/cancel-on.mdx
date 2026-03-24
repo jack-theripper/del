@@ -4,7 +4,7 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline'
 # Cancel on
 
 
-Stop the execution of a running function when a specific event is received using `cancelOn`.
+Остановите выполнение запущенной функции при получении определённого события с помощью `cancelOn`.
 
 ```ts
 inngest.createFunction(
@@ -13,9 +13,9 @@ inngest.createFunction(
     triggers: { event: "app/user.created" },
     cancelOn: [
       {
-        // Can be a string or EventType
+        // Может быть строкой или EventType
         event: "app/user.deleted",
-        // ensure the async (future) event's userId matches the trigger userId
+        // убедитесь, что userId в async (будущем) событии совпадает с userId в триггере
         if: "async.data.userId == event.data.userId",
       },
     ],
@@ -24,17 +24,17 @@ inngest.createFunction(
 );
 ```
 
-Using `cancelOn` is very useful for handling scenarios where a long-running function should be terminated early due to changes elsewhere in your system.
+Использование `cancelOn` очень полезно для обработки сценариев, когда длительно выполняемая функция должна быть досрочно завершена из-за изменений в другом месте системы.
 
-The API for this is similar to the [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event) tool, allowing you to specify the incoming event and different methods for matching pieces of data within.
+API похож на [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event) и позволяет указать входящее событие и различные методы сопоставления данных.
 
 ---
 
-## How to use `cancelOn`
+## Как использовать `cancelOn`
 
-The most common use case for cancellation is to cancel a function's execution if a specific field in the incoming event matches the same field in the triggering event. For example, you might want to cancel a sync event for a user if that user is deleted. For this, you need to specify a `match` [expression](/docs/guides/writing-expressions). Let's look at an example function and two events.
+Наиболее распространённый сценарий отмены — это отмена выполнения функции, если определённое поле входящего события совпадает с соответствующим полем в триггерном событии. Например, отмена синхронизации пользователя при его удалении. Для этого нужно указать выражение `match`. Рассмотрим пример функции и двух событий.
 
-This function specifies it will `cancelOn` the `"app/user.deleted"` event only when it and the original `"app/user.created"` event have the same `data.userId` value:
+Эта функция указывает, что она будет `cancelOn` событии `"app/user.deleted"` только когда оно и исходное событие `"app/user.created"` имеют одинаковое значение `data.userId`:
 
 ```ts
 inngest.createFunction(
@@ -44,7 +44,7 @@ inngest.createFunction(
     cancelOn: [
       {
         event: "app/user.deleted",
-        // ensure the async (future) event's userId matches the trigger userId
+        // убедитесь, что userId в async (будущем) событии совпадает с userId в триггере
         if: "async.data.userId == event.data.userId",
       },
     ],
@@ -53,7 +53,7 @@ inngest.createFunction(
 );
 ```
 
-For the given function, this is an example of an event that would trigger the function:
+Для данной функции это пример события, которое запустит её:
 
 ```json
 {
@@ -65,7 +65,7 @@ For the given function, this is an example of an event that would trigger the fu
 }
 ```
 
-And this is an example of an event that would cancel the function as it and the original event have the same `data.userId` value of `"123"`:
+А это пример события, которое отменит функцию, так как оно и исходное событие имеют одинаковое значение `data.userId` равное `"123"`:
 
 ```json
 {
@@ -76,45 +76,45 @@ And this is an example of an event that would cancel the function as it and the 
 }
 ```
 
-Match expressions can be simple equalities or be more complex. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info.
+Выражения сопоставления могут быть простыми проверками равенства или более сложными. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions).
 
 <Callout Icon={InformationCircleIcon}>
-  Functions are cancelled _between steps_, meaning that if there is a `step.run` currently executing, it will finish before the function is cancelled.
+  Функции отменяются _между шагами_, то есть если `step.run` выполняется в данный момент, он завершится до отмены функции.
 
-  Inngest does this to ensure that steps are treated like atomic operations and each step either completes or does not run at all.
+  Inngest делает это для обеспечения атомарности шагов: каждый шаг либо завершается полностью, либо вообще не запускается.
 </Callout>
 
-## Configuration
+## Конфигурация
 
 <Properties>
   <Property name="cancelOn" type="array of objects">
-    Define events that can be used to cancel a running or sleeping function
+    Определяет события, которые могут отменить выполняющуюся или спящую функцию
     <Properties nested={true}>
       <Property name="event" type="string | EventType" required>
-        The event that will be used to cancel. This can be a string event name (e.g. `"app/user.deleted"`) or an event object created with `eventType()`
+        Событие для отмены. Может быть строковым именем (например, `"app/user.deleted"`) или объектом события, созданным с помощью `eventType()`
       </Property>
       <Property name="match" type="string">
-        The property to match the event trigger and the cancelling event, using dot-notation, for example, `data.userId`. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info.
+        Свойство для сопоставления триггерного и отменяющего событий с использованием точечной нотации, например `data.userId`. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions).
       </Property>
       <Property name="if" type="string">
-        An expression on which to conditionally match the original event trigger (`event`) and the wait event (`async`). Cannot be combined with `match`.
+        Выражение для условного сопоставления исходного триггерного события (`event`) и ожидаемого события (`async`). Нельзя комбинировать с `match`.
 
-        Expressions are defined using the Common Expression Language (CEL) with the events accessible using dot-notation. Read our [guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
         * `event.data.userId == async.data.userId && async.data.billing_plan == 'pro'`
       </Property>
       <Property name="timeout" type="string">
-        The amount of time to wait to receive the cancelling event. A time string compatible with the [ms](https://npm.im/ms) package, e.g. `"30m"`, `"3 hours"`, or `"2.5d"`
+        Время ожидания отменяющего события. Строка времени, совместимая с пакетом [ms](https://npm.im/ms), например `"30m"`, `"3 hours"` или `"2.5d"`
       </Property>
     </Properties>
   </Property>
 </Properties>
 
-## Examples
+## Примеры
 
-### Using an event object
+### Использование объекта события
 
-The `event` property also accepts an event object instead of a string. This is useful when you have typed event definitions or want to reference events from a schema.
+Свойство `event` также принимает объект события вместо строки. Это полезно при наличии типизированных определений событий или при ссылке на события из схемы.
 
 ```ts
 import { userCreatedEvent, userDeletedEvent } from "./events";
@@ -134,9 +134,9 @@ inngest.createFunction(
 );
 ```
 
-### With a timeout window
+### С окном таймаута
 
-Cancel a function's execution if a matching event is received within a given amount of time from the function being triggered.
+Отмена выполнения функции, если в течение заданного времени с момента запуска получено соответствующее событие.
 
 ```ts
 inngest.createFunction(
@@ -149,4 +149,4 @@ inngest.createFunction(
 );
 ```
 
-This is useful when you want to limit the time window for cancellation, ensuring that the function will continue to execute if no matching event is received within the specified time frame.
+Это полезно для ограничения временного окна отмены, гарантируя, что функция продолжит выполнение, если соответствующее событие не получено в указанные сроки.

@@ -1,15 +1,15 @@
 import { CardGroup, Card, Callout, VersionBadge, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-# Failure handlers
+# Обработчики сбоев
 
-If your function exhausts all of its retries, it will be marked as "Failed." You can handle this circumstance by either providing an [`onFailure/on_failure`](/docs/reference/functions/handling-failures) handler when defining your function, or by listening for the [`inngest/function.failed`](/docs/reference/system-events/inngest-function-failed) system event.
+Если функция исчерпала все попытки повтора, она помечается как «Завершившаяся с ошибкой». Обработать эту ситуацию можно двумя способами: предоставив обработчик [`onFailure/on_failure`](/docs/reference/functions/handling-failures) при определении функции или подписавшись на системное событие [`inngest/function.failed`](/docs/reference/system-events/inngest-function-failed).
 
-The first approach is function-specific, while the second covers all function failures in a given Inngest environment.
+Первый подход действует для конкретной функции, второй охватывает все сбои функций в заданной среде Inngest.
 
 
-# Examples
+# Примеры
 
-The example below checks if a user's subscription is valid a total of six times. If you can't check the subscription after all retries, you'll unsubscribe the user:
+В примере ниже подписка пользователя проверяется в общей сложности шесть раз. Если проверка подписки не удалась после всех повторных попыток, пользователь отписывается:
 
 <LanguageSelector>
 
@@ -128,8 +128,7 @@ f := inngestgo.CreateFunction(
 </LanguageSelector>
 
 <Callout>
-  To handle cancelled function runs, checkout out [this example](/docs/examples/cleanup-after-function-cancellation) that uses the [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled) system event.
+  Для обработки отменённых запусков функций ознакомьтесь с [этим примером](/docs/examples/cleanup-after-function-cancellation), использующим системное событие [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled).
 </Callout>
-
 
 

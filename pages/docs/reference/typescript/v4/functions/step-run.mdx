@@ -1,11 +1,11 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-export const description = `Define steps to execute with step.run()`
+export const description = `Определение шагов для выполнения с помощью step.run()`
 
 # Run
 
 
-Use `step.run()` to run synchronous or asynchronous code as a retriable step in your function. `step.run()` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves with the return value of your handler function.
+Используйте `step.run()` для выполнения синхронного или асинхронного кода как повторяемого шага в вашей функции. `step.run()` возвращает [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), разрешающийся в возвращаемое значение вашего обработчика.
 
 ```ts
 export default inngest.createFunction(
@@ -29,32 +29,32 @@ export default inngest.createFunction(
   <Col>
     <Properties>
       <Property name="id" type="string" required>
-        The ID of the step. This will be what appears in your function's logs and is used to memoize step state across function versions.
+        ID шага. Будет отображаться в логах функции и используется для мемоизации состояния шага между версиями функции.
       </Property>
       <Property name="handler" type="function" required>
-        The function that code that you want to run and automatically retry for this step. Functions can be:
-        * A synchronous function
-        * An `async` function
-        * Any function that returns a [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+        Функция с кодом, который нужно выполнить и автоматически повторить при ошибке для этого шага. Функции могут быть:
+        * Синхронной функцией
+        * `async`-функцией
+        * Любой функцией, возвращающей [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
-        Throwing errors within the handler function will trigger the step to be retried ([reference](/docs/functions/retries)).
+        Выброс ошибок внутри обработчика вызовет повтор шага ([справочник](/docs/functions/retries)).
       </Property>
     </Properties>
   </Col>
   <Col>
   ```ts
-  // Steps can have async handlers
+  // Шаги могут иметь асинхронные обработчики
   const result = await step.run("get-api-data", async () => {
-    // Steps should return data used in other steps
+    // Шаги должны возвращать данные, используемые в других шагах
     return fetch("...").json();
   });
 
-  // Steps can have synchronous handlers
+  // Шаги могут иметь синхронные обработчики
   const data = await step.run("transform", () => {
     return transformData(result);
   });
 
-  // Returning data is optional
+  // Возврат данных необязателен
   await step.run("insert-data", async () => {
     db.insert(data);
   });
@@ -63,22 +63,22 @@ export default inngest.createFunction(
   </Col>
 </Row>
 
-## How to call `step.run()`
+## Как вызывать `step.run()`
 
-As `step.run()` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), you will need to handle it like any other Promise in JavaScript. Here are some ways you can use `step.run()` in your code:
+Поскольку `step.run()` возвращает [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), его нужно обрабатывать как любой другой Promise в JavaScript. Вот несколько способов использования `step.run()`:
 
 ```ts
-// Use the "await" keyword to wait for the promise to fulfil
+// Используйте ключевое слово "await" для ожидания выполнения промиса
 await step.run("create-user", () => {/* ... */});
 const user = await step.run("create-user", () => {/* ... */});
 
-// Use `then` (or similar)
+// Используйте `then` (или аналоги)
 step.run("create-user", () => {/* ... */})
   .then((user) => {
-    // do something else
+    // сделать что-то ещё
   });
 
-// Use with a Promise helper function to run in parallel
+// Используйте с хелперами Promise для параллельного выполнения
 Promise.all([
   step.run("create-subscription", () => {/* ... */}),
   step.run("add-to-crm", () => {/* ... */}),
@@ -86,17 +86,17 @@ Promise.all([
 ]);
 ```
 
-## Retries
+## Повторные попытки
 
-Each `step.run()` call has its own independent retry counter. When a step throws an error, it will be retried according to your function's retry configuration. The retry configuration applies to each individual step, not as a shared pool across all steps in your function.
+Каждый вызов `step.run()` имеет собственный независимый счётчик попыток. При возникновении ошибки шаг будет повторён согласно конфигурации повторных попыток функции. Конфигурация повторных попыток применяется к каждому отдельному шагу, а не как общий пул для всех шагов функции.
 
-For example, if your function is configured with `retries: 4`, each `step.run()` will be retried up to 4 times independently (5 total attempts including the initial attempt). If you have multiple steps in your function, each step gets its own full set of retries.
+Например, если функция настроена с `retries: 4`, каждый `step.run()` будет повторяться до 4 раз независимо (5 попыток всего включая первую). При наличии нескольких шагов каждый шаг получает полный набор повторных попыток.
 
-Learn more about [configuring retries](/docs/features/inngest-functions/error-retries/retries).
+Подробнее о [настройке повторных попыток](/docs/features/inngest-functions/error-retries/retries).
 
-## Return values and serialization
+## Возвращаемые значения и сериализация
 
-All data returned from `step.run` is serialized as JSON. This is done to enable the SDK to return a valid serialized response to the Inngest service.
+Все данные, возвращаемые из `step.run`, сериализуются как JSON для обеспечения возможности SDK вернуть допустимый сериализованный ответ в сервис Inngest.
 
 ```ts
 const output = await step.run("create-user", () => {
@@ -110,8 +110,8 @@ const output = await step.run("create-user", () => {
 */
 ```
 
-## Usage limits
+## Ограничения использования
 
-See [usage limits][usage-limits] for more details.
+Смотрите [ограничения использования][usage-limits] для подробностей.
 
 [usage-limits]: /docs/usage-limits/inngest#functions

@@ -1,21 +1,21 @@
 import { Steps, Step, CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = 'Learn how to subscribe to data from Inngest functions.';
+export const description = 'Узнайте, как подписываться на данные из функций Inngest.';
 
-### Subscribing
+### Подписка
 
-To subscribe to data on the client (browser), you'll need to create a subscription token and use the `subscribe()` function which also requires `channel` and `topic` to be specified.
+Для подписки на данные на стороне клиента (браузера) необходимо создать токен подписки и использовать функцию `subscribe()`, для которой также нужно указать `channel` и `topic`.
 
-Your application uses the Inngest SDK to create a token, which is then used by the subscribe function to connect to the Inngest WebSocket server.
+Приложение использует SDK Inngest для создания токена, который затем используется функцией подписки для подключения к WebSocket-серверу Inngest.
 
 
 <Steps>
-  <Step title="Create a subscription token">
-    Subscription tokens are required to securely establish a connection to the Inngest WebSocket server.
+  <Step title="Создать токен подписки">
+    Токены подписки необходимы для безопасного установления соединения с WebSocket-сервером Inngest.
 
-    Your application must create tokens on the server and pass them to the client. You can create a new endpoint to generate a token, ensuring that the user is authorized to subscribe to a given channel and topics.
+    Приложение должно создавать токены на сервере и передавать их клиенту. Можно создать новый эндпоинт для генерации токена, гарантируя, что пользователь авторизован для подписки на данный канал и темы.
 
-    Here's an example of a server endpoint that creates a token, scoped to a user's channel and specific topics.
+    Вот пример серверного эндпоинта, создающего токен для канала пользователя и конкретных тем.
 
     <CodeGroup>
     ```ts {{ title: "Next.js - Server action" }}
@@ -76,8 +76,8 @@ Your application uses the Inngest SDK to create a token, which is then used by t
     ```
     </CodeGroup>
   </Step>
-  <Step title="Subscribe to a channel">
-    Once you have a token, you can subscribe to a channel by calling the `subscribe` function with the token. You can also subscribe using the `useInngestSubscription` React hook. Read more about the [React hook here](/docs/features/realtime/react-hooks).
+  <Step title="Подписаться на канал">
+    Получив токен, можно подписаться на канал, вызвав функцию `subscribe` с токеном. Также можно подписаться с помощью React-хука `useInngestSubscription`. Подробнее о [React-хуке здесь](/docs/features/realtime/react-hooks).
 
     <CodeGroup>
 
@@ -141,6 +141,6 @@ Your application uses the Inngest SDK to create a token, which is then used by t
       The `subscribe()` approach uses the `typeOnlyChannel()` helper to get a typed channel.
     </Info>*/}
 
-    That's all you need to do to subscribe to a channel from the client!
+    Это всё, что нужно для подписки на канал из клиента!
   </Step>
 </Steps>

@@ -2,46 +2,46 @@ import { Callout, Info, Tip, CodeGroup, Properties, Property } from "src/shared/
 import Lottie from "lottie-react";
 import Concurrency from "components/RedesignedLanding/FlowAccoridion/Lottie/Concurrency.json";
 
-# Concurrency management
+# Управление конкурентностью (Concurrency)
 
-Limiting concurrency in systems is an important tool for correctly managing computing resources and scaling workloads. Inngest's concurrency control enables you to manage the number of _steps_ that concurrently execute.
+Ограничение конкурентности в системах является важным инструментом для правильного управления вычислительными ресурсами и масштабирования рабочих нагрузок. Управление конкурентностью в Inngest позволяет вам контролировать количество _шагов_, которые выполняются одновременно.
 
 <Callout>
-**Important:** Concurrency limits the number of _steps_ executing at a single time, **not** the number of function runs. A function run that is sleeping, waiting for an event, or paused between steps does **not** count against your concurrency limit. Only steps that are actively executing code count toward the limit.
+**Важно:** Конкурентность ограничивает количество _шагов_, выполняемых в один момент времени, а **не** количество запусков функций. Запуск функции, который находится в режиме ожидания (sleeping), ожидает события или приостановлен между шагами, **не** учитывается в лимите конкурентности. Только шаги, активно выполняющие код, учитываются в этом лимите.
 
-This means you may have many more function runs in progress than your concurrency limit suggests, because most of those runs are likely paused or waiting between steps.
+Это означает, что у вас может быть гораздо больше запущенных функций, чем предполагает ваш лимит конкурентности, так как большинство из них, скорее всего, приостановлены или ожидают между шагами.
 </Callout>
 
 {/* TODO - Link to updated keys section */}
-Step concurrency can be optionally configured using "keys" which applies the limit to each unique value of the key (ex. user id). The concurrency option can also be applied to different "scopes" which allows a concurrency limit to be shared across _multiple_ functions.
+Конкурентность шагов может быть дополнительно настроена с помощью «ключей» (keys), что применяет лимит к каждому уникальному значению ключа (например, ID пользователя). Опция конкурентности также может быть применена к различным «областям видимости» (scopes), что позволяет разделять лимит конкурентности между _несколькими_ функциями.
 
-As compared to traditional queue and worker systems, Inngest manages the concurrency within the system so you do not need to implement additional worker-level logic or state.
+По сравнению с традиционными системами очередей и воркеров, Inngest управляет конкурентностью внутри системы, поэтому вам не нужно реализовывать дополнительную логику на уровне воркеров или управлять состоянием.
 
-## When to use concurrency
+## Когда использовать конкурентность
 
-Concurrency is most useful when you want to constrain your function for a set of resources. Some use cases include:
+Конкурентность наиболее полезна, когда вы хотите ограничить использование ресурсов вашей функцией. Некоторые сценарии использования включают:
 
-- **Limiting in multi-tenant systems** - Prevent a single account, user, or tenant from consuming too many resources and creating a backlog for others. See: [Concurrency keys (Multi-tenant concurrency)](#concurrency-keys-multi-tenant-concurrency).
-- **Limiting throughput for database operations** - Prevent potentially high volume jobs from overwhelming a database or similar resource. See: [Sharing limits across functions (scope)](#sharing-limits-across-functions-scope).
-- **Basic concurrent operations limits** - Limit the capacity dedicated to processing a certain job, for example an import pipeline. See: [Basic concurrency](#basic-concurrency).
-- **Combining multiple of the above** - Multiple concurrency limits can be added per function. See: [Combining multiple concurrency limits](#combining-multiple-concurrency-limits)
+- **Ограничение в мультиарендных (multi-tenant) системах** — предотвращение ситуации, когда одна учетная запись, пользователь или арендатор потребляет слишком много ресурсов, создавая очередь для остальных. См.: [Ключи конкурентности (Мультиарендная конкурентность)](#concurrency-keys-multi-tenant-concurrency).
+- **Ограничение пропускной способности для операций с базой данных** — предотвращение перегрузки базы данных или аналогичного ресурса потенциально объемными задачами. См.: [Общие лимиты для нескольких функций (scope)](#sharing-limits-across-functions-scope).
+- **Базовые лимиты одновременных операций** — ограничение мощности, выделенной для обработки определенной задачи, например, пайплайна импорта. См.: [Базовая конкурентность](#basic-concurrency).
+- **Комбинирование вышеперечисленного** — для одной функции можно добавить несколько лимитов конкурентности. См.: [Комбинирование нескольких лимитов конкурентности](#combining-multiple-concurrency-limits).
 
 <Info>
-If you need to limit a function to a certain rate of processing, for example with a third party API rate limit, you might need [throttling](/docs/guides/throttling) instead. Throttling is applied at the function level, compared to concurrency which is at the step level.
+Если вам нужно ограничить функцию определенной скоростью обработки (например, из-за лимитов стороннего API), вам может понадобиться [дросселирование (throttling)](/docs/guides/throttling). Дросселирование применяется на уровне функции, в то время как конкурентность — на уровне шагов.
 </Info>
 
-## How to configure concurrency
+## Как настроить конкурентность
 
-One or more concurrency limits can be configured for each function.
+Для каждой функции можно настроить один или несколько лимитов конкурентности.
 
-* [Basic concurrency](#basic-concurrency)
-* [Concurrency keys (Multi-tenant concurrency)](#concurrency-keys-multi-tenant-concurrency)
-* [Sharing limits across functions (scope)](#sharing-limits-across-functions-scope)
-* [Combining multiple concurrency limits](#combining-multiple-concurrency-limits)
+* [Базовая конкурентность](#basic-concurrency)
+* [Ключи конкурентности (Мультиарендная конкурентность)](#concurrency-keys-multi-tenant-concurrency)
+* [Общие лимиты для нескольких функций (scope)](#sharing-limits-across-functions-scope)
+* [Комбинирование нескольких лимитов конкурентности](#combining-multiple-concurrency-limits)
 
-### Basic concurrency
+### Базовая конкурентность
 
-The most basic concurrency limit is a single `limit` set to an integer value of the maximum number of concurrently executing steps. When concurrency limit is reached, new steps will continue to be queued and create a backlog to be processed.
+Самый простой лимит конкурентности — это одиночный параметр `limit`, установленный в целое число, обозначающее максимальное количество одновременно выполняемых шагов. При достижении лимита новые шаги будут ставиться в очередь, образуя список ожидания для последующей обработки.
 
 <CodeGroup>
 ```ts
@@ -52,7 +52,7 @@ inngest.createFunction(
     triggers: { event: "ai/summary.requested" },
   },
   async ({ event, step }) => {
-    // Your function handler here
+    // Обработчик вашей функции
   }
 );
 ```
@@ -64,9 +64,9 @@ inngest.createFunction(
 ```
 </CodeGroup>
 
-### Concurrency keys (Multi-tenant concurrency)
+### Ключи конкурентности (Мультиарендная конкурентность)
 
-Use a concurrency `key` expression to apply the `limit` to each unique value of key received. Within the Inngest system, this creates a **virtual queue** for every unique value and limits concurrency to each.
+Используйте выражение `key` для применения `limit` к каждому уникальному полученному значению ключа. Внутри системы Inngest это создает **виртуальную очередь** для каждого уникального значения и ограничивает конкурентность для каждого из них.
 
 <CodeGroup>
 ```ts
@@ -94,12 +94,12 @@ inngest.createFunction(
 </CodeGroup>
 
 <Tip>
-  Concurrency keys are great for creating fair, multi-tenant systems. This can help prevent the noisy neighbor issue where one user triggers a lot of jobs and consumes far more resources that slow down your other users.
+  Ключи конкурентности отлично подходят для создания справедливых мультиарендных систем. Это помогает предотвратить проблему «шумного соседа», когда один пользователь запускает множество задач и потребляет гораздо больше ресурсов, замедляя работу других пользователей.
 </Tip>
 
-### Sharing limits across functions (scope)
+### Общие лимиты для нескольких функций (scope)
 
-Using the `scope` option, limits can be set across your entire Inngest account, shared across multiple functions. Here is an example of setting an `"account"` level limit for a _static_ `key` equal to `"openai"`. This will create a virtual queue using `"openai"` as the key. Any other functions using this same `"openai"` key will consume from this same limit.
+Используя параметр `scope`, лимиты можно установить для всей вашей учетной записи Inngest и разделить их между несколькими функциями. Вот пример установки лимита уровня `"account"` для _статического_ ключа `key`, равного `"openai"`. Это создаст виртуальную очередь, использующую `"openai"` в качестве ключа. Любые другие функции, использующие этот же ключ `"openai"`, будут использовать этот же общий лимит.
 
 {/* TODO - Link to the detail section on how this works */}
 
@@ -129,12 +129,12 @@ inngest.createFunction(
 ```
 </CodeGroup>
 
-### Combining multiple concurrency limits
+### Комбинирование нескольких лимитов конкурентности
 
-Each SDK's concurrency option supports up to two limits. This is the most beneficial when combining limits, each with a different `scope`. Here is an example that combines two limits, one on the `"account"` scope and another on the `"fn"` level. Combining limits will create multiple virtual queues to limit concurrency. In the below function:
+Опция конкурентности в каждом SDK поддерживает до двух лимитов. Это наиболее эффективно при комбинировании лимитов с разными областями видимости (`scope`). Вот пример, объединяющий два лимита: один с областью видимости `"account"`, а другой — на уровне функции (`"fn"`). Комбинирование лимитов создаст несколько виртуальных очередей для ограничения конкурентности. В функции ниже:
 
-- If there are 10 steps executing under the 'openai' key's virtual queue, any future runs will be blocked and will wait for existing runs to finish before executing.
-- If there are 5 steps executing under the 'openai' key and a single `event.data.account_id` enqueues 2 runs, the second run is limited by the `event.data.account_id` virtual queue and will wait before executing.
+- Если в виртуальной очереди ключа 'openai' уже выполняется 10 шагов, любые последующие запуски будут заблокированы и будут ждать завершения текущих запусков перед началом выполнения.
+- Если в очереди 'openai' выполняется 5 шагов, и один и тот же `event.data.account_id` ставит в очередь 2 запуска, второй запуск будет ограничен виртуальной очередью `event.data.account_id` и будет ожидать перед выполнением.
 
 
 
@@ -146,18 +146,18 @@ inngest.createFunction(
     id: "unique-function-id",
     concurrency: [
       {
-         // Use an account-level concurrency limit for this function, using the
-         // "openai" key as a virtual queue.  Any other function which
-         // runs using the same "openai"` key counts towards this limit.
+         // Использовать лимит конкурентности уровня аккаунта для этой функции,
+         // используя ключ "openai" в качестве виртуальной очереди. Любая другая
+         // функция, использующая тот же ключ "openai", учитывается в этом лимите.
          scope: "account",
          key: `"openai"`,
          limit: 10,
       },
       {
-         // Create another virtual concurrency queue for this function only.  This
-         // limits all accounts to a single executing step for this function, based off
-         // of the `event.data.account_id` field.
-         // NOTE - "fn" is the default scope, so we could omit this field.
+         // Создать еще одну виртуальную очередь конкурентности только для этой функции.
+         // Это ограничивает все аккаунты одним выполняемым шагом для этой функции
+         // на основе поля `event.data.account_id`.
+         // ПРИМЕЧАНИЕ: "fn" — это область видимости по умолчанию, поэтому ее можно опустить.
          scope: "fn",
          key: "event.data.account_id",
          limit: 1,
@@ -179,61 +179,61 @@ inngest.createFunction(
 </CodeGroup>
 
 <Info>
-  It's worth it to note that the `"fn"` scope is the default and is optional to include.
+  Стоит отметить, что область видимости `"fn"` является стандартной и ее указывать необязательно.
 </Info>
 
-## How concurrency works
+## Как работает конкурентность
 
-**Concurrency works by limiting the number of steps executing at a single time.** Within Inngest, execution is defined as "an SDK running code". **Calling **`step.sleep`**, **`step.sleepUntil`**, **`step.waitForEvent`**, or **`step.invoke`** does not count towards capacity limits**, as the SDK doesn't execute code while those steps wait.
+**Конкурентность работает путем ограничения количества шагов, выполняемых в один момент времени.** В Inngest выполнение определяется как «SDK, запускающий код». **Вызов **`step.sleep`**, **`step.sleepUntil`**, **`step.waitForEvent`** или **`step.invoke`** не учитывается в лимитах мощности**, так как SDK не выполняет код, пока эти шаги ожидают.
 
-### Understanding step execution vs. function runs
+### Понимание выполнения шагов в сравнении с запусками функций
 
-Because sleeping or waiting is common, concurrency _does not_ limit the number of functions in progress. Instead, it limits the number of steps executing at any single time.
+Поскольку ожидание или пауза являются обычным делом, конкурентность _не_ ограничивает количество функций, находящихся в процессе выполнения. Вместо этого она ограничивает количество шагов, активно выполняемых в любой момент времени.
 
-The animation below shows how concurrency works in Inngest. You can see how different jobs queue up and flow through the system. When a limit is set, only that number of steps can execute at any given time. As steps complete, the next queued steps start executing.
+Анимация ниже показывает, как работает конкурентность в Inngest. Вы можете видеть, как различные задачи встают в очередь и проходят через систему. Когда установлен лимит, только указанное количество шагов может выполняться одновременно. По мере завершения шагов начинают выполняться следующие шаги из очереди.
 
 <Lottie animationData={Concurrency} loop={true} />
 
-The key insight is that your concurrency limit applies to _active execution_, not to the number of function runs in progress. Consider a function with a `concurrency` limit of `10`:
+Ключевой момент заключается в том, что ваш лимит конкурентности применяется к _активному выполнению_, а не к количеству запусков функций в процессе. Рассмотрим функцию с лимитом `concurrency`, равным `10`:
 
-- You could have **hundreds** of function runs in progress
-- But only **10 steps** can be actively executing code at once
-- When a function run calls `step.sleep("wait", "1h")`, it releases its execution slot
-- That slot becomes available for other steps to use
+- У вас могут быть **сотни** запусков функций в процессе.
+- Но только **10 шагов** могут активно выполнять код одновременно.
+- Когда запуск функции вызывает `step.sleep("wait", "1h")`, он освобождает свой слот выполнения.
+- Этот слот становится доступным для использования другими шагами.
 
 <Info>
-  **What counts against concurrency:**
-  - `step.run()` - while the step's code is executing
+  **Что учитывается в конкурентности:**
+  - `step.run()` — пока выполняется код шага.
 
-  **What does NOT count against concurrency:**
-  - `step.sleep()` / `step.sleepUntil()` - while sleeping
-  - `step.waitForEvent()` - while waiting for an event
-  - `step.invoke()` - while waiting for the invoked function to complete
-  - Time between steps - when Inngest is coordinating the next step
+  **Что НЕ учитывается в конкурентности:**
+  - `step.sleep()` / `step.sleepUntil()` — во время паузы.
+  - `step.waitForEvent()` — во время ожидания события.
+  - `step.invoke()` — во время ожидания завершения вызванной функции.
+  - Время между шагами — когда Inngest координирует запуск следующего шага.
 </Info>
 
-### Queue ordering
+### Порядок очереди
 
-**Queues are ordered from oldest to newest jobs ([FIFO](https://en.wikipedia.org/wiki/FIFO))** across the same function.  Ordering amongst different functions is not guaranteed.  This means that within a specific function, Inngest prioritizes finishing older functions above starting newer functions - even if the older functions continue to schedule new steps to run.  Different functions, however, compete for capacity, with runs on the most backlogged function much more likely (but not guaranteed) to be scheduled first.
+**Очереди упорядочены от старых задач к новым ([FIFO](https://en.wikipedia.org/wiki/FIFO))** в рамках одной и той же функции. Порядок между различными функциями не гарантируется. Это означает, что внутри конкретной функции Inngest отдает приоритет завершению старых запусков перед началом новых — даже если старые функции продолжают планировать новые шаги для запуска. Однако разные функции соревнуются за мощность, при этом запуски в наиболее загруженной функции с большей вероятностью (но без гарантии) будут запланированы первыми.
 
-### Additional information
+### Дополнительная информация
 
-- The order of keys does not matter.  Concurrency is limited by any key that reaches its limits.
-- You can specify multiple keys for the same scope, as long as the resulting `key` evaluates to a different string.
+- Порядок ключей не имеет значения. Конкурентность ограничивается любым ключом, который достигает своих пределов.
+- Вы можете указать несколько ключей для одной и той же области видимости, если результирующий `key` вычисляется в разные строки.
 
-## Concurrency control across specific steps in a function
+## Управление конкурентностью для конкретных шагов в функции
 
-You might need to set a different concurrency limit for a single step in a function. For example, within an AI flow you may have 10 pre-processing steps which can run with higher limits, and a single AI call with much lower limits.
+Вам может потребоваться установить другой лимит конкурентности для отдельного шага в функции. Например, в AI-потоке у вас может быть 10 шагов предварительной обработки, которые могут выполняться с высокими лимитами, и один вызов AI с гораздо более низкими лимитами.
 
-To control concurrency on individual steps, extract the step into a new function with its _own_ concurrency controls, and invoke the new function using `step.invoke`. This lets you combine concurrency controls and manage "flow control" in a clean, composable manner.
+Чтобы управлять конкурентностью отдельных шагов, вынесите этот шаг в новую функцию с ее _собственными_ элементами управления конкурентностью и вызовите новую функцию с помощью `step.invoke`. Это позволяет комбинировать элементы управления конкурентностью и управлять «потоком выполнения» чистым и модульным способом.
 
-## How global limits work
+## Как работают глобальные лимиты
 
 <Callout>
-  While two functions can share different `account` scoped limits, we strongly recommend that you use a global const with a single shared limit.
+  Хотя две функции могут разделять разные лимиты с областью видимости `account`, мы настоятельно рекомендуем использовать глобальную константу с единым общим лимитом.
 </Callout>
 
-You may write two functions that define different levels for an 'account' scoped concurrency limit.  For example, function A may limit the "ai" capacity to 5, while function B limits the "ai" capacity to 50:
+Вы можете написать две функции, которые определяют разные уровни для лимита конкурентности с областью видимости 'account'. Например, функция A может ограничивать мощность "ai" до 5, в то время как функция B ограничивает мощность "ai" до 50:
 
 
 <CodeGroup>
@@ -279,55 +279,55 @@ inngest.createFunction(
 
 
 </CodeGroup>
-This works in Inngest and is *not* a conflict.  Instead, function A is limited any time there are 5 or more functions running in the 'openai' queue.  Function B, however, is limited when there are 50 or more items in the queue.  This means that function B has more capacity than function A, though both are limited and compete on the same virtual queue.
+В Inngest это работает и *не* является конфликтом. Вместо этого функция A ограничивается каждый раз, когда в очереди 'openai' выполняется 5 или более функций. Функция B, однако, ограничивается, когда в очереди 50 или более элементов. Это означает, что у функции B больше мощностей, чем у функции A, хотя обе ограничены и соревнуются в одной и той же виртуальной очереди.
 
-Because functions are FIFO, function runs are more likely to be worked on the older their jobs get (as the backlog grows).  If function A's jobs stay in the backlog longer than function B's jobs, it's likely that their jobs will be worked on as soon as capacity is free.  That said, function B will almost always have capacity before function A and may block function A's work.
+Поскольку функции работают по принципу FIFO, над запусками функций тем вероятнее будут работать, чем старше становятся их задачи (по мере роста очереди). Если задачи функции A остаются в очереди дольше, чем задачи функции B, вполне вероятно, что над ними начнут работать, как только освободится мощность. Тем не менее, у функции B почти всегда будет мощность раньше, чем у функции A, и она может блокировать работу функции A.
 
-**While this works we strongly recommend that you use global constants for `env` or `account` level scopes, giving functions the same limit.**
+**Хотя это работает, мы настоятельно рекомендуем использовать глобальные константы для областей видимости уровня `env` или `account`, устанавливая функциям одинаковый лимит.**
 
-## Limitations
+## Ограничения
 
-- Concurrency limits the number of steps executing at a single time. It does not _yet_ perform rate limiting over a given period of time.
-- Functions can specify up to 2 concurrency constraints at once
-- The maximum concurrency limit is defined by <a href="/pricing?ref=docs-concurrency" target="_blank" rel="nofollow">your account's plan</a>
-- Ordering amongst the same function is guaranteed (with the exception of retries)
-- Ordering amongst different functions is not guaranteed.  Functions compete with each other randomly to be scheduled.
+- Конкурентность ограничивает количество шагов, выполняемых в один момент времени. Она *пока* не выполняет ограничение частоты (rate limiting) за определенный период времени.
+- Функции могут указывать до 2 ограничений конкурентности одновременно.
+- Максимальный лимит конкурентности определяется <a href="/pricing?ref=docs-concurrency" target="_blank" rel="nofollow">планом вашей учетной записи</a>.
+- Порядок выполнения внутри одной и той же функции гарантирован (за исключением повторных попыток).
+- Порядок выполнения между разными функциями не гарантирован. Функции соревнуются друг с другом за планирование в случайном порядке.
 
-## Concurrency reference
+## Справочник по конкурентности
 
 <Properties>
   <Property name="limit" type="number" required>
-    The maximum number of concurrently running steps.
-    A value of `0` or `undefined` is the equivalent of not setting a limit.
-    The maximum value is dictated by <a href="/pricing?ref=docs-concurrency" target="_blank" rel="nofollow">your account's plan</a>.
+    Максимальное количество одновременно выполняемых шагов.
+    Значение `0` или `undefined` эквивалентно отсутствию лимита.
+    Максимальное значение диктуется <a href="/pricing?ref=docs-concurrency" target="_blank" rel="nofollow">планом вашей учетной записи</a>.
   </Property>
   <Property name="scope" type="'account' | 'env' | 'fn'">
-    The scope for the concurrency limit, which impacts whether concurrency is managed on an individual function, across an environment, or across your entire account.
+    Область видимости для лимита конкурентности, которая влияет на то, управляется ли конкурентность для отдельной функции, во всей среде или во всей вашей учетной записи.
 
-    * `fn` (default):  only the runs of this function affects the concurrency limit
-    * `env`:  all runs within the same environment that share the same evaluated key value will affect the concurrency limit.  This requires setting a `key` which evaluates to a virtual queue name.
-    * `account`:  every run that shares the same evaluated key value will affect the concurrency limit, across every environment.  This requires setting a `key` which evaluates to a virtual queue name.
+    * `fn` (по умолчанию): лимит конкурентности затрагивает только запуски этой функции.
+    * `env`: лимит конкурентности затрагивают все запуски в одной среде, которые разделяют одно и то же вычисленное значение ключа. Это требует установки `key`, который вычисляется в имя виртуальной очереди.
+    * `account`: лимит конкурентности затрагивают каждый запуск, разделяющий одно и то же вычисленное значение ключа, во всех средах. Это требует установки `key`, который вычисляется в имя виртуальной очереди.
 
-    Each SDK exposes these enums in the idiomatic manner of a given language, though the meanings of the enums are the same across all languages.
+    Каждый SDK предоставляет эти перечисления в идиоматической для данного языка манере, хотя значения перечислений одинаковы для всех языков.
   </Property>
   <Property name="key" type="string">
-    An expression which evaluates to a string given the triggering event.  The string returned from the expression is used as the concurrency queue name.  A key is required when setting an `env` or `account` level scope.
+    Выражение, которое вычисляется в строку на основе инициирующего события. Строка, возвращаемая выражением, используется как имя очереди конкурентности. Ключ обязателен при установке области видимости уровня `env` или `account`.
 
-    Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+    Выражения определяются с использованием Common Expression Language (CEL), а доступ к исходному событию осуществляется через точечную нотацию. Прочтите [наше руководство по написанию выражений](/docs/guides/writing-expressions) для получения дополнительной информации. Примеры:
 
-    * Limit concurrency to `n` (via `limit`) per customer id: `'event.data.customer_id'`
-    * Limit concurrency to `n` per user, per import id: `'event.data.user_id + "-" + event.data.import_id'`
-    * Limit globally using a specific string: `'"global-quoted-key"'` (wrapped in quotes, as the expression is evaluated as a language)
+    * Ограничить конкурентность до `n` (через `limit`) на каждого ID клиента: `'event.data.customer_id'`
+    * Ограничить конкурентность до `n` на пользователя для каждого ID импорта: `'event.data.user_id + "-" + event.data.import_id'`
+    * Ограничить глобально с помощью конкретной строки: `'"global-quoted-key"'` (обернуто в кавычки, так как выражение вычисляется как язык)
   </Property>
 </Properties>
 
-## Further examples
+## Дополнительные примеры
 
-### Restricting parallel import jobs for a customer id
+### Ограничение параллельных задач импорта для ID клиента
 
-In this hypothetical system, customers can upload `.csv` files which each need to be processed and imported. We want to limit each customer to only one import job at a time so no two jobs are writing to a customer's data at a given time. We do this by setting a `limit: 1` and a concurrency `key` to the `customerId` which is included in every single event payload.
+В этой гипотетической системе клиенты могут загружать файлы `.csv`, каждый из которых должен быть обработан и импортирован. Мы хотим ограничить каждого клиента только одной задачей импорта за раз, чтобы две задачи не записывали данные клиента одновременно. Мы делаем это, устанавливая `limit: 1` и ключ конкурентности `key` равным `customerId`, который включен в полезную нагрузку каждого события.
 
-Inngest ensures that the concurrency (`1`) applies to each unique value for `event.data.customerId`. This allows different customers to have steps executing at the same exact time, but no given customer can have two steps executing at once!
+Inngest гарантирует, что конкурентность (`1`) применяется к каждому уникальному значению `event.data.customerId`. Это позволяет разным клиентам выполнять шаги в одно и то же время, но у конкретного клиента не может быть двух шагов, выполняемых одновременно!
 
 <CodeGroup>
 
@@ -338,7 +338,7 @@ export const send = inngest.createFunction(
     id: "process-customer-csv-import",
     concurrency: {
       limit: 1,
-      key: `event.data.customerId`, // You can use any piece of data from the event payload
+      key: `event.data.customerId`, // Вы можете использовать любые данные из полезной нагрузки события
     },
     triggers: { event: "csv/file.uploaded" },
   },
@@ -363,6 +363,6 @@ export const send = inngest.createFunction(
 
 </CodeGroup>
 
-## Tips
+## Советы
 
-* Configure [start timeouts](/docs/features/inngest-functions/cancellation/cancel-on-timeouts) to prevent large backlogs with concurrency
+* Настройте [тайм-ауты запуска](/docs/features/inngest-functions/cancellation/cancel-on-timeouts), чтобы предотвратить образование больших очередей при использовании конкурентности.

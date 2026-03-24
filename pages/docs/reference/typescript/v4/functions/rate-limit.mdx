@@ -1,11 +1,11 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-# Rate limit function execution
+# Ограничение частоты выполнения функций
 
 
-Set a _hard limit_ on how many function runs can start within a time period. Events that exceed the rate limit are _skipped_ and do not trigger functions to start.
+Установите _жёсткий лимит_ на количество запусков функций в течение периода времени. События, превышающие ограничение частоты, _пропускаются_ и не запускают функции.
 
-See the [Rate Limiting guide](/docs/guides/rate-limiting) for more information about how this feature works.
+Смотрите [руководство по ограничению частоты](/docs/guides/rate-limiting) для получения дополнительной информации о работе этой функции.
 
 ```ts
 export default inngest.createFunction(
@@ -19,46 +19,46 @@ export default inngest.createFunction(
     },
   },
   async ({ event, step }) => {
-    // This function will be rate limited
-    // It will only run 1 once per 4 hours for a given event payload with matching company_id
+    // Эта функция будет ограничена по частоте
+    // Она будет запускаться не более 1 раза в 4 часа для данного event.data.company_id
   }
 );
 ```
 
-## Configuration
+## Конфигурация
 
 <Properties>
   <Property name="rateLimit" type="object">
-    Options to configure how to rate limit function execution
+    Параметры для настройки ограничения частоты выполнения функций
 
     <Properties nested={true}>
       <Property name="limit" type="number" required>
-        The maximum number of functions to run in the given time period.
+        Максимальное количество функций, запускаемых за заданный период времени.
       </Property>
       <Property name="period" type="string" required>
-        The time period of which to set the limit. The period begins when the first matching event is received.
-        Current permitted values are from `1s` to `24h`.
+        Период времени для применения лимита. Период начинается при получении первого соответствующего события.
+        Допустимые значения: от `1s` до `24h`.
       </Property>
       <Property name="key" type="string">
-        A unique key expression to apply the limit to. The expression is evaluated for each triggering event.
+        Уникальное ключевое выражение для применения лимита. Выражение вычисляется для каждого триггерного события.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Rate limit per customer id: `'event.data.customer_id'`
-        * Rate limit per account and email address: `'event.data.account_id + "-" + event.user.email'`
+        * Ограничение по ID клиента: `'event.data.customer_id'`
+        * Ограничение по аккаунту и email: `'event.data.account_id + "-" + event.user.email'`
       </Property>
     </Properties>
   </Property>
 </Properties>
 
-## Examples
+## Примеры
 
-### Limiting synchronization triggered by webhook events
+### Ограничение синхронизации, запущенной webhook-событиями
 
-In this example, we use events from the Intercom webhook. The webhook can be overly chatty and send multiple `intercom/company.updated` events in a short time window. We also only really care to sync the user's data from Intercom no more than 4 times per day, so we set our limit to `6h`:
+В этом примере мы используем события из webhook Intercom. Webhook может быть избыточно активным и отправлять несколько событий `intercom/company.updated` за короткое время. Кроме того, нам нужна синхронизация данных пользователя из Intercom не более 4 раз в день, поэтому устанавливаем лимит `6h`:
 
 ```ts
-/** Example event payload:
+/** Пример полезной нагрузки события:
 {
   name: "intercom/company.updated",
   data: {
@@ -94,12 +94,12 @@ export default inngest.createFunction(
 );
 ```
 
-### Send at most one email for multiple alerts over an hour
+### Отправка не более одного email при нескольких оповещениях за час
 
-When there is an issue in your system, you may want to send your user an email notification, but don't want to spam them. The issue may repeat several times within the span of few minutes, but the user really just needs one email. You can
+Когда в системе возникает проблема, вы можете захотеть отправить пользователю email-уведомление, но не перегружать его. Проблема может повторяться несколько раз в течение нескольких минут, но пользователю нужен только один email. Вы можете:
 
 ```ts
-/** Example event payload:
+/** Пример полезной нагрузки события:
 {
   name: "service/check.failed",
   data: {
@@ -120,7 +120,7 @@ export default inngest.createFunction(
     id: "send-check-failed-notification",
     triggers: { event: "service/check.failed" },
     rateLimit: {
-      // Don't send duplicate emails to the same user for the same service over 1 hour
+      // Не отправлять дублирующиеся email одному пользователю для одного сервиса в течение 1 часа
       key: `event.data.user_id + "-" + event.data.service_id`,
       limit: 1,
       period: "1h",

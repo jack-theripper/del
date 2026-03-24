@@ -1,11 +1,11 @@
 import { Info, Callout, CodeGroup, Col, Properties, Property, Row, VersionBadge } from "src/shared/Docs/mdx";
 
-export const description = `Sleep until a specific date time with step.sleepUntil()`;
+export const description = `Приостановка выполнения до конкретной даты и времени с помощью step.sleepUntil()`;
 
 # Sleep until `step.sleepUntil()`
 
 
-Use `step.sleepUntil()` to pause your function's execution until a specific date and time. This is useful when you need to wait until a known point in time, such as the end of a trial period or a scheduled deadline.
+Используйте `step.sleepUntil()` для приостановки выполнения функции до конкретной даты и времени. Это полезно, когда нужно ждать до известного момента времени, например до окончания пробного периода или запланированного дедлайна.
 
 ## `step.sleepUntil(id, datetime): Promise`
 
@@ -13,13 +13,13 @@ Use `step.sleepUntil()` to pause your function's execution until a specific date
   <Col>
     <Properties>
       <Property name="id" type="string" required>
-        The ID of the step. This will be what appears in your function's logs and is used to memoize step state across function versions.
+        ID шага. Будет отображаться в логах функции и используется для мемоизации состояния шага между версиями функции.
       </Property>
       <Property name="datetime" type="Date | string | Temporal.Instant | Temporal.ZonedDateTime" required>
-        The datetime at which to continue execution of your function. This can be:
+        Дата и время для возобновления выполнения функции. Может быть:
 
-        * A [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
-        * Any date time `string` in [the format accepted by the `Date` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format), i.e. `YYYY-MM-DDTHH:mm:ss.sssZ` or simplified forms like `YYYY-MM-DD` or `YYYY-MM-DDHH:mm:ss`
+        * Объектом [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+        * Строкой даты и времени в [формате, принимаемом объектом `Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format): `YYYY-MM-DDTHH:mm:ss.sssZ` или упрощённые формы `YYYY-MM-DD` или `YYYY-MM-DDHH:mm:ss`
         * [`Temporal.Instant`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/Instant)
         * [`Temporal.ZonedDateTime`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/ZonedDateTime)
       </Property>
@@ -27,21 +27,21 @@ Use `step.sleepUntil()` to pause your function's execution until a specific date
   </Col>
   <Col>
   ```ts
-  // Sleep until the new year
+  // Спать до Нового года
   await step.sleepUntil("happy-new-year", "2024-01-01");
 
-  // Sleep until September ends
+  // Спать до конца сентября
   await step.sleepUntil("wake-me-up", "2023-09-30T11:59:59");
 
-  // Sleep until the end of the this week
+  // Спать до конца текущей недели
   const date = dayjs().endOf("week").toDate();
   await step.sleepUntil("wait-for-end-of-the-week", date);
 
-  // Sleep until tea time in London
+  // Спать до времени чая в Лондоне
   const teaTime = Temporal.ZonedDateTime.from("2025-05-01T16:00:00+01:00[Europe/London]");
   await step.sleepUntil("british-tea-time", teaTime);
 
-  // Sleep until the end of the day
+  // Спать до конца дня
   const now = Temporal.Now.instant();
   const endOfDay = now.round({ smallestUnit: "day", roundingMode: "ceil" });
   await step.sleepUntil("done-for-today", endOfDay);
@@ -50,5 +50,5 @@ Use `step.sleepUntil()` to pause your function's execution until a specific date
 </Row>
 
 <Callout>
-  `step.sleepUntil()` must be called using `await` or some other Promise handler to ensure your function sleeps correctly.
+  `step.sleepUntil()` должен вызываться с `await` или другим обработчиком Promise для корректной работы функции.
 </Callout>

@@ -1,51 +1,51 @@
 import { ImageTheme, LanguageSelector, LanguageSection, CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = 'How to use the fan-out pattern with Inngest to trigger multiple functions from a single event.'
+export const description = 'Как использовать паттерн fan-out в Inngest для запуска нескольких функций от одного события.'
 
-# Fan-out (one-to-many)
+# Fan-out (один ко многим)
 
-The fan-out pattern enables you to send a single event and trigger multiple functions in parallel (one-to-many). The key benefits of this approach are:
+Паттерн fan-out («разветвление») позволяет отправить одно событие и запустить несколько функций параллельно (один ко многим). Ключевыми преимуществами этого подхода являются:
 
-* **Reliability**: Logic from each function runs independently, meaning an issue with one function will not affect the other(s).
-* **Performance**: As functions area run in parallel, all of the work will execute faster than running in sequence.
+* **Надежность**: логика каждой функции выполняется независимо, что означает, что проблема в одной функции не повлияет на другие.
+* **Производительность**: поскольку функции запускаются параллельно, вся работа будет выполнена быстрее, чем при последовательном запуске.
 
 
 <ImageTheme
   light={'/assets/docs/guides/fan-out-diagram.png'}
-  alt={'A diagram showing how to fan-out to multiple functions'}
+  alt={'Диаграмма, показывающая разветвление (fan-out) на несколько функций'}
   className="rounded-md mx-auto block"
 />
 
 
-A use case for fan-out is, for example, when a user signs up for your product. In this scenario, you may want to:
-1. Send a welcome email
-2. Start a trial in Stripe
-3. Add the user to your CRM
-4. Add the user's email to your mailing list
+Примером использования fan-out может служить ситуация, когда пользователь регистрируется в вашем продукте. В этом сценарии вы можете захотеть:
+1. Отправить приветственное письмо.
+2. Запустить пробный период в Stripe.
+3. Добавить пользователя в CRM.
+4. Добавить email пользователя в список рассылки.
 
 {/* TODO - Link to future distributed systems guide*/}
-The fan-out pattern is also useful in distributed systems where a single event is consumed by functions running in different applications.
+Паттерн fan-out также полезен в распределенных системах, где одно событие потребляется функциями, работающими в разных приложениях.
 
-## How to fan-out to multiple functions
+## Как реализовать fan-out на несколько функций
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-Since Inngest is powered by events, implementing fan-out is as straightforward as defining multiple functions that use the same event trigger. Let's take the above example of user signup and implement it in Inngest.
+Поскольку Inngest работает на основе событий, реализация fan-out так же проста, как определение нескольких функций, использующих один и тот же триггер события. Давайте возьмем приведенный выше пример регистрации пользователя и реализуем его в Inngest.
 
-First, set up a `/signup` route handler to send an event to Inngest when a user signs up:
+Сначала настройте обработчик маршрута `/signup`, чтобы отправлять событие в Inngest при регистрации пользователя:
 
 ```ts {{ filename: "app/routes/signup/route.ts" }}
 import { inngest } from '../inngest/client';
 
 export async function POST(request: Request) {
-  // NOTE - this code is simplified for the example:
+  // ПРИМЕЧАНИЕ — этот код упрощен для примера:
   const { email, password } = await request.json();
   const user = await createUser({ email, password });
   await createSession(user.id);
 
-  // Send an event to Inngest
+  // Отправляем событие в Inngest
   await inngest.send({
     name: 'app/user.signup',
     data: {
@@ -60,16 +60,16 @@ export async function POST(request: Request) {
 }
 ```
 
-Now, with this event, any function using `"app/user.signup"` as its event trigger will be automatically invoked.
+Теперь, благодаря этому событию, любая функция, использующая `"app/user.signup"` в качестве триггера события, будет вызвана автоматически.
 
-Next, define two functions: `sendWelcomeEmail` and `startStripeTrial`. As you can see below, both functions use the same event trigger, but perform different work.
+Затем определите две функции: `sendWelcomeEmail` и `startStripeTrial`. Как вы видите ниже, обе функции используют один и тот же триггер события, но выполняют разную работу.
 
 ```ts {{ filename: "inngest/functions.ts" }}
 const sendWelcomeEmail = inngest.createFunction(
   { id: 'send-welcome-email', triggers: { event: 'app/user.signup' } },
   async ({ event, step }) => {
     await step.run('send-email', async () => {
-      await sendEmail({ email: event.data.user.email, template: 'welcome');
+      await sendEmail({ email: event.data.user.email, template: 'welcome' });
     });
   }
 )
@@ -91,49 +91,49 @@ const startStripeTrial = inngest.createFunction(
 )
 ```
 
-You've now successfully implemented fan-out in our application. Each function will run independently and in parallel. If one function fails, the others will not be disrupted.
+Теперь вы успешно реализовали fan-out в нашем приложении. Каждая функция будет выполняться независимо и параллельно. Если одна функция даст сбой, это не помешает работе других.
 
-Other benefits of fan-out include:
+Другие преимущества fan-out включают:
 
-* **Bulk Replay**: If a third-party API goes down for a period of time (for example, your email provider), you can use [Replay](/docs/platform/replay) to selectively re-run all functions that failed, without having to re-run all sign-up flow functions.
-* **Testing**: Each function can be tested in isolation, without having to run the entire sign-up flow.
-* **New features or refactors**: As each function is independent, you can add new functions or refactor existing ones without having to edit unrelated code.
-* **Trigger functions in different codebases**: If you have multiple codebases, even using different programming languages (for example [Python](/docs/reference/python) or [Go](https://pkg.go.dev/github.com/inngest/inngestgo)), you can trigger functions in both codebases from a single event.
+* **Массовый повтор (Bulk Replay)**: если сторонний API на время выйдет из строя (например, ваш почтовый сервис), вы можете использовать [Replay (Повтор)](/docs/platform/replay), чтобы выборочно перезапустить все функции, которые завершились ошибкой, без необходимости перезапускать весь поток регистрации.
+* **Тестирование**: каждую функцию можно тестировать изолированно, без необходимости запускать весь поток регистрации.
+* **Новые функции или рефакторинг**: поскольку каждая функция независима, вы можете добавлять новые функции или рефакторить существующие, не затрагивая несвязанный код.
+* **Запуск функций в разных кодовых базах**: если у вас несколько кодовых баз, даже на разных языках программирования (например, [Python](/docs/reference/python) или [Go](https://pkg.go.dev/github.com/inngest/inngestgo)), вы можете запускать функции в обеих кодовых базах от одного события.
 
 </LanguageSection>
 <LanguageSection show="go">
 
-Since Inngest is powered by events, implementing fan-out is as straightforward as defining multiple functions that use the same event trigger. Let's take the above example of user signup and implement it in Inngest.
+Поскольку Inngest работает на основе событий, реализация fan-out так же проста, как определение нескольких функций, использующих один и тот же триггер события. Давайте возьмем приведенный выше пример регистрации пользователя и реализуем его в Inngest.
 
-First, set up a `/signup` route handler to send an event to Inngest when a user signs up:
+Сначала настройте обработчик маршрута `/signup`, чтобы отправлять событие в Inngest при регистрации пользователя:
 
 ```go {{ filename: "main.go" }}
 !snippet:path=snippets/go/docs/examples/fan_out_jobs/main.go
 ```
 
-Now, with this event, any function using `"app/user.signup"` as its event trigger will be automatically invoked.
+Теперь, благодаря этому событию, любая функция, использующая `"app/user.signup"` в качестве триггера события, будет вызвана автоматически.
 
-Next, define two functions: `sendWelcomeEmail` and `startStripeTrial`. As you can see below, both functions use the same event trigger, but perform different work.
+Затем определите две функции: `sendWelcomeEmail` и `startStripeTrial`. Как вы видите ниже, обе функции используют один и тот же триггер события, но выполняют разную работу.
 
 ```go {{ filename: "inngest/functions.go" }}
 !snippet:path=snippets/go/docs/functions/fan_out_functions.go
 ```
 
-You've now successfully implemented fan-out in our application. Each function will run independently and in parallel. If one function fails, the others will not be disrupted.
+Теперь вы успешно реализовали fan-out в нашем приложении. Каждая функция будет выполняться независимо и параллельно. Если одна функция даст сбой, это не помешает работе других.
 
-Other benefits of fan-out include:
+Другие преимущества fan-out включают:
 
-* **Bulk Replay**: If a third-party API goes down for a period of time (for example, your email provider), you can use [Replay](/docs/platform/replay) to selectively re-run all functions that failed, without having to re-run all sign-up flow functions.
-* **Testing**: Each function can be tested in isolation, without having to run the entire sign-up flow.
-* **New features or refactors**: As each function is independent, you can add new functions or refactor existing ones without having to edit unrelated code.
-* **Trigger functions in different codebases**: If you have multiple codebases, even using different programming languages (for example [TypeScript](/docs/reference/typescript) or [Python](/docs/reference/python)), you can trigger functions in both codebases from a single event.
+* **Массовый повтор (Bulk Replay)**: если сторонний API на время выйдет из строя (например, ваш почтовый сервис), вы можете использовать [Replay (Повтор)](/docs/platform/replay), чтобы выборочно перезапустить все функции, которые завершились ошибкой, без необходимости перезапускать весь поток регистрации.
+* **Тестирование**: каждую функцию можно тестировать изолированно, без необходимости запускать весь поток регистрации.
+* **Новые функции или рефакторинг**: поскольку каждая функция независима, вы можете добавлять новые функции или рефакторить существующие, не затрагивая несвязанный код.
+* **Запуск функций в разных кодовых базах**: если у вас несколько кодовых баз, даже на разных языках программирования (например, [TypeScript](/docs/reference/typescript) или [Python](/docs/reference/python)), вы можете запускать функции в обеих кодовых базах от одного события.
 
 </LanguageSection>
 <LanguageSection show="python">
 
-Since Inngest is powered by events, implementing fan-out is as straightforward as defining multiple functions that use the same event trigger. Let's take the above example of user signup and implement it in Inngest.
+Поскольку Inngest работает на основе событий, реализация fan-out так же проста, как определение нескольких функций, использующих один и тот же триггер события. Давайте возьмем приведенный выше пример регистрации пользователя и реализуем его в Inngest.
 
-First, set up a `/signup` route handler to send an event to Inngest when a user signs up:
+Сначала настройте обработчик маршрута `/signup`, чтобы отправлять событие в Inngest при регистрации пользователя:
 
 <CodeGroup>
 
@@ -147,29 +147,29 @@ First, set up a `/signup` route handler to send an event to Inngest when a user 
 
 </CodeGroup>
 
-Now, with this event, any function using `"app/user.signup"` as its event trigger will be automatically invoked.
+Теперь, благодаря этому событию, любая функция, использующая `"app/user.signup"` в качестве триггера события, будет вызвана автоматически.
 
-Next, define two functions: `sendWelcomeEmail` and `startStripeTrial`. As you can see below, both functions use the same event trigger, but perform different work.
+Затем определите две функции: `sendWelcomeEmail` и `startStripeTrial`. Как вы видите ниже, обе функции используют один и тот же триггер события, но выполняют разную работу.
 
 ```py {{ filename: "inngest/functions.py" }}
 !snippet:path=snippets/py/v0_5/fan_out_jobs/functions.py
 ```
 
-You've now successfully implemented fan-out in our application. Each function will run independently and in parallel. If one function fails, the others will not be disrupted.
+Теперь вы успешно реализовали fan-out в нашем приложении. Каждая функция будет выполняться независимо и параллельно. Если одна функция даст сбой, это не помешает работе других.
 
-Other benefits of fan-out include:
+Другие преимущества fan-out включают:
 
-* **Bulk Replay**: If a third-party API goes down for a period of time (for example, your email provider), you can use [Replay](/docs/platform/replay) to selectively re-run all functions that failed, without having to re-run all sign-up flow functions.
-* **Testing**: Each function can be tested in isolation, without having to run the entire sign-up flow.
-* **New features or refactors**: As each function is independent, you can add new functions or refactor existing ones without having to edit unrelated code.
-* **Trigger functions in different codebases**: If you have multiple codebases, even using different programming languages (for example [TypeScript](/docs/reference/typescript) or [Go](https://pkg.go.dev/github.com/inngest/inngestgo)), you can trigger functions in both codebases from a single event.
+* **Массовый повтор (Bulk Replay)**: если сторонний API на время выйдет из строя (например, ваш почтовый сервис), вы можете использовать [Replay (Повтор)](/docs/platform/replay), чтобы выборочно перезапустить все функции, которые завершились ошибкой, без необходимости перезапускать весь поток регистрации.
+* **Тестирование**: каждую функцию можно тестировать изолированно, без необходимости запускать весь поток регистрации.
+* **Новые функции или рефакторинг**: поскольку каждая функция независима, вы можете добавлять новые функции или рефакторить существующие, не затрагивая несвязанный код.
+* **Запуск функций в разных кодовых базах**: если у вас несколько кодовых баз, даже на разных языках программирования (например, [TypeScript](/docs/reference/typescript) или [Go](https://pkg.go.dev/github.com/inngest/inngestgo)), вы можете запускать функции в обеих кодовых базах от одного события.
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Further reading
+## Дополнительная литература
 
-* [Sending events](/docs/events)
-* [Invoking functions from within functions](/docs/guides/invoking-functions-directly)
-* [Sending events from functions](/docs/guides/sending-events-from-functions)
+* [Отправка событий](/docs/events)
+* [Вызов функций из других функций](/docs/guides/invoking-functions-directly)
+* [Отправка событий из функций](/docs/guides/sending-events-from-functions)

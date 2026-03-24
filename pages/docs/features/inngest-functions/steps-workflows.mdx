@@ -10,40 +10,40 @@ import {
   RiGitForkFill,
 } from "@remixicon/react";
 
-# Steps & Workflows
+# Шаги и рабочие процессы
 
-Steps are fundamental building blocks of Inngest, turning your Inngest Functions into reliable workflows that can runs for months and recover from failures.
+Шаги — фундаментальные строительные блоки Inngest, превращающие функции в надёжные рабочие процессы, способные выполняться месяцами и восстанавливаться после сбоев.
 
 <CardGroup cols={1}>
-  <Card title="Thinking in Steps" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/guides/multi-step-functions'}>
-    Discover by example how steps enable more reliable and flexible functions with step-level error handling, conditional steps and waits.
+  <Card title="Мышление категориями шагов" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/guides/multi-step-functions'}>
+    Узнайте на примерах, как шаги обеспечивают более надёжные и гибкие функции с обработкой ошибок на уровне шагов, условными шагами и ожиданиями.
   </Card>
 </CardGroup>
 
 
-Once you are familiar with Steps, start adding new capabilities to your Inngest Functions: 
+Освоив работу с шагами, можно добавлять новые возможности в функции Inngest:
 
 <CardGroup cols={2}>
-  <Card title="Add sleeps" icon={<RiCalendarLine className="text-basis h-4 w-4" />} href={'/docs/features/inngest-functions/steps-workflows/sleeps'}>
-    Enable your Inngest Functions to pause by waiting from minutes to months.
+  <Card title="Добавить сны" icon={<RiCalendarLine className="text-basis h-4 w-4" />} href={'/docs/features/inngest-functions/steps-workflows/sleeps'}>
+    Позвольте функциям Inngest приостанавливать выполнение от минут до месяцев.
   </Card>
-  <Card title="Wait for events" icon={<EventIcon className="text-basis h-4 w-4"/>} href={'/docs/features/inngest-functions/steps-workflows/wait-for-event'}>
-    Write functions that react to incoming events.
+  <Card title="Ожидание событий" icon={<EventIcon className="text-basis h-4 w-4"/>} href={'/docs/features/inngest-functions/steps-workflows/wait-for-event'}>
+    Пишите функции, реагирующие на входящие события.
   </Card>
-  <Card title="Loop over steps" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/guides/working-with-loops'}>
-    Iterate over large datasets by looping with steps.
+  <Card title="Циклы по шагам" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/guides/working-with-loops'}>
+    Итерируйтесь по большим наборам данных с помощью шагов.
   </Card>
-  <Card title="Parallelize steps" icon={<RiGitForkFill className="rotate-90 text-basis h-4 w-4" />} href={'/docs/guides/step-parallelism'}>
-    Discover how to apply the map-reduce pattern with Steps.
+  <Card title="Параллельное выполнение шагов" icon={<RiGitForkFill className="rotate-90 text-basis h-4 w-4" />} href={'/docs/guides/step-parallelism'}>
+    Узнайте, как применять паттерн map-reduce с помощью шагов.
   </Card>
 </CardGroup>
 
 
-## How steps work
+## Как работают шаги
 
-You might wonder: how do Steps work? Why doesn't an Inngest Function get timed out when running on a Serverless environment?
+Может возникнуть вопрос: как работают шаги? Почему функция Inngest не завершается по таймауту при работе в бессерверной среде?
 
-You can think of steps as an API for expressing checkpoints in your workflow, such as waits or work that might benefit from retries or parallelism:
+Можно думать о шагах как об API для описания контрольных точек в рабочем процессе — ожиданий или работы, которая выиграет от повторных попыток или параллелизма:
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -81,10 +81,10 @@ def sync_systems(ctx: inngest.ContextSync) -> None:
 ```
 </CodeGroup>
 
-Each step execution relies on a communication with Inngest's [Durable Execution Engine](/docs/learn/how-functions-are-executed) which is responsible to:
+Каждое выполнение шага зависит от взаимодействия с [Движком устойчивого исполнения](/docs/learn/how-functions-are-executed) Inngest, который отвечает за:
 
-- Invoking Functions with the correct steps state (current step + previous steps data)
-- Gather each step result and schedule the next step to perform
+- Вызов функций с правильным состоянием шагов (текущий шаг + данные предыдущих шагов)
+- Сбор результатов каждого шага и планирование следующего шага
 
 
 <ImageTheme
@@ -94,44 +94,44 @@ Each step execution relies on a communication with Inngest's [Durable Execution 
   alt={'Each Inngest Functions\'s step invocation implies a communication between your application and the Inngest Platform. The illustration shows how each step results in two requests to the deployed application.'}
 />
 
-This architecture powers the durability of Inngest Functions with retriable steps and waits from hours to months. Also, when used in a serverless environment, steps benefit from an extended max duration, enabling workflows that both span over months and run for more than 5 minutes!
+Эта архитектура обеспечивает надёжность функций Inngest с повторяемыми шагами и ожиданиями от часов до месяцев. Также в бессерверной среде шаги получают расширенное максимальное время выполнения, позволяя создавать рабочие процессы, которые одновременно охватывают месяцы и выполняются более 5 минут!
 
-Explore the following guide for a step-by-step overview of a complete workflow run:
+Изучите следующее руководство для пошагового обзора полного выполнения рабочего процесса:
 
 <CardGroup cols={1}>
-  <Card title="How Functions are executed" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/learn/how-functions-are-executed'}>
-    A deep dive into Inngest's Durable Execution Engine with a step-by-step workflow run example.
+  <Card title="Как выполняются функции" icon={<RiGuideFill className="text-basis h-4 w-4" />} href={'/docs/learn/how-functions-are-executed'}>
+    Подробное погружение в Движок устойчивого исполнения Inngest с пошаговым примером выполнения рабочего процесса.
   </Card>
 </CardGroup>
 
-## SDK References
+## Справочник SDK
 
 
 <CardGroup cols={3}>
 
-  <Card 
+  <Card
     href={"/docs/reference/functions/step-run"}
     title={"TypeScript SDK"}
     icon={<TypeScriptIcon className="text-basis" />}
   >
-  Steps API reference
+  Справочник API шагов
   </Card>
 
-  <Card 
+  <Card
     href={"/docs/reference/python/steps/invoke"}
     title={"Python SDK"}
     icon={<PythonIcon className="text-basis" />}
   >
-    Steps API reference
+    Справочник API шагов
   </Card>
 
 
-  <Card 
+  <Card
     href={"https://pkg.go.dev/github.com/inngest/inngestgo@v0.9.0/step"}
     title={"Go SDK"}
     icon={<GoIcon className="text-basis" />}
   >
-    Steps API reference
+    Справочник API шагов
   </Card>
 
 </CardGroup>

@@ -2,35 +2,35 @@ import { ResourceGrid, Resource } from 'src/shared/Docs/Resources';
 import { Info, Callout, CodeGroup, Steps, Step, CardGroup, Card, VersionBadge, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 import { RiNextjsFill } from "@remixicon/react";
 
-export const description = 'Learn how to create Durable Endpoints with Inngest. Turn any API endpoint into a durable, observable workflow with step-based checkpointing.';
+export const description = 'Узнайте, как создавать Durable Endpoints с помощью Inngest. Превратите любой API-эндпоинт в надежный, наблюдаемый рабочий процесс с пошаговым сохранением состояния.';
 
 # Durable Endpoints <VersionBadge version="Beta" />
 
-Durable Endpoints let you build or transform your API into fault-tolerant endpoints simply by wrapping your critical logic into [durable steps](/docs/learn/inngest-steps).
+Durable Endpoints позволяют создавать или преобразовывать ваш API в отказоустойчивые эндпоинты, просто оборачивая критическую логику в [надежные шаги (durable steps)](/docs/learn/inngest-steps).
 
-Durable Endpoints behave like normal endpoints. The mental model stays the same: request, response. But each step brings you tracing, observability, and retry logic from the point of failure.
+Durable Endpoints ведут себя как обычные эндпоинты. Ментальная модель остается прежней: запрос, ответ. Но каждый шаг добавляет трассировку, наблюдаемость и логику повторов с момента сбоя.
 
 
 <Callout>
-  Durable Endpoints are available in the TypeScript and Go SDKs.
+  Durable Endpoints доступны в SDK для TypeScript и Go.
 </Callout>
 
-## When to use Durable Endpoints
+## Когда использовать Durable Endpoints
 
-**You have endpoints that fail partway through.** Any endpoint with multiple steps where failure at step 3 means steps 1 and 2 were wasted work. Instead of writing try/catch logic everywhere or hoping for the best, simply wrap your code in steps and let failures resume from where they left off.
+**У вас есть эндпоинты, которые падают на полпути.** Любой эндпоинт с несколькими шагами, где сбой на шаге 3 означает, что работа на шагах 1 и 2 была напрасной. Вместо того чтобы писать логику try/catch повсюду или надеяться на лучшее, просто оберните свой код в шаги, и пусть выполнение возобновляется с того места, где оно остановилось.
 
-**You want observability without the setup.** If you want visibility into your endpoints without configuring a bunch of external services, Durable Endpoints give you that instantly.
+**Вам нужна наблюдаемость без сложной настройки.** Если вы хотите видеть, что происходит в ваших эндпоинтах, без настройки множества внешних сервисов, Durable Endpoints дают вам это мгновенно.
 
-**You're already using Inngest.** You can add durability to other endpoints without refactoring everything into a workflow or thinking heavily about event logic.
+**Вы уже используете Inngest.** Вы можете добавить надежность другим эндпоинтам без переработки всего в рабочий процесс или глубоких раздумий о логике событий.
 
 <LanguageSelector>
 
-## Quick Start
+## Быстрый старт
 
 
 
 <LanguageSection show="typescript">
-If you have a traditional endpoint:
+Если у вас есть традиционный эндпоинт:
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -71,7 +71,7 @@ Bun.serve({
 </CodeGroup>
 
 
-Create an Inngest client:
+Создайте клиент Inngest:
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -94,7 +94,7 @@ const inngest = new Inngest({
 ```
 </CodeGroup>
 
-Then, wrap your API endpoint with `inngest.endpoint` and move your endpoint's critical logic into `step.run` blocks:
+Затем оберните ваш API-эндпоинт с помощью `inngest.endpoint` и перенесите критическую логику вашего эндпоинта в блоки `step.run`:
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -105,18 +105,18 @@ import { NextRequest } from "next/server";
 export const POST = inngest.endpoint(async (req: NextRequest) => {
   const { userId, data } = await req.json();
 
-  // Step 1: Validate and enrich the data
+  // Шаг 1: Валидация и обогащение данных
   const enriched = await step.run("enrich-data", async () => {
     const user = await db.users.find(userId);
     return { ...data, account: user.accountId };
   });
 
-  // Step 2: Process the enriched data
+  // Шаг 2: Обработка обогащенных данных
   const result = await step.run("process", async () => {
     return await processData(enriched);
   });
 
-  // Step 3: Send notification
+  // Шаг 3: Отправка уведомления
   await step.run("notify", async () => {
     await sendNotification(userId, result);
   });
@@ -136,18 +136,18 @@ Bun.serve({
     "/process": inngest.endpoint(async (req) => {
       const { userId, data } = await req.json();
 
-      // Step 1: Validate and enrich the data
+      // Шаг 1: Валидация и обогащение данных
       const enriched = await step.run("enrich-data", async () => {
         const user = await db.users.find(userId);
         return { ...data, account: user.accountId };
       });
 
-      // Step 2: Process the enriched data
+      // Шаг 2: Обработка обогащенных данных
       const result = await step.run("process", async () => {
         return await processData(enriched);
       });
 
-      // Step 3: Send notification
+      // Шаг 3: Отправка уведомления
       await step.run("notify", async () => {
         await sendNotification(userId, result);
       });
@@ -159,24 +159,24 @@ Bun.serve({
 ```
 </CodeGroup>
 
-If `process` fails, the endpoint will retry from that step. `enrich-data` won't re-run.
+Если `process` упадет, эндпоинт повторит попытку с этого шага. `enrich-data` не будет запускаться повторно.
 
-**Read the [Durable Endpoint TypeScript SDK Reference](/docs/reference/typescript/durable-endpoints) for more detailed usage information.**
+**Прочтите [Справочник по Durable Endpoint TypeScript SDK](/docs/reference/typescript/durable-endpoints) для получения более подробной информации об использовании.**
 
-### Using Steps
+### Использование шагов (Steps)
 
-Durable Endpoints support all the same step methods as Inngest functions. See the [Steps documentation](/docs/learn/inngest-steps) for the full reference:
+Durable Endpoints поддерживают все те же методы шагов, что и функции Inngest. См. [документацию по шагам](/docs/learn/inngest-steps) для получения полной справки:
 
-- [`step.run()`](/docs/learn/inngest-steps#step-run): Reliably execute the provided block by retrying upon failure
-- [`step.sleep()`](/docs/learn/inngest-steps#step-sleep): Pause execution for a duration
-- [`step.waitForEvent()`](/docs/learn/inngest-steps#step-wait-for-event-step-wait-for-event): Wait for an external event
+- [`step.run()`](/docs/learn/inngest-steps#step-run): Надежно выполняет предоставленный блок, повторяя попытку в случае сбоя
+- [`step.sleep()`](/docs/learn/inngest-steps#step-sleep): Приостанавливает выполнение на определенное время
+- [`step.waitForEvent()`](/docs/learn/inngest-steps#step-wait-for-event-step-wait-for-event): Ожидает внешнего события
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
 
-In order to start using steps within your API endpoints, you must first set up middleware to intercept HTTP requests.
+Чтобы начать использовать шаги в ваших API-эндпоинтах, вы должны сначала настроить промежуточное ПО (middleware) для перехвата HTTP-запросов.
 
 ```go
 import (
@@ -187,23 +187,23 @@ import (
 )
 
 func setuphttp() {
-	// provider adds inngest support to http handlers
+	// provider добавляет поддержку inngest к http-обработчикам
 	provider := stephttp.Setup(stephttp.SetupOpts{
-		Domain: "api.example.com", // add your api domain here.
+		Domain: "api.example.com", // добавьте сюда ваш домен api.
 	})
 
-  // provider allows you to wrap individual http handlers via `provider.servehttp`,
-  // and provides stdlib-compatible middleware via `provider.middleware`
+  // provider позволяет оборачивать отдельные http-обработчики через `provider.servehttp`,
+  // и предоставляет stdlib-совместимое промежуточное ПО через `provider.middleware`
   http.HandleFunc("/users", provider.ServeHTTP(handleUsers))
 
-  // or, via middleware with, for example, chi:
+  // или через middleware, например, с chi:
   r := chi.NewRouter()
   r.Use(provider.Middleware)
   r.Get("/users", handleUsers)
 }
 ```
 
-Once you've added the middleware, you can configure functions and execute steps within REST endpoints directly:
+После добавления промежуточного ПО вы можете настраивать функции и выполнять шаги непосредственно в REST-эндпоинтах:
 
 ```go
 import (
@@ -217,13 +217,13 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	stephttp.Configure(ctx, stephttp.FnOpts{
-		// Configure the function ID, removing IDs from the URL:
+		// Настройте ID функции, удалив ID из URL:
 		ID: "/users/{id}"
 	})
 
-	// Step 1: Authenticate (with full observability)
+	// Шаг 1: Аутентификация (с полной наблюдаемостью)
 	auth, err := step.Run(ctx, "authenticate", func(ctx context.Context) (*AuthResult, error) {
-		// You can chain steps as usual...
+		// Вы можете связывать шаги как обычно...
 		return nil, nil
 	})
 	if err != nil {
@@ -239,18 +239,18 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 <LanguageSection show="python">
 
 <Callout>
-  Durable Endpoints are not yet available in the Python SDK.
+  Durable Endpoints еще не доступны в Python SDK.
 </Callout>
 
 </LanguageSection>
 
-## Requesting a Durable Endpoint
+## Запрос к Durable Endpoint
 
-Durable Endpoints behave like regular API endpoints on the success path. You can request them from your front-end (_or back-end_) using `fetch()` or your favorite query or http library:
+Durable Endpoints ведут себя как обычные API-эндпоинты при успешном выполнении. Вы можете запрашивать их из фронтенда (_или бэкенда_), используя `fetch()` или вашу любимую библиотеку для запросов:
 
-However, when a failure triggers retries, a Durable Endpoint returns a redirect to a dedicated endpoint on Inngest Cloud to poll the final result.
+Однако, когда сбой вызывает повторные попытки, Durable Endpoint возвращает перенаправление (redirect) на специальный эндпоинт в Inngest Cloud для опроса финального результата.
 
-Here is a snippet handling both the direct result and the redirected result after retries:
+Вот пример кода, обрабатывающего как прямой результат, так и результат после перенаправления при повторах:
 
 ```typescript
 function handleError(error) {
@@ -265,7 +265,7 @@ async function handleResult(result) {
 fetch(`/api/your-durable-endpoint`)
   .then((res) => {
     if (res.redirected) {
-      // follow the redirect
+      // следуем за перенаправлением
       fetch(res.url)
         .then(handleResult)
         .catch(handleError);
@@ -277,57 +277,57 @@ fetch(`/api/your-durable-endpoint`)
 ```
 
 <Callout>
-  As the Durable Endpoint redirects the request to a dedicated endpoint on Inngest's Cloud, `fetch()` cannot simply follow this redirect for you (_CORS policy_).
-  Instead, you need to get the redirect URL (`res.url`) and trigger a new `fetch()` request.
+  Поскольку Durable Endpoint перенаправляет запрос на специальный эндпоинт в облаке Inngest, `fetch()` не может просто автоматически следовать за этим перенаправлением (_из-за политики CORS_).
+  Вместо этого вам нужно получить URL перенаправления (`res.url`) и инициировать новый запрос `fetch()`.
 </Callout>
 
 
 
-## SDK Support
+## Поддержка SDK
 
-| SDK | Support | Version |
+| SDK | Поддержка | Версия |
 |-----|---------|---------|
-| TypeScript | ✅ Beta | >= 3.x (with `endpointAdapter`) |
+| TypeScript | ✅ Beta | >= 3.x (с `endpointAdapter`) |
 | Go | ✅ | >= v0.14.0 |
 
-## Limitations
+## Ограничения
 
-Durable Endpoints is currently in beta. The following limitations apply:
+Durable Endpoints в данный момент находятся в стадии бета-тестирования. Применяются следующие ограничения:
 
-- **Flow control is not supported** — Features like concurrency limits and rate limiting are not available for Durable Endpoints
-- **POST body is not yet supported** — Prefer using query strings for passing data. POST body support is coming soon
-- **Standard HTTP responses only** — Durable Endpoints should return a standard HTTP response, not an SSE stream
+- **Управление потоком (Flow control) не поддерживается** — такие функции, как ограничения параллелизма (concurrency limits) и ограничение частоты запросов (rate limiting), недоступны для Durable Endpoints
+- **Тело POST-запроса пока не поддерживается** — предпочитайте использовать строки запроса (query strings) для передачи данных. Поддержка тела POST-запроса появится скоро
+- **Только стандартные HTTP-ответы** — Durable Endpoints должны возвращать стандартный HTTP-ответ, а не поток SSE
 
-## Examples
+## Примеры
 
-The [Durable Endpoints example page](/docs/examples/durable-endpoints) provides practical pattern examples such as parallel steps.
+[Страница примеров Durable Endpoints](/docs/examples/durable-endpoints) содержит примеры практических паттернов, таких как параллельные шаги.
 
-The following demos are also available to check out and run locally with the Inngest Dev Server:
+Следующие демо-версии также доступны для ознакомления и локального запуска с помощью Inngest Dev Server:
 
 <CardGroup cols={2}>
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/durable-endpoints-trip-booker#readme"
-    title={"Explore the full Trip Booker example"}
+    title={"Изучите полный пример Trip Booker"}
     icon={<RiNextjsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this example locally to run it and explore the full source code.
+   Склонируйте этот пример локально, чтобы запустить его и изучить полный исходный код.
   </Card>
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/durable-endpoints-deepresearch#readme"
-    title={"Explore the full DeepResearch demo"}
+    title={"Изучите полное демо DeepResearch"}
     icon={<RiNextjsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Explore a more advanced example with a DeepResearch interface entirely built with Durable Endpoints.
+   Изучите более продвинутый пример с интерфейсом DeepResearch, полностью построенным на Durable Endpoints.
   </Card>
 
 </CardGroup>
 
-## Further Reference
+## Дополнительные материалы
 
-- [Durable Endpoint - TypeScript SDK Reference](/docs/reference/typescript/durable-endpoints)
-- [Steps Overview](/docs/learn/inngest-steps)
+- [Durable Endpoint - Справочник по TypeScript SDK](/docs/reference/typescript/durable-endpoints)
+- [Обзор шагов (Steps)](/docs/learn/inngest-steps)
 
 </LanguageSelector>

@@ -1,22 +1,22 @@
 import { CodeGroup, Row, Col, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
-export const description = 'Learn how to cancel long running functions with events.'
+export const description = 'Узнайте, как отменять долго выполняющиеся функции с помощью событий.'
 
-# Cancel on Events
+# Отмена по событиям
 
 
-As you have learned that you can trigger functions to run using events, you can also cancel active functions by sending an event.
+Как вы уже узнали, функции можно запускать с помощью событий — точно так же можно отменять активные функции, отправив событие.
 
-For our example, we'll take a reminder app where a user can schedule to be reminded of something in the future at whatever time they want. The user can also delete the reminder if they change their mind and don't want to receive the reminder anymore.
+В качестве примера возьмём приложение-напоминалку, где пользователь может запланировать напоминание на будущее. Пользователь также может удалить напоминание, если передумал.
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-Delaying code to run for days or weeks is easy with `step.sleepUntil`, but we need a way to be able to stop the function if the user deletes the reminder while our function is "sleeping."
+Откладывать выполнение кода на дни или недели легко с помощью `step.sleepUntil`, но нам нужен способ остановить функцию, если пользователь удалит напоминание, пока функция «спит».
 
-When defining a function, you can also specify the `cancelOn` option which allows you to list one or more events that, when sent to Inngest, will cause the sleep to be terminated and function will be marked as "Canceled."
+При определении функции можно указать параметр `cancelOn`, который позволяет задать одно или несколько событий, при получении которых Inngest прекратит сон и пометит функцию как «Отменённую».
 
-Here is our schedule reminders function that leverages `cancelOn`:
+Вот функция планирования напоминаний с использованием `cancelOn`:
 
 
 ```ts {{ title: "inngest/syncContacts.ts" }}
@@ -41,14 +41,14 @@ const scheduleReminder = inngest.createFunction(
 ```
 
 
-Let's break down how this works:
+Разберём, как это работает:
 
-1. Whenever the function is triggered, a cancellation listener is created which waits for an `"tasks/reminder.deleted"` event to be received.
-2. The `if` statement tells Inngest that both the triggering event (`"tasks/reminder.created"`) and the cancellation event (`"tasks/reminder.deleted"`) have the same exact value for `data.reminderId` in each event payload. This makes sure that an event does not cancel a different reminder.
+1. При каждом запуске функции создаётся слушатель отмены, ожидающий получения события `"tasks/reminder.deleted"`.
+2. Условие `if` сообщает Inngest, что и триггерное событие (`"tasks/reminder.created"`), и событие отмены (`"tasks/reminder.deleted"`) должны иметь одинаковое значение `data.reminderId` в полезной нагрузке. Это гарантирует, что одно событие не отменит другое напоминание.
 
-For more information on writing events, read our guide [on writing expressions](/docs/guides/writing-expressions).
+Подробнее о написании выражений читайте в нашем руководстве [по написанию выражений](/docs/guides/writing-expressions).
 
-Here is an example of these two events which will be matched on the `data.reminderId` field:
+Вот пример двух событий, которые будут сопоставлены по полю `data.reminderId`:
 
 <Row>
   <Col>
@@ -81,24 +81,24 @@ Here is an example of these two events which will be matched on the `data.remind
 </Row>
 
 
-### Tips
+### Советы
 
-* You can also optionally specify a `timeout` to only enable cancellation for a period of time.
-* You can configure multiple events to cancel a function, up to five.
-* You can write a more complex matching statement using the `if` field.
+* Можно дополнительно указать `timeout`, чтобы разрешить отмену только в течение определённого периода времени.
+* Можно настроить до пяти событий для отмены функции.
+* Можно написать более сложное выражение сопоставления с помощью поля `if`.
 
-Learn more in the full [reference](/docs/reference/typescript/functions/cancel-on).
+Подробнее в полном [справочнике](/docs/reference/typescript/functions/cancel-on).
 
 </LanguageSection>
 
 <LanguageSection show="python">
 
 
-Delaying code to run for days or weeks is easy with `step.sleep_until`, but we need a way to be able to stop the function if the user deletes the reminder while our function is "sleeping."
+Откладывать выполнение кода на дни или недели легко с помощью `step.sleep_until`, но нам нужен способ остановить функцию, если пользователь удалит напоминание, пока функция «спит».
 
-When defining a function, you can also specify the `cancel` option which allows you to list one or more events that, when sent to Inngest, will cause the sleep to be terminated and function will be marked as "Canceled."
+При определении функции можно указать параметр `cancel`, который позволяет задать одно или несколько событий, при получении которых Inngest прекратит сон и пометит функцию как «Отменённую».
 
-Here is our schedule reminders function that leverages `cancel`:
+Вот функция планирования напоминаний с использованием `cancel`:
 
 ```py {{ title: "inngest/schedule_reminder.py" }}
 @inngest_client.create_function(
@@ -126,14 +126,14 @@ async def send_reminder_push() -> None:
     pass
 ```
 
-Let's break down how this works:
+Разберём, как это работает:
 
-1. Whenever the function is triggered, a cancellation listener is created which waits for an `"tasks/reminder.deleted"` event to be received.
-2. The `if` statement tells Inngest that both the triggering event (`"tasks/reminder.created"`) and the cancellation event (`"tasks/reminder.deleted"`) have the same exact value for `data.reminderId` in each event payload. This makes sure that an event does not cancel a different reminder.
+1. При каждом запуске функции создаётся слушатель отмены, ожидающий получения события `"tasks/reminder.deleted"`.
+2. Условие `if` сообщает Inngest, что и триггерное событие (`"tasks/reminder.created"`), и событие отмены (`"tasks/reminder.deleted"`) должны иметь одинаковое значение `data.reminderId` в полезной нагрузке. Это гарантирует, что одно событие не отменит другое напоминание.
 
-For more information on writing events, read our guide [on writing expressions](/docs/guides/writing-expressions).
+Подробнее о написании выражений читайте в нашем руководстве [по написанию выражений](/docs/guides/writing-expressions).
 
-Here is an example of these two events which will be matched on the `data.reminderId` field:
+Вот пример двух событий, которые будут сопоставлены по полю `data.reminderId`:
 
 <Row>
   <Col>
@@ -171,24 +171,24 @@ Here is an example of these two events which will be matched on the `data.remind
 <LanguageSection show="go">
 
 
-Delaying code to run for days or weeks is easy with `step.Sleep()`, but we need a way to be able to stop the function if the user deletes the reminder while our function is "sleeping."
+Откладывать выполнение кода на дни или недели легко с помощью `step.Sleep()`, но нам нужен способ остановить функцию, если пользователь удалит напоминание, пока функция «спит».
 
-When defining a function, you can also specify the `Cancel` option which allows you to list one or more events that, when sent to Inngest, will cause the sleep to be terminated and function will be marked as "Canceled."
+При определении функции можно указать параметр `Cancel`, который позволяет задать одно или несколько событий, при получении которых Inngest прекратит сон и пометит функцию как «Отменённую».
 
-Here is our schedule reminders function that leverages `Cancel`:
+Вот функция планирования напоминаний с использованием `Cancel`:
 
 ```go {{ title: "main.go" }}
 !snippet:path=snippets/go/docs/functions/cancel_function.go
 ```
 
-Let's break down how this works:
+Разберём, как это работает:
 
-1. Whenever the function is triggered, a cancellation listener is created which waits for an `"tasks/reminder.deleted"` event to be received.
-2. The `if` statement tells Inngest that both the triggering event (`"tasks/reminder.created"`) and the cancellation event (`"tasks/reminder.deleted"`) have the same exact value for `data.reminderId` in each event payload. This makes sure that an event does not cancel a different reminder.
+1. При каждом запуске функции создаётся слушатель отмены, ожидающий получения события `"tasks/reminder.deleted"`.
+2. Условие `if` сообщает Inngest, что и триггерное событие (`"tasks/reminder.created"`), и событие отмены (`"tasks/reminder.deleted"`) должны иметь одинаковое значение `data.reminderId` в полезной нагрузке. Это гарантирует, что одно событие не отменит другое напоминание.
 
-For more information on writing events, read our guide [on writing expressions](/docs/guides/writing-expressions).
+Подробнее о написании выражений читайте в нашем руководстве [по написанию выражений](/docs/guides/writing-expressions).
 
-Here is an example of these two events which will be matched on the `data.reminderId` field:
+Вот пример двух событий, которые будут сопоставлены по полю `data.reminderId`:
 
 <Row>
   <Col>

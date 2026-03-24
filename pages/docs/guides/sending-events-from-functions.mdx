@@ -1,31 +1,31 @@
 import { Callout, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-export const description = 'How to send events from within functions to trigger other functions to run in parallel'
+export const description = 'Как отправлять события из функций для запуска других функций в параллельном режиме'
 
-# Sending events from functions
+# Отправка событий из функций
 
-In some workflows or pipeline functions, you may want to broadcast events from within your function to trigger _other_ functions. This pattern is useful when:
+В некоторых рабочих процессах или пайплайн-функциях вам может потребоваться транслировать события изнутри функции для запуска _других_ функций. Этот паттерн полезен, когда:
 
-* You want to decouple logic into separate functions that can be re-used across your system
-* You want to send an event to [fan-out](/docs/guides/fan-out-jobs) to multiple other functions
-* Your function is handling many items that you want to process in parallel functions
-* You want to [delegate tasks to sub-agents asynchronously](/docs/ai-patterns/sub-agent-delegation#delegate-asynchronously-with-stepsendevent) in an AI agent system
-* You want to [cancel](/docs/guides/cancel-running-functions) another function
-* You want to send data to another function [waiting for an event](/docs/reference/functions/step-wait-for-event)
+* Вы хотите разделить логику на отдельные функции, которые можно повторно использовать в вашей системе
+* Вы хотите отправить событие для [fan-out](/docs/guides/fan-out-jobs) к нескольким другим функциям
+* Ваша функция обрабатывает множество элементов, которые вы хотите обрабатывать в параллельных функциях
+* Вы хотите [делегировать задачи подагентам асинхронно](/docs/ai-patterns/sub-agent-delegation#delegate-asynchronously-with-stepsendevent) в системе AI-агентов
+* Вы хотите [отменить](/docs/guides/cancel-running-functions) другую функцию
+* Вы хотите отправить данные в другую функцию, [ожидающую событие](/docs/reference/functions/step-wait-for-event)
 
-If your function needs to handle the result of another function, or wait until that other function has completed, you should use [direct function invocation](/docs/guides/invoking-functions-directly) instead.
+Если вашей функции нужно обработать результат другой функции или дождаться её завершения, вместо этого следует использовать [прямой вызов функции](/docs/guides/invoking-functions-directly).
 
-## How to send events from functions
+## Как отправлять события из функций
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-To send events from within functions, you will use [`step.sendEvent()`](/docs/reference/functions/step-send-event). This method takes a single event, or an array of events. The example below uses an array of events.
+Для отправки событий из функций используйте [`step.sendEvent()`](/docs/reference/functions/step-send-event). Этот метод принимает одно событие или массив событий. Пример ниже использует массив событий.
 
-This is an example of a [scheduled function](/docs/guides/scheduled-functions) that sends a weekly activity email to all users.
+Это пример [запланированной функции](/docs/guides/scheduled-functions), которая отправляет еженедельное письмо об активности всем пользователям.
 
-First, the function fetches all users, then it maps over all users to create a `"app/weekly-email-activity.send"` event for each user, and finally it sends all events to Inngest.
+Сначала функция получает всех пользователей, затем для каждого пользователя создаёт событие `"app/weekly-email-activity.send"`, и наконец отправляет все события в Inngest.
 
 ```ts
 import { GetEvents, Inngest } from "inngest";
@@ -36,13 +36,13 @@ type Events = GetEvents<typeof inngest>;
 export const loadCron = inngest.createFunction(
   { id: "weekly-activity-load-users", triggers: { cron: "0 12 * * 5" } },
   async ({ event, step }) => {
-    // Fetch all users
+    // Получаем всех пользователей
     const users = await step.run("fetch-users", async () => {
       return fetchUsers();
     });
 
-    // For each user, send us an event.  Inngest supports batches of events
-    // as long as the entire payload is less than 512KB.
+    // Для каждого пользователя отправляем событие. Inngest поддерживает пакеты событий,
+    // если весь payload занимает менее 512 КБ.
     const events = users.map<Events["app/weekly-email-activity.send"]>(
       (user) => {
         return {
@@ -55,17 +55,17 @@ export const loadCron = inngest.createFunction(
       }
     );
 
-    // Send all events to Inngest, which triggers any functions listening to
-    // the given event names.
+    // Отправляем все события в Inngest, что запускает все функции,
+    // слушающие указанные имена событий.
     await step.sendEvent("fan-out-weekly-emails", events);
 
-    // Return the number of users triggered.
+    // Возвращаем количество запущенных пользователей.
     return { count: users.length };
   }
 );
 ```
 
-Next, create a function that listens for the `"app/weekly-email-activity.send"` event. This function will be triggered for each user that was sent an event in the previous function.
+Далее создайте функцию, которая слушает событие `"app/weekly-email-activity.send"`. Эта функция будет запускаться для каждого пользователя, которому было отправлено событие в предыдущей функции.
 
 ```ts
 export const sendReminder = inngest.createFunction(
@@ -82,49 +82,49 @@ export const sendReminder = inngest.createFunction(
 );
 ```
 
-Each of these functions will run in parallel and individually retry on error, resulting in a faster, more reliable system.
+Каждая из этих функций будет выполняться параллельно и отдельно повторяться при ошибке, что даёт более быструю и надёжную систему.
 
 <Callout>
-  💡 **Tip**: When triggering lots of functions to run in parallel, you will likely want to configure `concurrency` limits to prevent overloading your system. See our [concurrency guide](/docs/guides/concurrency) for more information.
+  💡 **Совет**: При запуске большого количества параллельных функций рекомендуется настроить ограничения `concurrency`, чтобы не перегрузить вашу систему. Подробнее см. в [руководстве по параллелизму](/docs/guides/concurrency).
 </Callout>
 
-### Why `step.sendEvent()` vs. `inngest.send()`?
+### Почему `step.sendEvent()`, а не `inngest.send()`?
 
-By using [`step.sendEvent()`](/docs/reference/functions/step-send-event) Inngest's SDK can automatically add context and tracing which ties events to the current function run. If you use [`inngest.send()`](/docs/reference/events/send), the context around the function run is not present.
+Используя [`step.sendEvent()`](/docs/reference/functions/step-send-event), SDK Inngest может автоматически добавлять контекст и трассировку, связывающие события с текущим запуском функции. При использовании [`inngest.send()`](/docs/reference/events/send) контекст запуска функции отсутствует.
 
 </LanguageSection>
 <LanguageSection show="go">
 
-To send events from within functions, you  will use [`step.Send()`](https://pkg.go.dev/github.com/inngest/inngestgo/step#Send) or [`step.SendMany()`](https://pkg.go.dev/github.com/inngest/inngestgo/step#SendMany)
+Для отправки событий из функций используйте [`step.Send()`](https://pkg.go.dev/github.com/inngest/inngestgo/step#Send) или [`step.SendMany()`](https://pkg.go.dev/github.com/inngest/inngestgo/step#SendMany).
 
-This is an example of a [scheduled function](/docs/guides/scheduled-functions) that sends a weekly activity email to all users.
+Это пример [запланированной функции](/docs/guides/scheduled-functions), которая отправляет еженедельное письмо об активности всем пользователям.
 
-First, the function fetches all users, then it maps over all users to create a `"app/weekly-email-activity.send"` event for each user, and finally it sends all events to Inngest.
+Сначала функция получает всех пользователей, затем для каждого пользователя создаёт событие `"app/weekly-email-activity.send"`, и наконец отправляет все события в Inngest.
 
 ```go
 !snippet:path=snippets/go/docs/functions/sending_events_from_functions_part1.go
 ```
 
-Next, create a function that listens for the `"app/weekly-email-activity.send"` event. This function will be triggered for each user that was sent an event in the previous function.
+Далее создайте функцию, которая слушает событие `"app/weekly-email-activity.send"`. Эта функция будет запускаться для каждого пользователя, которому было отправлено событие в предыдущей функции.
 
 ```go
 !snippet:path=snippets/go/docs/functions/sending_events_from_functions_part2.go
 ```
 
-Each of these functions will run in parallel and individually retry on error, resulting in a faster, more reliable system.
+Каждая из этих функций будет выполняться параллельно и отдельно повторяться при ошибке, что даёт более быструю и надёжную систему.
 
 <Callout>
-  💡 **Tip**: When triggering lots of functions to run in parallel, you will likely want to configure `concurrency` limits to prevent overloading your system. See our [concurrency guide](/docs/guides/concurrency) for more information.
+  💡 **Совет**: При запуске большого количества параллельных функций рекомендуется настроить ограничения `concurrency`, чтобы не перегрузить вашу систему. Подробнее см. в [руководстве по параллелизму](/docs/guides/concurrency).
 </Callout>
 
 </LanguageSection>
 <LanguageSection show="python">
 
-To send events from within functions, you will use [`step.send_event()`](/docs/reference/python/steps/send-event). This method takes a single event, or an array of events. The example below uses an array of events.
+Для отправки событий из функций используйте [`step.send_event()`](/docs/reference/python/steps/send-event). Этот метод принимает одно событие или массив событий. Пример ниже использует массив событий.
 
-This is an example of a [scheduled function](/docs/guides/scheduled-functions) that sends a weekly activity email to all users.
+Это пример [запланированной функции](/docs/guides/scheduled-functions), которая отправляет еженедельное письмо об активности всем пользователям.
 
-First, the function fetches all users, then it maps over all users to create a `"app/weekly-email-activity.send"` event for each user, and finally it sends all events to Inngest.
+Сначала функция получает всех пользователей, затем для каждого пользователя создаёт событие `"app/weekly-email-activity.send"`, и наконец отправляет все события в Inngest.
 
 ```py
 import inngest
@@ -135,14 +135,14 @@ from src.inngest.client import inngest_client
     trigger=inngest.TriggerCron(cron="0 12 * * 5")
 )
 async def load_cron(ctx: inngest.Context):
-    # Fetch all users
+    # Получаем всех пользователей
     async def fetch():
         return await fetch_users()
-    
+
     users = await ctx.step.run("fetch-users", fetch)
 
-    # For each user, send us an event. Inngest supports batches of events
-    # as long as the entire payload is less than 512KB.
+    # Для каждого пользователя отправляем событие. Inngest поддерживает пакеты событий,
+    # если весь payload занимает менее 512 КБ.
     events = []
     for user in users:
         events.append(
@@ -155,15 +155,15 @@ async def load_cron(ctx: inngest.Context):
             )
         )
 
-    # Send all events to Inngest, which triggers any functions listening to
-    # the given event names.
+    # Отправляем все события в Inngest, что запускает все функции,
+    # слушающие указанные имена событий.
     await ctx.step.send_event("fan-out-weekly-emails", events)
 
-    # Return the number of users triggered.
+    # Возвращаем количество запущенных пользователей.
     return {"count": len(users)}
 ```
 
-Next, create a function that listens for the `"app/weekly-email-activity.send"` event. This function will be triggered for each user that was sent an event in the previous function.
+Далее создайте функцию, которая слушает событие `"app/weekly-email-activity.send"`. Эта функция будет запускаться для каждого пользователя, которому было отправлено событие в предыдущей функции.
 
 ```py
 @inngest_client.create_function(
@@ -173,45 +173,44 @@ Next, create a function that listens for the `"app/weekly-email-activity.send"` 
 async def send_reminder(ctx: inngest.Context):
     async def load_data():
         return await load_user_data(ctx.event.data["user"]["id"])
-    
+
     data = await ctx.step.run("load-user-data", load_data)
 
     async def send():
         return await send_email(ctx.event.data["user"], data)
-    
+
     await ctx.step.run("email-user", send)
 ```
 
-Each of these functions will run in parallel and individually retry on error, resulting in a faster, more reliable system.
+Каждая из этих функций будет выполняться параллельно и отдельно повторяться при ошибке, что даёт более быструю и надёжную систему.
 
 <Callout>
-  💡 **Tip**: When triggering lots of functions to run in parallel, you will likely want to configure `concurrency` limits to prevent overloading your system. See our [concurrency guide](/docs/guides/concurrency) for more information.
+  💡 **Совет**: При запуске большого количества параллельных функций рекомендуется настроить ограничения `concurrency`, чтобы не перегрузить вашу систему. Подробнее см. в [руководстве по параллелизму](/docs/guides/concurrency).
 </Callout>
 
-### Why `step.send_event()` vs. `inngest.send()`?
+### Почему `step.send_event()`, а не `inngest.send()`?
 
-By using [`step.send_event()`](/docs/reference/python/steps/send-event) Inngest's SDK can automatically add context and tracing which ties events to the current function run. If you use [`inngest.send()`](/docs/reference/python/client/send), the context around the function run is not present.
+Используя [`step.send_event()`](/docs/reference/python/steps/send-event), SDK Inngest может автоматически добавлять контекст и трассировку, связывающие события с текущим запуском функции. При использовании [`inngest.send()`](/docs/reference/python/client/send) контекст запуска функции отсутствует.
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Parallel functions vs. parallel steps
+## Параллельные функции vs. параллельные шаги
 
-Another technique similar is running multiple steps in parallel (read the [step parallelism guide](/docs/guides/step-parallelism)). Here are the key differences:
+Похожая техника — запуск нескольких шагов параллельно (см. [руководство по параллелизму шагов](/docs/guides/step-parallelism)). Ключевые отличия:
 
-* Both patterns run code in parallel
-* With parallel steps, you can access the output of each step, whereas with the above example, you cannot
-* Parallel steps have limit of 1,000 steps, though you can trigger as many functions as you'd like using the send event pattern
-* Decoupled functions can be tested and [replayed](/docs/platform/replay) separately, whereas parallel steps can only be tested as a whole
-* You can retry individual functions easily if they permanently fail, whereas if a step permanently fails (after retrying) the function itself will fail and terminate.
+* Оба паттерна выполняют код параллельно
+* При параллельных шагах вы можете получить доступ к результату каждого шага, тогда как в примере выше это невозможно
+* Параллельные шаги ограничены 1000 шагами, однако с помощью паттерна отправки событий можно запустить столько функций, сколько нужно
+* Разделённые функции можно тестировать и [воспроизводить](/docs/platform/replay) по отдельности, тогда как параллельные шаги можно тестировать только как единое целое
+* При необходимости можно легко повторить отдельные функции после постоянной ошибки, тогда как при постоянном сбое шага (после повторных попыток) сама функция завершится с ошибкой и остановится
 
-## Sending events vs. invoking
+## Отправка событий vs. вызов функций
 
-A related pattern is invoking external functions directly instead of just triggering them with an event. See the [Invoking functions directly](/docs/guides/invoking-functions-directly) guide. Here are some key differences:
+Связанный паттерн — прямой вызов внешних функций вместо их запуска через событие. См. руководство [Прямой вызов функций](/docs/guides/invoking-functions-directly). Ключевые отличия:
 
-* Sending events from functions is better suited for parallel processing of independent tasks and invocation is better for coordinated, interdependent functions
-* Sending events can be done in bulk, whereas invoke can only invoke one function at a time.
-* Sending events can be combined with [fan-out](/docs/guides/fan-out-jobs) to trigger multiple functions from a single event
-* Unlike invocation, sending events will not receive the result of the invoked function
-
+* Отправка событий из функций лучше подходит для параллельной обработки независимых задач, а вызов — для координации взаимозависимых функций
+* Отправка событий может выполняться пакетами, тогда как вызов позволяет вызывать только одну функцию за раз
+* Отправку событий можно комбинировать с [fan-out](/docs/guides/fan-out-jobs) для запуска нескольких функций из одного события
+* В отличие от вызова, отправка событий не возвращает результат вызванной функции

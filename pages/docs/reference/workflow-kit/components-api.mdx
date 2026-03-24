@@ -1,21 +1,21 @@
 import { Callout, CodeGroup, Card, CardGroup, Properties, Property } from "src/shared/Docs/mdx";
 
-# Components API (React)
+# API компонентов (React)
 
-The [`@inngest/workflow-kit`](https://npmjs.com/package/@inngest/workflow-kit) package provides a set of React components, enabling you to build a workflow editor UI in no time!
+Пакет [`@inngest/workflow-kit`](https://npmjs.com/package/@inngest/workflow-kit) предоставляет набор React-компонентов, позволяющих в кратчайшие сроки создать интерфейс редактора рабочих процессов!
 
 ![workflow-kit-announcement-video-loop.gif](/assets/docs/reference/workflow-kit/workflow-demo.gif)
 
-## Usage
+## Использование
 
 ```tsx {{ title: "src/components/my-workflow-editor.ts" }}
 import { useState } from "react";
 import { Editor, Provider, Sidebar, type Workflow } from "@inngest/workflow-kit/ui";
 
-// import `PublicEngineAction[]`
+// импорт `PublicEngineAction[]`
 import { actionsDefinitions } from "@/inngest/actions-definitions";
 
-// NOTE - Importing CSS from JavaScript requires a bundler plugin like PostCSS or CSS Modules
+// ПРИМЕЧАНИЕ - Импорт CSS из JavaScript требует плагина сборщика, такого как PostCSS или CSS-модули
 import "@inngest/workflow-kit/ui/ui.css";
 import "@xyflow/react/dist/style.css";
 
@@ -39,34 +39,34 @@ export const MyWorkflowEditor = ({ workflow }: { workflow: Workflow }) => {
 ```
 
 
-## Reference
+## Справочник
 
 ### `<Provider>`
 
 <Callout>
 
-`<Provider>` is a [Controlled Component](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components), watching the `workflow={}` to update.
+`<Provider>` — это [контролируемый компонент (Controlled Component)](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components), который следит за обновлением `workflow={}`.
 
-Make sure to updated `workflow={}` based on the updates received via `onChange={}`.
+Убедитесь, что `workflow={}` обновляется на основе данных, полученных через `onChange={}`.
 
 </Callout>
 
 
 <Properties>
   <Property name="workflow" type="Workflow" required>
-    A [Workflow instance object](/docs/reference/workflow-kit/workflow-instance).
+    [Объект экземпляра Workflow](/docs/reference/workflow-kit/workflow-instance).
   </Property>
   <Property name="trigger" type="object" required>
-    An object with a `name: string` property [representing an event name](/docs/reference/functions/create#trigger).
+    Объект со свойством `name: string`, [представляющим имя события](/docs/reference/functions/create#trigger).
   </Property>
   <Property name="availableActions" type="PublicEngineAction[]">
-    See [the `PublicEngineActionEngineAction[]` reference](/docs/reference/workflow-kit/actions#passing-actions-to-the-react-components-public-engine-action).
+    См. [справочник по `PublicEngineActionEngineAction[]`](/docs/reference/workflow-kit/actions#passing-actions-to-the-react-components-public-engine-action).
   </Property>
   <Property name="onChange" type="function" required>
-    A callback function, called after each `workflow` changes.
+    Функция обратного вызова, вызываемая после каждого изменения `workflow`.
   </Property>
   <Property name="{children}" type="React.ReactNode" required>
-    The `<Provider>` component should always get the following tree as children:
+    Компонент `<Provider>` всегда должен получать в качестве дочерних элементов следующее дерево:
   </Property>
 </Properties>
 

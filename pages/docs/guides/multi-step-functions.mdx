@@ -1,34 +1,31 @@
 import { CodeGroup, Callout, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-export const description = `Build reliable workflows with event coordination and conditional execution using Inngest's multi-step functions.`
+export const description = `Создавайте надежные рабочие процессы с координацией событий и условным выполнением, используя многошаговые функции Inngest.`
 export const hidePageSidebar = true;
 
-# Multi-Step Functions
+# Многошаговые функции (Multi-Step Functions)
 
-Use Inngest's multi-step functions to safely coordinate events, delay execution for hours (or up to a year), retry [individual steps](/docs/learn/inngest-steps), and conditionally run code based on the result of previous steps and incoming events.
+Используйте многошаговые функции Inngest для безопасной координации событий, задержки выполнения на часы (или до года), повторного запуска [отдельных шагов](/docs/learn/inngest-steps) и условного выполнения кода на основе результатов предыдущих шагов и входящих событий.
 
-Critically, multi-step functions are written in code, not config, meaning you create readable, obvious functionality that's easy to maintain.
+Важно отметить, что многошаговые функции описываются кодом, а не конфигурацией. Это позволяет создавать читаемую и понятную функциональность, которую легко поддерживать.
 
-## Benefits of multi-step functions
+## Преимущества многошаговых функций
 
-Creating functions that utilize multiple steps enable you to:
+Создание функций, состоящих из нескольких шагов, позволяет:
 
-- Running retriable blocks of code to maximum reliability.
-- Pausing execution and waiting for an event matching rules before continuing.
-- Pausing for an amount of time or until a specified time.
+- Запускать блоки кода с возможностью повтора для максимальной надежности.
+- Приостанавливать выполнение и ждать события, соответствующего определенным правилам, прежде чем продолжить.
+- Делать паузу на определенное время или до указанного момента.
 
-This approach makes building reliable and distributed code simple. By wrapping asynchronous actions such as API calls in retriable blocks, we can ensure reliability when coordinating across many services.
-
-
+Этот подход упрощает написание надежного распределенного кода. Оборачивая асинхронные действия (например, вызовы API) в блоки с поддержкой повторов, мы гарантируем надежность при взаимодействии со множеством сервисов.
 
 
-
-## How to write a multi-step function
+## Как написать многошаговую функцию
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
-Consider this simple [Inngest function](/docs/learn/inngest-functions) which sends a welcome email when a user signs up:
+Рассмотрим простую [функцию Inngest](/docs/learn/inngest-functions), которая отправляет приветственное письмо при регистрации пользователя:
 
 <CodeGroup>
 ```ts
@@ -45,15 +42,15 @@ export default inngest.createFunction(
 ```
 </CodeGroup>
 
-This function comes with all of the benefits of Inngest: the code is reliable and retriable. If an error happens, you will recover the data. This works for a single-task functions.
+Эта функция обладает всеми преимуществами Inngest: код надежен и поддерживает повторные попытки. В случае ошибки данные будут восстановлены. Это отлично работает для функций с одной задачей.
 
-However, there is a new requirement: if a user hasn't created a post on our platform within 24 hours of signing up, we should send the user another email. Instead of adding more logic to the handler, we can convert this function into a multi-step one.
+Однако появилось новое требование: если пользователь не создал ни одного поста на нашей платформе в течение 24 часов после регистрации, мы должны отправить ему еще одно письмо. Вместо того чтобы усложнять логику обработчика, мы можем превратить эту функцию в многошаговую.
 
-### 1. Convert to a step function
+### 1. Преобразование в функцию с шагами
 
-First, let's convert this function into a multi-step function:
-- Add a `step` argument to the handler in the Inngest function.
-- Wrap `sendEmail()` call in a [`step.run()`](/docs/reference/functions/step-run) method.
+Сначала преобразуем эту функцию в многошаговую:
+- Добавим аргумент `step` в обработчик функции Inngest.
+- Обернем вызов `sendEmail()` в метод [`step.run()`](/docs/reference/functions/step-run).
 
 ```ts
 export default inngest.createFunction(
@@ -66,15 +63,15 @@ export default inngest.createFunction(
 );
 ```
 
-The main difference is that we've wrapped our `sendEmail()` call in a `step.run()` call. This is how we tell Inngest that this is an individual step in our function. This step can be retried independently, just like a single-step function would.
+Основное отличие в том, что мы обернули вызов `sendEmail()` в `step.run()`. Так мы сообщаем Inngest, что это отдельный шаг в нашей функции. Этот шаг может быть перезапущен независимо, точно так же, как и одношаговая функция.
 
-### 2. Add another step: wait for event
+### 2. Добавление шага: ожидание события
 
-Once the welcome email is sent, we want to wait at most 24 hours for our user to create a post. If they haven't created one by then, we want to send them a reminder email.
+После отправки приветственного письма мы хотим подождать не более 24 часов, пока пользователь создаст пост. Если он этого не сделает, мы отправим ему напоминание.
 
-Elsewhere in our app, an `app/post.created` event is sent whenever a user creates a new post. We could use it to trigger the second email.
+В другом месте нашего приложения событие `app/post.created` отправляется всякий раз, когда пользователь создает новый пост. Мы можем использовать его для запуска второго письма.
 
-To do this, we can use the [`step.waitForEvent()`](/docs/reference/functions/step-wait-for-event) method. This tool will wait for a matching event to be fired, and then return the event data. If the event is not fired within the timeout, it will return `null`, which we can use to decide whether to send the reminder email.
+Для этого воспользуемся методом [`step.waitForEvent()`](/docs/reference/functions/step-wait-for-event). Этот инструмент будет ждать возникновения подходящего события, а затем вернет данные этого события. Если событие не произойдет в течение указанного времени, метод вернет `null`, что мы и используем для принятия решения об отправке напоминания.
 
 <CodeGroup>
 ```ts
@@ -85,22 +82,22 @@ export default inngest.createFunction(
       return await sendEmail({ email: event.user.email, template: "welcome" });
     });
 
-    // Wait for an "app/post.created" event
+    // Ждем события "app/post.created"
     const postCreated = await step.waitForEvent("wait-for-post-creation", {
       event: "app/post.created",
-      match: "data.user.id", // the field "data.user.id" must match
-      timeout: "24h", // wait at most 24 hours
+      match: "data.user.id", // поле "data.user.id" должно совпадать
+      timeout: "24h", // ждать не более 24 часов
     });
   }
 );
 ```
 </CodeGroup>
 
-Now we have a `postCreated` variable, which will be `null` if the user hasn't created a post within 24 hours, or the event data if they have.
+Теперь у нас есть переменная `postCreated`, которая будет содержать `null`, если пользователь не создал пост в течение 24 часов, или данные события, если создал.
 
-### 3. Set conditional action
+### 3. Настройка условного действия
 
-Finally, we can use the `postCreated` variable to send the reminder email if the user hasn't created a post. Let's add another block of code with `step.run()`:
+Наконец, мы можем использовать переменную `postCreated`, чтобы отправить напоминание, если пост не был создан. Добавим еще один блок кода с `step.run()`:
 
 <CodeGroup>
 ```ts
@@ -111,15 +108,15 @@ export default inngest.createFunction(
       return await sendEmail({ email: event.user.email, template: "welcome" });
     });
 
-    // Wait for an "app/post.created" event
+    // Ждем события "app/post.created"
     const postCreated = await step.waitForEvent("wait-for-post-creation", {
       event: "app/post.created",
-      match: "data.user.id", // the field "data.user.id" must match
-      timeout: "24h", // wait at most 24 hours
+      match: "data.user.id", // поле "data.user.id" должно совпадать
+      timeout: "24h", // ждать не более 24 часов
     });
 
     if (!postCreated) {
-      // If no post was created, send a reminder email
+      // Если пост не был создан, отправляем напоминание
       await step.run("send-reminder-email", async () => {
         return await sendEmail({
           email: event.user.email,
@@ -132,13 +129,13 @@ export default inngest.createFunction(
 ```
 </CodeGroup>
 
-That's it! We've now written a multi-step function that will send a welcome email, and then send a reminder email if the user hasn't created a post within 24 hours.
+Вот и всё! Мы написали многошаговую функцию, которая отправляет приветственное письмо, а затем — напоминание, если пользователь не создал пост в течение 24 часов.
 
-Most importantly, we had to write no config to do this. We can use all the power of JavaScript to write our functions and all the power of Inngest's tools to coordinate between events and steps.
+Самое главное, что для этого нам не пришлось писать файлы конфигурации. Мы используем всю мощь JavaScript для написания функций и возможности инструментов Inngest для координации событий и шагов.
 
 </LanguageSection>
 <LanguageSection show="go">
-Consider this simple [Inngest function](/docs/learn/inngest-functions) which sends a welcome email when a user signs up:
+Рассмотрим простую [функцию Inngest](/docs/learn/inngest-functions), которая отправляет приветственное письмо при регистрации пользователя:
 
 <CodeGroup>
 ```go
@@ -146,29 +143,29 @@ Consider this simple [Inngest function](/docs/learn/inngest-functions) which sen
 ```
 </CodeGroup>
 
-This function comes with all of the benefits of Inngest: the code is reliable and retriable. If an error happens, you will recover the data. This works for a single-task functions.
+Эта функция обладает всеми преимуществами Inngest: код надежен и поддерживает повторные попытки. В случае ошибки данные будут восстановлены. Это отлично работает для функций с одной задачей.
 
-However, there is a new requirement: if a user hasn't created a post on our platform within 24 hours of signing up, we should send the user another email. Instead of adding more logic to the handler, we can convert this function into a multi-step one.
+Однако появилось новое требование: если пользователь не создал ни одного поста на нашей платформе в течение 24 часов после регистрации, мы должны отправить ему еще одно письмо. Вместо того чтобы усложнять логику обработчика, мы можем превратить эту функцию в многошаговую.
 
-### 1. Convert to a step function
+### 1. Преобразование в функцию с шагами
 
-First, let's convert this function into a multi-step function:
-- Add a `github.com/inngest/inngestgo/step` import
-- Wrap `sendEmail()` call in a [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run) method.
+Сначала преобразуем эту функцию в многошаговую:
+- Добавим импорт `github.com/inngest/inngestgo/step`.
+- Обернем вызов `sendEmail()` в метод [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run).
 
 ```go
 !snippet:path=snippets/go/docs/functions/multi_step_functions/v2/send_activation_email_function.go
 ```
 
-The main difference is that we've wrapped our `sendEmail()` call in a `step.run()` call. This is how we tell Inngest that this is an individual step in our function. This step can be retried independently, just like a single-step function would.
+Основное отличие в том, что мы обернули вызов `sendEmail()` в `step.run()`. Так мы сообщаем Inngest, что это отдельный шаг в нашей функции. Этот шаг может быть перезапущен независимо, точно так же, как и одношаговая функция.
 
-### 2. Add another step: wait for event
+### 2. Добавление шага: ожидание события
 
-Once the welcome email is sent, we want to wait at most 24 hours for our user to create a post. If they haven't created one by then, we want to send them a reminder email.
+После отправки приветственного письма мы хотим подождать не более 24 часов, пока пользователь создаст пост. Если он этого не сделает, мы отправим ему напоминание.
 
-Elsewhere in our app, an `app/post.created` event is sent whenever a user creates a new post. We could use it to trigger the second email.
+В другом месте нашего приложения событие `app/post.created` отправляется всякий раз, когда пользователь создает новый пост. Мы можем использовать его для запуска второго письма.
 
-To do this, we can use the [`step.WaitForEvent()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#WaitForEvent) method. This tool will wait for a matching event to be fired, and then return the event data. If the event is not fired within the timeout, it will return `nil`, which we can use to decide whether to send the reminder email.
+Для этого воспользуемся методом [`step.WaitForEvent()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#WaitForEvent). Этот инструмент будет ждать возникновения подходящего события, а затем вернет данные этого события. Если событие не произойдет в течение указанного времени, метод вернет `nil`, что мы и используем для принятия решения об отправке напоминания.
 
 <CodeGroup>
 ```go
@@ -176,11 +173,11 @@ To do this, we can use the [`step.WaitForEvent()`](https://pkg.go.dev/github.com
 ```
 </CodeGroup>
 
-Now we have a `postCreated` variable, which will be `nil` if the user hasn't created a post within 24 hours, or the event data if they have.
+Теперь у нас есть переменная `postCreated`, которая будет содержать `nil`, если пользователь не создал пост в течение 24 часов, или данные события, если создал.
 
-### 3. Set conditional action
+### 3. Настройка условного действия
 
-Finally, we can use the `postCreated` variable to send the reminder email if the user hasn't created a post. Let's add another block of code with `step.Run()`:
+Наконец, мы можем использовать переменную `postCreated`, чтобы отправить напоминание, если пост не был создан. Добавим еще один блок кода с `step.Run()`:
 
 <CodeGroup>
 ```go
@@ -188,13 +185,13 @@ Finally, we can use the `postCreated` variable to send the reminder email if the
 ```
 </CodeGroup>
 
-That's it! We've now written a multi-step function that will send a welcome email, and then send a reminder email if the user hasn't created a post within 24 hours.
+Вот и всё! Мы написали многошаговую функцию, которая отправляет приветственное письмо, а затем — напоминание, если пользователь не создал пост в течение 24 часов.
 
-Most importantly, we had to write no config to do this. We can use all the power of JavaScript to write our functions and all the power of Inngest's tools to coordinate between events and steps.
+Самое главное, что для этого нам не пришлось писать файлы конфигурации. Мы используем всю мощь JavaScript для написания функций и возможности инструментов Inngest для координации событий и шагов.
 
 </LanguageSection>
 <LanguageSection show="python">
-Consider this simple [Inngest function](/docs/learn/inngest-functions) which sends a welcome email when a user signs up:
+Рассмотрим простую [функцию Inngest](/docs/learn/inngest-functions), которая отправляет приветственное письмо при регистрации пользователя:
 
 <CodeGroup>
 ```py
@@ -210,15 +207,15 @@ async def fn(ctx: inngest.Context) -> None:
 ```
 </CodeGroup>
 
-This function comes with all of the benefits of Inngest: the code is reliable and retriable. If an error happens, you will recover the data. This works for a single-task functions.
+Эта функция обладает всеми преимуществами Inngest: код надежен и поддерживает повторные попытки. В случае ошибки данные будут восстановлены. Это отлично работает для функций с одной задачей.
 
-However, there is a new requirement: if a user hasn't created a post on our platform within 24 hours of signing up, we should send the user another email. Instead of adding more logic to the handler, we can convert this function into a multi-step one.
+Однако появилось новое требование: если пользователь не создал ни одного поста на нашей платформе в течение 24 часов после регистрации, мы должны отправить ему еще одно письмо. Вместо того чтобы усложнять логику обработчика, мы можем превратить эту функцию в многошаговую.
 
-### 1. Convert to a step function
+### 1. Преобразование в функцию с шагами
 
-First, let's convert this function into a multi-step function:
-- Add a `step` argument to the handler in the Inngest function.
-- Wrap `sendEmail()` call in a [`step.run()`](/docs/reference/python/steps/run) method.
+Сначала преобразуем эту функцию в многошаговую:
+- Добавим аргумент `step` в обработчик функции Inngest.
+- Обернем вызов `sendEmail()` в метод [`step.run()`](/docs/reference/python/steps/run).
 
 ```py
 import inngest
@@ -235,15 +232,15 @@ async def fn(ctx: inngest.Context) -> None:
     }))
 ```
 
-The main difference is that we've wrapped our `sendEmail()` call in a `step.run()` call. This is how we tell Inngest that this is an individual step in our function. This step can be retried independently, just like a single-step function would.
+Основное отличие в том, что мы обернули вызов `sendEmail()` в `step.run()`. Так мы сообщаем Inngest, что это отдельный шаг в нашей функции. Этот шаг может быть перезапущен независимо, точно так же, как и одношаговая функция.
 
-### 2. Add another step: wait for event
+### 2. Добавление шага: ожидание события
 
-Once the welcome email is sent, we want to wait at most 24 hours for our user to create a post. If they haven't created one by then, we want to send them a reminder email.
+После отправки приветственного письма мы хотим подождать не более 24 часов, пока пользователь создаст пост. Если он этого не сделает, мы отправим ему напоминание.
 
-Elsewhere in our app, an `app/post.created` event is sent whenever a user creates a new post. We could use it to trigger the second email.
+В другом месте нашего приложения событие `app/post.created` отправляется всякий раз, когда пользователь создает новый пост. Мы можем использовать его для запуска второго письма.
 
-To do this, we can use the [`step.wait_for_event()`](/docs/reference/python/steps/wait-for-event) method. This tool will wait for a matching event to be fired, and then return the event data. If the event is not fired within the timeout, it will return `None`, which we can use to decide whether to send the reminder email.
+Для этого воспользуемся методом [`step.wait_for_event()`](/docs/reference/python/steps/wait-for-event). Этот инструмент будет ждать возникновения подходящего события, а затем вернет данные этого события. Если событие не произойдет в течение указанного времени, метод вернет `None`, что мы и используем для принятия решения об отправке напоминания.
 
 <CodeGroup>
 ```py
@@ -260,20 +257,20 @@ async def fn(ctx: inngest.Context) -> None:
         "template": "welcome"
     }))
 
-    # Wait for an "app/post.created" event
+    # Ждем события "app/post.created"
     post_created = await ctx.step.wait_for_event("wait-for-post-creation", {
         "event": "app/post.created",
-        "match": "data.user.id",  # the field "data.user.id" must match
-        "timeout": "24h",  # wait at most 24 hours
+        "match": "data.user.id",  # поле "data.user.id" должно совпадать
+        "timeout": "24h",  # ждать не более 24 часов
     })
 ```
 </CodeGroup>
 
-Now we have a `postCreated` variable, which will be `None` if the user hasn't created a post within 24 hours, or the event data if they have.
+Теперь у нас есть переменная `postCreated`, которая будет содержать `None`, если пользователь не создал пост в течение 24 часов, или данные события, если создал.
 
-### 3. Set conditional action
+### 3. Настройка условного действия
 
-Finally, we can use the `postCreated` variable to send the reminder email if the user hasn't created a post. Let's add another block of code with `step.run()`:
+Наконец, мы можем использовать переменную `postCreated`, чтобы отправить напоминание, если пост не был создан. Добавим еще один блок кода с `step.run()`:
 
 <CodeGroup>
 ```py
@@ -290,15 +287,15 @@ async def fn(ctx: inngest.Context) -> None:
         "template": "welcome"
     }))
 
-    # Wait for an "app/post.created" event
+    # Ждем события "app/post.created"
     post_created = await ctx.step.wait_for_event("wait-for-post-creation", {
         "event": "app/post.created",
-        "match": "data.user.id",  # the field "data.user.id" must match
-        "timeout": "24h",  # wait at most 24 hours
+        "match": "data.user.id",  # поле "data.user.id" должно совпадать
+        "timeout": "24h",  # ждать не более 24 часов
     })
 
     if not post_created:
-        # If no post was created, send a reminder email
+        # Если пост не был создан, отправляем напоминание
         await ctx.step.run("send-reminder-email", lambda: sendEmail({
             "email": ctx.event.user.email,
             "template": "reminder"
@@ -306,53 +303,53 @@ async def fn(ctx: inngest.Context) -> None:
 ```
 </CodeGroup>
 
-That's it! We've now written a multi-step function that will send a welcome email, and then send a reminder email if the user hasn't created a post within 24 hours.
+Вот и всё! Мы написали многошаговую функцию, которая отправляет приветственное письмо, а затем — напоминание, если пользователь не создал пост в течение 24 часов.
 
-Most importantly, we had to write no config to do this. We can use all the power of JavaScript to write our functions and all the power of Inngest's tools to coordinate between events and steps.
+Самое главное, что для этого нам не пришлось писать файлы конфигурации. Мы используем всю мощь JavaScript для написания функций и возможности инструментов Inngest для координации событий и шагов.
 
 </LanguageSection>
 </LanguageSelector>
 
 
-## Step Reference
+## Справочник по шагам
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-You can read more about [Inngest steps](/docs/learn/inngest-steps) or jump directly to a step reference guide:
+Вы можете узнать больше о [шагах Inngest](/docs/learn/inngest-steps) или сразу перейти к справочному руководству по конкретному шагу:
 
-- [`step.run()`](/docs/reference/functions/step-run): Run synchronous or asynchronous code as a retriable step in your function.
-- [`step.sleep()`](/docs/reference/functions/step-sleep): Sleep for a given amount of time.
-- [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until): Sleep until a given time.
-- [`step.invoke()`](/docs/reference/functions/step-invoke): Invoke another Inngest function as a step, receiving the result of the invoked function.
-- [`step.waitForEvent()`](/docs/reference/functions/step-wait-for-event): Pause a function's execution until another event is received.
-- [`step.sendEvent()`](/docs/reference/functions/step-send-event): Send event(s) reliably within your function. Use this instead of `inngest.send()` to ensure reliable event delivery from within functions.
+- [`step.run()`](/docs/reference/functions/step-run): Запуск синхронного или асинхронного кода как шага с поддержкой повторов.
+- [`step.sleep()`](/docs/reference/functions/step-sleep): Пауза на заданное время.
+- [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until): Пауза до определенного времени.
+- [`step.invoke()`](/docs/reference/functions/step-invoke): Вызов другой функции Inngest как шага с получением результата.
+- [`step.waitForEvent()`](/docs/reference/functions/step-wait-for-event): Приостановка выполнения до получения другого события.
+- [`step.sendEvent()`](/docs/reference/functions/step-send-event): Надежная отправка событий внутри вашей функции. Используйте это вместо `inngest.send()` для гарантии доставки событий из функций.
 
 <Callout>
-Please note that each step is executed as **a separate HTTP request**. To ensure efficient and correct execution, place any non-deterministic logic (such as DB calls or API calls) within a `step.run()` call. [Learn more](/docs/guides/working-with-loops).
+Обратите внимание, что каждый шаг выполняется как **отдельный HTTP-запрос**. Для обеспечения эффективного и корректного выполнения помещайте любую недетерминированную логику (например, вызовы БД или API) внутрь вызова `step.run()`. [Узнать больше](/docs/guides/working-with-loops).
 
 </Callout>
 
-## Gotchas
+## Нюансы (Gotchas)
 
-### My function is running twice
+### Моя функция запускается дважды
 
-Inngest will communicate with your function multiple times throughout a single run and will use your use of tools to intelligently memoize state.
+Inngest будет взаимодействовать с вашей функцией несколько раз в течение одного запуска и использовать ваши инструменты для интеллектуальной мемоизации состояния.
 
-For this reason, placing business logic outside of a `step.run()` call is a bad idea, as this will be run every time Inngest communicates with your function.
+По этой причине размещение бизнес-логики вне вызова `step.run()` является плохой идеей, так как этот код будет выполняться при каждом взаимодействии Inngest с вашей функцией.
 
-### I want to run asynchronous code
+### Я хочу запустить асинхронный код
 
-`step.run()` accepts an `async` function, like so:
+`step.run()` принимает асинхронную функцию (`async`):
 
 ```ts
 await step.run("do-something", async () => {
-  // your code
+  // ваш код
 });
 ```
 
-Each call to `step.run()` is a single retriable step - a lightweight transaction.  Therefore, each step should have a single side effect. For example, the below code is problematic:
+Каждый вызов `step.run()` — это один шаг с поддержкой повторов, своего рода «легкая транзакция». Поэтому каждый шаг должен иметь один побочный эффект. Например, приведенный ниже код проблематичен:
 
 ```ts
 await step.run("create-alert", async () => {
@@ -361,9 +358,9 @@ await step.run("create-alert", async () => {
 });
 ```
 
-If `createAlert()` succeeds but `sendAlertLinkToSlack()` fails, the code will be retried and an alert will be created every time the step is retried.
+Если `createAlert()` выполнится успешно, а `sendAlertLinkToSlack()` завершится ошибкой, код будет перезапущен, и оповещение (alert) будет создаваться заново при каждой попытке.
 
-Instead, we should split out asynchronous actions into multiple steps so they're retried independently.
+Вместо этого следует разделять асинхронные действия на несколько шагов, чтобы они повторялись независимо.
 
 ```ts
 const alertId = await step.run("create-alert", () => createAlert());
@@ -371,27 +368,27 @@ const alertId = await step.run("create-alert", () => createAlert());
 await step.run("send-alert-link", () => sendAlertLinkToSlack(alertId));
 ```
 
-### My variable isn't updating
+### Моя переменная не обновляется
 
-Because Inngest communicates with your function multiple times, memoising state as it goes, code within calls to `step.run()` is not called on every invocation.
+Поскольку Inngest взаимодействует с вашей функцией несколько раз, мемоизируя состояние по ходу дела, код внутри вызовов `step.run()` не вызывается при каждом обращении.
 
-Make sure that any variables needed for the overall function are _returned_ from calls to `step.run()`:
+Убедитесь, что любые переменные, необходимые для всей функции, *возвращаются* из вызовов `step.run()`:
 
 ```ts
-// This is the right way to set variables within step.run :)
+// Это правильный способ установки переменных внутри step.run :)
 const userId = await step.run("get-user", () => getRandomUserId());
 
 console.log(userId); // 123
 ```
 
-For comparison, here are **two examples of malfunctioning code** (if you're using steps to update variables within the function's closure):
+Для сравнения, вот **два примера неработающего кода** (если вы используете шаги для обновления переменных в замыкании функции):
 
 ```ts
-// THIS IS WRONG! step.run() only runs once and is skipped for future
-// steps, so userID will not be defined.
+// ЭТО НЕПРАВИЛЬНО! step.run() выполняется только один раз и пропускается при
+// последующих вызовах, поэтому userId не будет определен.
 let userId;
 
-// Do NOT do this! Instead, return data from step.run()
+// НЕ ДЕЛАЙТЕ ТАК! Вместо этого возвращайте данные из step.run()
 await step.run("get-user", async () => {
   userId = await getRandomUserId();
 });
@@ -399,24 +396,24 @@ await step.run("get-user", async () => {
 console.log(userId); // undefined
 ```
 
-### `sleepUntil()` isn't working as expected
+### `sleepUntil()` работает не так, как ожидалось
 
-Make sure to only to use `sleepUntil()` with dates that will be static across the various calls to your function.
+Используйте `sleepUntil()` только с датами, которые будут статичными при различных вызовах вашей функции.
 
-Always use `sleep()` if you'd like to wait a particular time from _now_.
+Всегда используйте `sleep()`, если вы хотите подождать определенное время, отсчитываемое от *текущего момента*.
 
 ```ts
-// ❌ Bad
+// ❌ Плохо
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 await step.sleepUntil("wait-until-tomorrow", tomorrow);
 
-// ✅ Good
+// ✅ Хорошо
 await step.sleep("wait-a-day", "1 day");
 ```
 
 ```ts
-// ✅ Good
+// ✅ Хорошо
 const userBirthday = await step.run("get-user-birthday", async () => {
   const user = await getUser();
   return user.birthday; // Date
@@ -425,124 +422,123 @@ const userBirthday = await step.run("get-user-birthday", async () => {
 await sleepUntil("wait-for-user-birthday", userBirthday);
 ```
 
-### Unexpected loop behavior
+### Неожиданное поведение циклов
 
-When using loops within functions, it is recommended to treat each iteration as it's own step or steps.
+При использовании циклов внутри функций рекомендуется рассматривать каждую итерацию как отдельный шаг или набор шагов.
 
-When [functions are run](/docs/learn/how-functions-are-executed), the function handler is re-executed from the start for each new step and previously completed steps are memoized. This means that iterations of loops will be run every re-execution, but code encapsulated within `step.run()` will not re-run.
+При [запуске функций](/docs/learn/how-functions-are-executed) обработчик функции выполняется заново с самого начала для каждого нового шага, а ранее завершенные шаги мемоизируются. Это означает, что итерации циклов будут выполняться при каждом перезапуске, но код, инкапсулированный в `step.run()`, не будет запускаться повторно.
 
-If code within a loop is not encapsulated within a step, it will re-run multiple times, which can lead to confusing behavior, debugging, or [logging](/docs/guides/logging). This is why it is recommended to encapsulate non-deterministic code within a `step.run()` when working with loops.
+Если код внутри цикла не инкапсулирован в шаг, он будет выполняться многократно, что может привести к запутанному поведению, проблемам при отладке или [логировании](/docs/guides/logging). Вот почему рекомендуется инкапсулировать недетерминированный код в `step.run()` при работе с циклами.
 
-Learn more about [working with loops in Inngest](/docs/guides/working-with-loops).
+Узнайте больше о [работе с циклами в Inngest](/docs/guides/working-with-loops).
 
 </LanguageSection>
 
 <LanguageSection show="go">
-You can read more about [Inngest steps](/docs/learn/inngest-steps) or jump directly to a step reference guide:
+Вы можете узнать больше о [шагах Inngest](/docs/learn/inngest-steps) или сразу перейти к справочному руководству по конкретному шагу:
 
-- [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run): Run synchronous or asynchronous code as a retriable step in your function.
-- [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep): Sleep for a given amount of time.
-- [`step.Invoke()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Invoke): Invoke another Inngest function as a step, receiving the result of the invoked function.
-- [`step.WaitForEvent()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#WaitForEvent): Pause a function's execution until another event is received.
+- [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run): Запуск синхронного или асинхронного кода как шага с поддержкой повторов.
+- [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep): Пауза на заданное время.
+- [`step.Invoke()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Invoke): Вызов другой функции Inngest как шага с получением результата.
+- [`step.WaitForEvent()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#WaitForEvent): Приостановка выполнения до получения другого события.
 
 <Callout>
-Please note that each step is executed as **a separate HTTP request**. To ensure efficient and correct execution, place any non-deterministic logic (such as DB calls or API calls) within a `step.Run()` call. [Learn more](/docs/guides/working-with-loops).
+Обратите внимание, что каждый шаг выполняется как **отдельный HTTP-запрос**. Для обеспечения эффективного и корректного выполнения помещайте любую недетерминированную логику (например, вызовы БД или API) внутрь вызова `step.Run()`. [Узнать больше](/docs/guides/working-with-loops).
 
 </Callout>
 
-## Gotchas
+## Нюансы (Gotchas)
 
-### My function is running twice
+### Моя функция запускается дважды
 
-Inngest will communicate with your function multiple times throughout a single run and will use your use of tools to intelligently memoize state.
+Inngest будет взаимодействовать с вашей функцией несколько раз в течение одного запуска и использовать ваши инструменты для интеллектуальной мемоизации состояния.
 
-For this reason, placing business logic outside of a `step.Run()` call is a bad idea, as this will be run every time Inngest communicates with your function.
+По этой причине размещение бизнес-логики вне вызова `step.Run()` является плохой идеей, так как этот код будет выполняться при каждом взаимодействии Inngest с вашей функцией.
 
 
-### Unexpected loop behavior
+### Неожиданное поведение циклов
 
-When using loops within functions, it is recommended to treat each iteration as it's own step or steps.
+При использовании циклов внутри функций рекомендуется рассматривать каждую итерацию как отдельный шаг или набор шагов.
 
-When [functions are run](/docs/learn/how-functions-are-executed), the function handler is re-executed from the start for each new step and previously completed steps are memoized. This means that iterations of loops will be run every re-execution, but code encapsulated within `step.Run()` will not re-run.
+При [запуске функций](/docs/learn/how-functions-are-executed) обработчик функции выполняется заново с самого начала для каждого нового шага, а ранее завершенные шаги мемоизируются. Это означает, что итерации циклов будут выполняться при каждом перезапуске, но код, инкапсулированный в `step.Run()`, не будет запускаться повторно.
 
-If code within a loop is not encapsulated within a step, it will re-run multiple times, which can lead to confusing behavior, debugging, or [logging](/docs/guides/logging). This is why it is recommended to encapsulate non-deterministic code within a `step.Run()` when working with loops.
+Если код внутри цикла не инкапсулирован в шаг, он будет выполняться многократно, что может привести к запутанному поведению, проблемам при отладке или [логировании](/docs/guides/logging). Вот почему рекомендуется инкапсулировать недетерминированный код в `step.Run()` при работе с циклами.
 
-Learn more about [working with loops in Inngest](/docs/guides/working-with-loops).
+Узнайте больше о [работе с циклами в Inngest](/docs/guides/working-with-loops).
 
 
 </LanguageSection>
 
 <LanguageSection show="python">
-You can read more about [Inngest steps](/docs/learn/inngest-steps) or jump directly to a step reference guide:
+Вы можете узнать больше о [шагах Inngest](/docs/learn/inngest-steps) или сразу перейти к справочному руководству по конкретному шагу:
 
-- [`step.run()`](/docs/reference/python/steps/run): Run synchronous or asynchronous code as a retriable step in your function.
-- [`step.sleep()`](/docs/reference/python/steps/sleep): Sleep for a given amount of time.
-- [`step.sleep_until()`](/docs/reference/python/steps/sleep-until): Sleep until a given time.
-- [`step.invoke()`](/docs/reference/python/steps/invoke): Invoke another Inngest function as a step, receiving the result of the invoked function.
-- [`step.wait_for_event()`](/docs/reference/python/steps/wait-for-event): Pause a function's execution until another event is received.
-- [`step.send_event()`](/docs/reference/python/steps/send-event): Send event(s) reliably within your function. Use this instead of `inngest.send()` to ensure reliable event delivery from within functions.
+- [`step.run()`](/docs/reference/python/steps/run): Запуск синхронного или асинхронного кода как шага с поддержкой повторов.
+- [`step.sleep()`](/docs/reference/python/steps/sleep): Пауза на заданное время.
+- [`step.sleep_until()`](/docs/reference/python/steps/sleep-until): Пауза до определенного времени.
+- [`step.invoke()`](/docs/reference/python/steps/invoke): Вызов другой функции Inngest как шага с получением результата.
+- [`step.wait_for_event()`](/docs/reference/python/steps/wait-for-event): Приостановка выполнения до получения другого события.
+- [`step.send_event()`](/docs/reference/python/steps/send-event): Надежная отправка событий внутри вашей функции. Используйте это вместо `inngest.send()` для гарантии доставки событий из функций.
 
 <Callout>
-Please note that each step is executed as **a separate HTTP request**. To ensure efficient and correct execution, place any non-deterministic logic (such as DB calls or API calls) within a `step.run()` call. [Learn more](/docs/guides/working-with-loops).
+Обратите внимание, что каждый шаг выполняется как **отдельный HTTP-запрос**. Для обеспечения эффективного и корректного выполнения помещайте любую недетерминированную логику (например, вызовы БД или API) внутрь вызова `step.run()`. [Узнать больше](/docs/guides/working-with-loops).
 
 </Callout>
 
-## Gotchas
+## Нюансы (Gotchas)
 
-### My function is running twice
+### Моя функция запускается дважды
 
-Inngest will communicate with your function multiple times throughout a single run and will use your use of tools to intelligently memoize state.
+Inngest будет взаимодействовать с вашей функцией несколько раз в течение одного запуска и использовать ваши инструменты для интеллектуальной мемоизации состояния.
 
-For this reason, placing business logic outside of a `step.run()` call is a bad idea, as this will be run every time Inngest communicates with your function.
+По этой причине размещение бизнес-логики вне вызова `step.run()` является плохой идеей, так как этот код будет выполняться при каждом взаимодействии Inngest с вашей функцией.
 
-### `sleep_until()` isn't working as expected
+### `sleep_until()` работает не так, как ожидалось
 
-Make sure to only to use `sleep_until()` with dates that will be static across the various calls to your function.
+Используйте `sleep_until()` только с датами, которые будут статичными при различных вызовах вашей функции.
 
-Always use `sleep()` if you'd like to wait a particular time from _now_.
+Всегда используйте `sleep()`, если вы хотите подождать определенное время, отсчитываемое от *текущего момента*.
 
 ```py
-# ❌ Bad
+# ❌ Плохо
 tomorrow = datetime.now() + timedelta(days=1)
 await ctx.step.sleepUntil("wait-until-tomorrow", tomorrow);
 
-# ✅ Good
+# ✅ Хорошо
 await ctx.step.sleep("wait-a-day", "1 day");
 ```
 
 ```py
-# ✅ Good
+# ✅ Хорошо
 user_birthday = await ctx.step.run("get-user-birthday", async () => {
   user = await get_user();
-  return user.birthday; # Date
+  return user.birthday; # Дата
 });
 
 await ctx.step.sleep_until("wait-for-user-birthday", user_birthday);
 ```
 
-### Unexpected loop behavior
+### Неожиданное поведение циклов
 
-When using loops within functions, it is recommended to treat each iteration as it's own step or steps.
+При использовании циклов внутри функций рекомендуется рассматривать каждую итерацию как отдельный шаг или набор шагов.
 
-When [functions are run](/docs/learn/how-functions-are-executed), the function handler is re-executed from the start for each new step and previously completed steps are memoized. This means that iterations of loops will be run every re-execution, but code encapsulated within `step.run()` will not re-run.
+При [запуске функций](/docs/learn/how-functions-are-executed) обработчик функции выполняется заново с самого начала для каждого нового шага, а ранее завершенные шаги мемоизируются. Это означает, что итерации циклов будут выполняться при каждом перезапуске, но код, инкапсулированный в `step.run()`, не будет запускаться повторно.
 
-If code within a loop is not encapsulated within a step, it will re-run multiple times, which can lead to confusing behavior, debugging, or [logging](/docs/guides/logging). This is why it is recommended to encapsulate non-deterministic code within a `step.run()` when working with loops.
+Если код внутри цикла не инкапсулирован в шаг, он будет выполняться многократно, что может привести к запутанному поведению, проблемам при отладке или [логировании](/docs/logging). Вот почему рекомендуется инкапсулировать недетерминированный код в `step.run()` при работе с циклами.
 
-Learn more about [working with loops in Inngest](/docs/guides/working-with-loops).
+Узнайте больше о [работе с циклами в Inngest](/docs/guides/working-with-loops).
 
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Further reading
+## Дополнительная литература
 
-More information on multi-step functions:
-- Docs guide: [working with loops in Inngest](/docs/guides/working-with-loops).
-- Blog post: ["Building an Event Driven Video Processing Workflow with Next.js, tRPC, and Inngest
-"](/blog/nextjs-trpc-inngest)
-- Blog post: ["Running chained LLMs with TypeScript in production"](/blog/running-chained-llms-typescript-in-production)
-- Blog post: [building Truckload](/blog/mux-migrating-video-collections), a tool for heavy video migration between hosting platforms, from Mux.
-- Blog post: building _banger.show_'s [video rendering pipeline](/blog/banger-video-rendering-pipeline).
-- [Email sequence examples](/docs/examples/email-sequence) implemented with Inngest.
-- [Customer story: Soundcloud](/customers/soundcloud): building scalable video pipelines with Inngest to streamline dynamic video generation.
+Больше информации о многошаговых функциях:
+- Руководство: [работа с циклами в Inngest](/docs/guides/working-with-loops).
+- Пост в блоге: ["Building an Event Driven Video Processing Workflow with Next.js, tRPC, and Inngest"](/blog/nextjs-trpc-inngest)
+- Пост в блоге: ["Running chained LLMs with TypeScript in production"](/blog/running-chained-llms-typescript-in-production)
+- Пост в блоге: [создание Truckload](/blog/mux-migrating-video-collections), инструмента для тяжелой миграции видео между хостинг-платформами, от Mux.
+- Пост в блоге: создание [пайплайна рендеринга видео](/blog/banger-video-rendering-pipeline) для _banger.show_.
+- [Примеры последовательностей писем](/docs/examples/email-sequence), реализованные с помощью Inngest.
+- [История клиента: Soundcloud](/customers/soundcloud): создание масштабируемых видео-пайплайнов с помощью Inngest для оптимизации динамической генерации видео.

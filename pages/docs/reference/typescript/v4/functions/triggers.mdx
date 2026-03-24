@@ -1,10 +1,10 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-export const description = `Reference for trigger helper functions: eventType(), cron(), invoke(), and staticSchema().`
+export const description = `Справочник по вспомогательным функциям триггеров: eventType(), cron(), invoke() и staticSchema().`
 
-# Trigger helpers
+# Вспомогательные функции триггеров
 
-Trigger helpers are functions that provide type-safe ways to define triggers and schemas for Inngest functions. They replace raw string-based triggers with typed, validated alternatives.
+Вспомогательные функции триггеров обеспечивают типобезопасные способы определения триггеров и схем для функций Inngest. Они заменяют строковые триггеры на типизированные, валидированные альтернативы.
 
 ```ts
 import { eventType, cron, invoke, staticSchema } from "inngest";
@@ -14,7 +14,7 @@ import { eventType, cron, invoke, staticSchema } from "inngest";
 
 ## `eventType`
 
-Define a typed event with optional runtime validation. Use the returned object as a [trigger](/docs/reference/typescript/v4/functions/create#triggers), with [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event), and with [`inngest.send()`](/docs/reference/typescript/v4/events/send) or [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event).
+Определение типизированного события с опциональной валидацией во время выполнения. Используйте возвращаемый объект как [триггер](/docs/reference/typescript/v4/functions/create#triggers), с [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event), а также с [`inngest.send()`](/docs/reference/typescript/v4/events/send) или [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event).
 
 ```ts
 import { eventType } from "inngest";
@@ -28,33 +28,33 @@ const accountCreated = eventType("app/account.created", {
 });
 ```
 
-### Parameters
+### Параметры
 
 <Properties>
   <Property name="name" type="string" required>
-    The event name. We recommend lowercase dot notation with a `prefix/` namespace, e.g. `"app/account.created"`.
+    Имя события. Рекомендуем использовать нижний регистр с точечной нотацией и пространство имён с префиксом `/`, например `"app/account.created"`.
   </Property>
   <Property name="options" type="object">
     <Properties nested={true}>
       <Property name="schema" type="StandardSchemaV1 | StaticSchema">
-        A schema for the event's `data` payload. Accepts any [Standard Schema](https://standardschema.dev/) compatible library (Zod, Valibot, ArkType, etc.) or a [`staticSchema()`](#staticschema) for type-only validation.
+        Схема для полезной нагрузки `data` события. Принимает любую библиотеку, совместимую со [Standard Schema](https://standardschema.dev/) (Zod, Valibot, ArkType и др.), или [`staticSchema()`](#staticschema) для проверки только на уровне типов.
 
-        When you provide a runtime schema, the SDK validates event payloads at runtime.
+        При указании схемы времени выполнения SDK валидирует полезные нагрузки событий во время выполнения.
       </Property>
       <Property name="version" type="string">
-        An optional version identifier for the event payload, e.g. `"2024-01-15.1"`. This sets the `v` field on sent events.
+        Опциональный идентификатор версии для полезной нагрузки события, например `"2024-01-15.1"`. Устанавливает поле `v` в отправляемых событиях.
       </Property>
     </Properties>
   </Property>
 </Properties>
 
-### Return value
+### Возвращаемое значение
 
-`eventType()` returns an `EventType` object. The only use case for directly interacting with this object is calling its `create` method when sending events.
+`eventType()` возвращает объект `EventType`. Единственный случай прямого взаимодействия с этим объектом — вызов метода `create` при отправке событий.
 
-### As a trigger
+### Как триггер
 
-Pass an `eventType()` result directly in the `triggers` array of `createFunction`:
+Передайте результат `eventType()` непосредственно в массив `triggers` функции `createFunction`:
 
 <Row>
   <Col>
@@ -72,14 +72,14 @@ Pass an `eventType()` result directly in the `triggers` array of `createFunction
         triggers: [orderPlaced],
       },
       async ({ event }) => {
-        // event.data is typed as { orderId: string; total: number }
+        // event.data типизирован как { orderId: string; total: number }
         console.log(event.data.orderId);
       }
     );
     ```
   </Col>
   <Col>
-    You can also combine with `if` filtering by wrapping in an object:
+    Можно также комбинировать с фильтрацией `if`, обернув в объект:
 
     ```ts
     inngest.createFunction(
@@ -91,16 +91,16 @@ Pass an `eventType()` result directly in the `triggers` array of `createFunction
         }],
       },
       async ({ event }) => {
-        // Only runs for orders over 100
+        // Запускается только для заказов свыше 100
       }
     );
     ```
   </Col>
 </Row>
 
-### With `step.waitForEvent()`
+### С `step.waitForEvent()`
 
-Pass an `eventType()` result as the `event` option to get typed return values:
+Передайте результат `eventType()` как опцию `event` для получения типизированных возвращаемых значений:
 
 ```ts
 const approvalReceived = eventType("app/approval.received", {
@@ -123,18 +123,18 @@ inngest.createFunction(
     });
 
     if (approval) {
-      // approval.data is typed as { approved: boolean; approvedBy: string }
+      // approval.data типизирован как { approved: boolean; approvedBy: string }
     }
   }
 );
 ```
 
-### With `inngest.send()` and `step.sendEvent()`
+### С `inngest.send()` и `step.sendEvent()`
 
-Use the `.create()` method to build fully typed event payloads:
+Используйте метод `.create()` для создания полностью типизированных полезных нагрузок событий:
 
 ```ts
-// With inngest.send()
+// С inngest.send()
 await inngest.send(
   orderPlaced.create({
     orderId: "order_123",
@@ -142,7 +142,7 @@ await inngest.send(
   })
 );
 
-// With step.sendEvent()
+// С step.sendEvent()
 await step.sendEvent("notify-order",
   orderPlaced.create({
     orderId: "order_456",
@@ -151,9 +151,9 @@ await step.sendEvent("notify-order",
 );
 ```
 
-### Multiple event types
+### Несколько типов событий
 
-When a function has multiple event triggers, use `event.name` to narrow the type:
+Когда функция имеет несколько триггеров событий, используйте `event.name` для уточнения типа:
 
 ```ts
 const userCreated = eventType("app/user.created", {
@@ -171,19 +171,19 @@ inngest.createFunction(
   },
   async ({ event }) => {
     if (event.name === "app/user.created") {
-      // event.data typed as { userId: string }
+      // event.data типизирован как { userId: string }
     }
 
     if (event.name === "app/user.updated") {
-      // event.data typed as { userId: string; changes: Record<string, unknown> }
+      // event.data типизирован как { userId: string; changes: Record<string, unknown> }
     }
   }
 );
 ```
 
-### Wildcards
+### Символы подстановки
 
-You can use wildcard patterns with `eventType()` to match multiple event names:
+Можно использовать шаблоны с подстановочными символами в `eventType()` для сопоставления нескольких имён событий:
 
 ```ts
 const anyUserEvent = eventType("user/*");
@@ -194,20 +194,20 @@ inngest.createFunction(
     triggers: [anyUserEvent],
   },
   async ({ event }) => {
-    // Triggers on "user/created", "user/updated", etc.
+    // Запускается на "user/created", "user/updated" и т.д.
   }
 );
 ```
 
 <Callout>
-  Wildcard event types cannot define a schema, since the matched events may have different payload shapes.
+  Типы событий с подстановочными символами не могут определять схему, так как соответствующие события могут иметь разные структуры полезной нагрузки.
 </Callout>
 
 ---
 
 ## `cron`
 
-Create a typed cron trigger for scheduled functions.
+Создание типизированного cron-триггера для плановых функций.
 
 ```ts
 import { cron } from "inngest";
@@ -218,20 +218,20 @@ inngest.createFunction(
     triggers: [cron("0 0 * * *")],
   },
   async ({ step }) => {
-    // Runs every day at midnight UTC
+    // Запускается каждый день в полночь UTC
   }
 );
 ```
 
-### Parameters
+### Параметры
 
 <Properties>
   <Property name="cronExpression" type="string" required>
-    A [unix-cron](https://crontab.guru/) compatible schedule string. Supports an optional timezone prefix, e.g. `"TZ=Europe/Paris 0 12 * * 5"`.
+    Строка расписания в формате [unix-cron](https://crontab.guru/). Поддерживает опциональный префикс часового пояса, например `"TZ=Europe/Paris 0 12 * * 5"`.
   </Property>
 </Properties>
 
-### Examples
+### Примеры
 
 <CodeGroup>
 ```ts {{ title: "Basic" }}
@@ -241,7 +241,7 @@ inngest.createFunction(
     triggers: [cron("0 * * * *")],
   },
   async ({ step }) => {
-    // Runs every hour
+    // Запускается каждый час
   }
 );
 ```
@@ -253,7 +253,7 @@ inngest.createFunction(
     triggers: [cron("TZ=America/New_York 0 9 * * 1-5")],
   },
   async ({ step }) => {
-    // Runs at 9am ET on weekdays
+    // Запускается в 9:00 по времени ET в будни
   }
 );
 ```
@@ -270,7 +270,7 @@ inngest.createFunction(
     ],
   },
   async ({ event, step }) => {
-    // Runs every 6 hours OR when manually triggered
+    // Запускается каждые 6 часов ИЛИ при ручном запуске
   }
 );
 ```
@@ -280,7 +280,7 @@ inngest.createFunction(
 
 ## `invoke`
 
-Define a typed schema for [`step.invoke()`](/docs/reference/typescript/v4/functions/step-invoke) input data. All functions can be invoked regardless of whether you use `invoke()`. This helper only defines the schema so callers get type checking on the data they pass.
+Определение типизированной схемы для входных данных [`step.invoke()`](/docs/reference/typescript/v4/functions/step-invoke). Все функции можно вызывать независимо от использования `invoke()`. Этот вспомогательный инструмент только определяет схему, чтобы вызывающий код получал проверку типов на передаваемые данные.
 
 ```ts
 import { invoke } from "inngest";
@@ -302,21 +302,21 @@ const computeSquare = inngest.createFunction(
 );
 ```
 
-### Parameters
+### Параметры
 
 <Properties>
   <Property name="options" type="object" required>
     <Properties nested={true}>
       <Property name="schema" type="StandardSchemaV1 | StaticSchema" required>
-        A schema defining the expected `data` shape when callers invoke this function via `step.invoke()`. Accepts any [Standard Schema](https://standardschema.dev/) compatible library or a [`staticSchema()`](#staticschema).
+        Схема, определяющая ожидаемую структуру `data` при вызове этой функции через `step.invoke()`. Принимает любую библиотеку, совместимую со [Standard Schema](https://standardschema.dev/), или [`staticSchema()`](#staticschema).
       </Property>
     </Properties>
   </Property>
 </Properties>
 
-### Example
+### Пример
 
-Define the invoke schema on the target function, then call it with typed data:
+Определите схему invoke на целевой функции, затем вызовите её с типизированными данными:
 
 <Row>
   <Col>
@@ -338,7 +338,7 @@ Define the invoke schema on the target function, then call it with typed data:
         ],
       },
       async ({ event }) => {
-        // event.data.imageUrl and event.data.width are typed
+        // event.data.imageUrl и event.data.width типизированы
         return { processed: true };
       }
     );
@@ -351,7 +351,7 @@ Define the invoke schema on the target function, then call it with typed data:
       data: {
         imageUrl: "https://example.com/photo.jpg",
         width: 800,
-        // ^ The invoke schema types and validates this
+        // ^ Схема invoke типизирует и валидирует это
       },
     });
     ```
@@ -362,7 +362,7 @@ Define the invoke schema on the target function, then call it with typed data:
 
 ## `staticSchema`
 
-A type-only schema utility for when you want TypeScript type checking without runtime validation. Use this as an alternative to a Standard Schema library like Zod.
+Утилита только для типов — когда нужна проверка типов TypeScript без валидации во время выполнения. Используйте как альтернативу библиотеке Standard Schema, например Zod.
 
 ```ts
 import { eventType, staticSchema } from "inngest";
@@ -378,18 +378,18 @@ const orderPlaced = eventType("shop/order.placed", {
 ```
 
 <Callout>
-  Use `staticSchema()` when you don't need runtime validation. If you want payloads validated at runtime, use a Standard Schema library like [Zod](https://zod.dev/), [Valibot](https://valibot.dev/), or [ArkType](https://arktype.io/) instead.
+  Используйте `staticSchema()`, когда не нужна валидация во время выполнения. Если нужна валидация полезных нагрузок во время выполнения, используйте библиотеку Standard Schema, например [Zod](https://zod.dev/), [Valibot](https://valibot.dev/) или [ArkType](https://arktype.io/).
 </Callout>
 
-### Type parameters
+### Параметры типов
 
 <Properties>
   <Property name="T" type="type" required>
-    The TypeScript type representing the event's `data` shape. The compiler uses this type for compile-time type checking only — it does not perform runtime validation.
+    TypeScript-тип, представляющий структуру `data` события. Компилятор использует этот тип только для проверки на этапе компиляции — валидации во время выполнения не происходит.
   </Property>
 </Properties>
 
-### Examples
+### Примеры
 
 <CodeGroup>
 ```ts {{ title: "With eventType" }}
@@ -410,7 +410,7 @@ inngest.createFunction(
     triggers: [userCreated],
   },
   async ({ event }) => {
-    // event.data typed as { userId: string; email: string }
+    // event.data типизирован как { userId: string; email: string }
   }
 );
 ```
@@ -431,7 +431,7 @@ const resizeImage = inngest.createFunction(
     ],
   },
   async ({ event }) => {
-    // event.data typed as { imageUrl: string; width: number }
+    // event.data типизирован как { imageUrl: string; width: number }
     return { resized: true };
   }
 );

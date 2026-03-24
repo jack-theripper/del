@@ -1,61 +1,61 @@
-export const description = 'Learn how to pause an Inngest function.'
+export const description = 'Узнайте, как приостановить функцию Inngest.'
 
-# Function Pausing
+# Приостановка функций
 
-Inngest allows you to pause a function indefinitely. This is a powerful feature that can be useful, for example, if you are planning a maintenance window or if a user reports a bug and you want to stop processing events until you've fixed it.
+Inngest позволяет приостанавливать функцию на неопределенный срок. Это мощная возможность, которая может быть полезна, например, если вы планируете техническое обслуживание или если пользователь сообщил о баге, и вы хотите прекратить обработку событий до тех пор, пока не исправите его.
 
-## When a function is paused
+## Что происходит, когда функция приостановлена
 
-It's important to understand what happens when a function is paused.
+Важно понимать, что происходит при приостановке функции.
 
-**No data will be lost.** Inngest will continue receiving and storing your events, but the events will not trigger the paused function. The function will be marked as "skipped" on the event's page in Inngest Cloud.
+**Данные не будут потеряны.** Inngest продолжит получать и сохранять ваши события, но они не будут запускать приостановленную функцию. Функция будет помечена как «пропущенная» (skipped) на странице события в Inngest Cloud.
 
-**You can resume the function at any time.** No deployment or sync is required to resume your function. After you resume the function, new events will trigger it as usual.
+**Вы можете возобновить работу функции в любое время.** Для возобновления работы функции не требуется деплой или синхронизация. После возобновления новые события будут запускать её в обычном режиме.
 
-**Events received while the function was paused will not be reprocessed automatically** after you resume the function. Use [Replay](/docs/platform/replay) to process events that were received while the function was paused.
+**События, полученные во время приостановки, не будут обработаны автоматически** после возобновления. Используйте [Replay (Повторное воспроизведение)](/docs/platform/replay) для обработки событий, которые поступили, пока функция была на паузе.
 
-**Paused functions do not count toward your plan's concurrency limit.** Note that events received while a function is paused are still subject to your plan's history limit.
+**Приостановленные функции не учитываются в лимите конкурентности вашего тарифного плана.** Обратите внимание, что на события, полученные во время паузы, по-прежнему распространяется лимит истории вашего плана.
 
-## How to pause a function
+## Как приостановить функцию
 
-Navigate to the function's dashboard in Inngest Cloud and select the "Pause" option in the "All actions" menu from a function's dashboard.
+Перейдите в панель управления функцией в Inngest Cloud и выберите пункт «Pause» в меню «All actions».
 
-![The Pause option within the "All actions" menu on a function's dashboard.](/assets/docs/platform/function-dashboard-actions-2025-05-05.png)
+![Опция Pause в меню «All actions» на панели управления функцией.](/assets/docs/platform/function-dashboard-actions-2025-05-05.png)
 
-### Handling running invocations
+### Обработка текущих запусков
 
-When you pause a function, no new events will trigger it. You can choose what to do with any currently-running invocations of the function:
+Когда вы приостанавливаете функцию, новые события перестают её запускать. Вы можете выбрать, что делать с уже запущенными экземплярами функции:
 
-- **"Pause immediately, then cancel after 7 days:"** No further steps will be executed while the function is paused. If you resume the function within 7 days, these invocations will continue with the next step. Otherwise, they will be canceled. (This is the default behavior.)
-- **"Cancel immediately:"** All currently-running invocations of the function will be canceled. They will not continue running or restart when you resume the function.
+- **«Pause immediately, then cancel after 7 days» (Приостановить немедленно, отменить через 7 дней):** никакие дальнейшие шаги не будут выполняться, пока функция приостановлена. Если вы возобновите работу функции в течение 7 дней, эти запуски продолжатся со следующего шага. В противном случае они будут отменены. (Это поведение по умолчанию.)
+- **«Cancel immediately» (Отменить немедленно):** все текущие запуски функции будут отменены. Они не продолжатся и не перезапустятся при возобновлении работы функции.
 
-In both cases, all running invocations will complete their current step before being paused or canceled. Inngest cannot interrupt your function mid-step.
+В обоих случаях все запущенные экземпляры завершат свой текущий шаг перед приостановкой или отменой. Inngest не может прервать выполнение функции на середине шага.
 
 <div className="max-w-lg">
-![Options for handling running invocations when pausing a function.](/assets/docs/platform/pause/pause-modal-2025-05-05.png)
+![Варианты обработки текущих запусков при приостановке функции.](/assets/docs/platform/pause/pause-modal-2025-05-05.png)
 </div>
 
-## Resuming a function
+## Возобновление работы функции
 
-To resume a paused function, navigate to the function's page in Inngest Cloud and select the "Resume" option in the "All actions" menu from a function's dashboard.
+Чтобы возобновить работу приостановленной функции, перейдите на страницу функции в Inngest Cloud и выберите пункт «Resume» в меню «All actions».
 
-![The Resume option within the "All actions" menu on a function's dashboard.](/assets/docs/platform/pause/resume-function-2025-05-05.png)
+![Опция Resume в меню «All actions» на панели управления функцией.](/assets/docs/platform/pause/resume-function-2025-05-05.png)
 
-The function will immediately begin processing events received after you resume it.
+Функция немедленно начнет обрабатывать события, полученные после возобновления.
 
-## Replaying skipped events
+## Повторный запуск пропущенных событий
 
-After resuming a paused function, you may wish to replay the runs for that function that would otherwise have run while it was paused.  To do so:
+После возобновления функции вы можете захотеть запустить те выполнения, которые были пропущены за время паузы. Для этого:
 
-1. Navigate to the function's dashboard
-2. Select the "Replay" option in the "All actions" menu.
-3. Select an appropriate date window and enable the "Skipped" status.
-4. If you wish to replay runs that were canceled when you paused the function, select the "Canceled" status as well.
+1. Перейдите в панель управления функцией.
+2. Выберите пункт «Replay» в меню «All actions».
+3. Выберите подходящий временной интервал и включите статус «Skipped».
+4. Если вы хотите также перезапустить те выполнения, которые были отменены при приостановке функции, выберите дополнительно статус «Canceled».
 
-You'll see a preview of the number of runs to be replayed:
+Вы увидите предварительное количество запусков, которые будут воспроизведены:
 
-![Creating a replay for skipped function runs.](/assets/docs/platform/pause/replay-modal-2025-05-05.png)
+![Создание повторного воспроизведения для пропущенных запусков функции.](/assets/docs/platform/pause/replay-modal-2025-05-05.png)
 
-Remember that your plan's history limit still applies to events received while a function is paused. This means that if, for example, you're using Inngest's free plan, you will only be able to replay events from the last 3 days, regardless of how long your function was paused.
+Помните, что лимит истории вашего тарифного плана по-прежнему применяется к событиям, полученным во время паузы. Это означает, что если вы используете бесплатный план Inngest, вы сможете воспроизвести события только за последние 3 дня, независимо от того, как долго функция была приостановлена.
 
-See our [Replay guide](/docs/platform/replay) for more information.
+Дополнительную информацию см. в нашем [руководстве по Replay](/docs/platform/replay).

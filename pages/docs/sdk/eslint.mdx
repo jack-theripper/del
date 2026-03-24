@@ -1,16 +1,16 @@
-# ESLint Plugin
+# ESLint-плагин
 
-An ESLint plugin is available at [@inngest/eslint-plugin](https://www.npmjs.com/package/@inngest/eslint-plugin), providing rules to enforce best practices when writing Inngest functions.
+ESLint-плагин доступен по адресу [@inngest/eslint-plugin](https://www.npmjs.com/package/@inngest/eslint-plugin) и предоставляет правила для соблюдения лучших практик при написании функций Inngest.
 
-## Getting started
+## Начало работы
 
-Install the package using whichever package manager you'd prefer as a [dev dependency](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#devdependencies).
+Установите пакет с помощью предпочитаемого менеджера пакетов как [dev-зависимость](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#devdependencies).
 
 ```sh
 npm install -D @inngest/eslint-plugin
 ```
 
-Add the plugin to your ESLint configuration file with the recommended config.
+Добавьте плагин в файл конфигурации ESLint с рекомендуемыми настройками.
 
 ```json
 {
@@ -19,7 +19,7 @@ Add the plugin to your ESLint configuration file with the recommended config.
 }
 ```
 
-You can also manually configure each rule instead of using the `plugin:@inngest/recommend` config.
+Вы также можете настроить каждое правило вручную вместо использования конфигурации `plugin:@inngest/recommended`.
 
 ```json
 {
@@ -30,9 +30,9 @@ You can also manually configure each rule instead of using the `plugin:@inngest/
 }
 ```
 
-See below for a list of all rules available to configure.
+Список всех доступных правил смотрите ниже.
 
-## Rules
+## Правила
 
 - [@inngest/await-inngest-send](#inngest-await-inngest-send)
 - [@inngest/no-nested-steps](#inngest-no-nested-steps)
@@ -40,39 +40,39 @@ See below for a list of all rules available to configure.
 
 ### @inngest/await-inngest-send
 
-You should use `await` or `return` before `inngest.send().
+Перед вызовом `inngest.send()` следует использовать `await` или `return`.
 
 ```json
-"@inngest/await-inngest-send": "warn" // recommended
+"@inngest/await-inngest-send": "warn" // рекомендуется
 ```
 
-In serverless environments, it's common that runtimes are forcibly killed once a request handler has resolved, meaning any pending promises that are not performed before that handler ends may be cancelled.
+В бессерверных средах среда выполнения нередко принудительно завершается, как только обработчик запроса завершил работу. Это означает, что незавершённые промисы, не выполненные до окончания работы обработчика, могут быть отменены.
 
 ```ts
-// ❌ Bad
+// ❌ Плохо
 inngest.send({ name: "some.event" });
 ```
 ```ts
-// ✅ Good
+// ✅ Хорошо
 await inngest.send({ name: "some.event" });
 ```
 
-#### When not to use it
+#### Когда не использовать
 
-There are cases where you have deeper control of the runtime or when you'll safely `await` the send at a later time, in which case it's okay to turn this rule off.
+Есть случаи, когда у вас есть более глубокий контроль над средой выполнения или когда вы безопасно выполните `await` для отправки позже. В таких случаях это правило можно отключить.
 
 ### @inngest/no-nested-steps
 
-Use of `step.*` within a `step.run()` function is not allowed.
+Использование `step.*` внутри функции `step.run()` не допускается.
 
 ```json
-"@inngest/no-nested-steps": "error" // recommended
+"@inngest/no-nested-steps": "error" // рекомендуется
 ```
 
-Nesting `step.run()` calls is not supported and will result in an error at runtime. If your steps are nested, they're probably reliant on each other in some way. If this is the case, extract them into a separate function that runs them in sequence instead.
+Вложенные вызовы `step.run()` не поддерживаются и приведут к ошибке во время выполнения. Если ваши шаги вложены, они, вероятно, зависят друг от друга. В таком случае выделите их в отдельную функцию, которая выполняет их последовательно.
 
 ```ts
-// ❌ Bad
+// ❌ Плохо
 await step.run("a", async () => {
   const someValue = "...";
   await step.run("b", () => {
@@ -81,7 +81,7 @@ await step.run("a", async () => {
 });
 ```
 ```ts
-// ✅ Good
+// ✅ Хорошо
 const aThenB = async () => {
   const someValue = await step.run("a", async () => {
     return "...";
@@ -97,23 +97,23 @@ await aThenB();
 
 ### @inngest/no-variable-mutation-in-step
 
-Do not mutate variables inside `step.run()`, return the result instead.
+Не изменяйте переменные внутри `step.run()` — вместо этого возвращайте результат.
 
 ```json
-"@inngest/no-variable-mutation-in-step": "error" // recommended
+"@inngest/no-variable-mutation-in-step": "error" // рекомендуется
 ```
 
-Inngest executes your function multiple times over the course of a single run, memoizing state as it goes. This means that code within calls to `step.run()` is not called on every execution.
+Inngest выполняет вашу функцию несколько раз в ходе одного запуска, запоминая состояние по мере продвижения. Это означает, что код внутри вызовов `step.run()` вызывается не при каждом выполнении.
 
-This can be confusing if you're using steps to update variables within the function's closure, like so:
+Это может сбивать с толку, если вы используете шаги для обновления переменных в замыкании функции:
 
 ```ts
-// ❌ Bad
-// THIS IS WRONG!  step.run only runs once and is skipped for future
-// steps, so userID will not be defined.
+// ❌ Плохо
+// ЭТО НЕПРАВИЛЬНО! step.run выполняется только один раз и пропускается
+// при последующих шагах, поэтому userID не будет определён.
 let userId;
 
-// Do NOT do this!  Instead, return data from step.run.
+// НЕ делайте так! Вместо этого возвращайте данные из step.run.
 await step.run("get-user", async () => {
   userId = await getRandomUserId();
 });
@@ -121,11 +121,11 @@ await step.run("get-user", async () => {
 console.log(userId); // undefined
 ```
 
-Instead, make sure that any variables needed for the overall function are _returned_ from calls to `step.run()`.
+Убедитесь, что все переменные, необходимые для функции в целом, _возвращаются_ из вызовов `step.run()`.
 
 ```ts
-// ✅ Good
-// This is the right way to set variables within step.run :)
+// ✅ Хорошо
+// Это правильный способ задания переменных внутри step.run :)
 const userId = await step.run("get-user", () => getRandomUserId());
 
 console.log(userId); // 123

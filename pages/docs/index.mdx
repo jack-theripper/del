@@ -15,14 +15,13 @@ import LLMsTXTIcon from 'src/shared/Icons/LLMsTxt';
 
 export const hidePageSidebar = true;
 
-# Inngest Documentation
+# Документация Inngest
 
-Inngest is an event-driven durable execution platform that allows you to run fast, reliable code on any platform, without managing queues, infra, or state.
+Inngest — это платформа для надежного выполнения кода (durable execution) на основе событий, которая позволяет запускать быстрый и отказоустойчивый код на любой платформе без управления очередями, инфраструктурой или состоянием.
 
+Пишите функции на TypeScript, Python или Go для фоновых задач и задач по расписанию со встроенными шагами (steps). Мы берем на себя бэкенд-инфраструктуру, очереди, масштабирование, конкурентность, троттлинг, ограничение частоты запросов и наблюдаемость (observability).
 
-Write functions in TypeScript, Python or Go to power background and scheduled jobs, with steps built in.  We handle the backend infra, queueing, scaling, concurrency, throttling, rate limiting, and observability for you.
-
-## Get started
+## С чего начать
 
 
 <CardGroup cols={4}>
@@ -33,7 +32,7 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
     icon={<RiNextjsFill className="text-basis h-10 w-10"/>}
     iconPlacement="top"
   >
-  {/* Add queueing, events, crons, and step functions to your Next app on any cloud provider. */}
+  {/* Добавляйте очереди, события, cron-задачи и пошаговые функции в ваше приложение Next на любом облачном провайдере. */}
   </Card>
 
   <Card
@@ -42,7 +41,7 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
     icon={<RiNodejsFill className="text-basis h-10 w-10"/>}
     iconPlacement="top"
   >
-  {/* Write durable step functions in any Node.js app and run on servers or serverless. */}
+  {/* Пишите надежные пошаговые функции в любом приложении Node.js и запускайте их на серверах или в serverless среде. */}
   </Card>
 
   <Card
@@ -51,7 +50,7 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
     icon={<PythonIcon className="text-basis h-10 w-10"/>}
     iconPlacement="top"
   >
-    {/* Develop reliable step functions in Python without managing queueing systems or DAG based workflows. */}
+    {/* Разрабатывайте надежные пошаговые функции на Python без управления системами очередей или воркфлоу на основе DAG. */}
   </Card>
 
 
@@ -61,21 +60,21 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
     icon={<GoIcon className="text-basis h-10 w-10"/>}
     iconPlacement="top"
   >
-    {/* Write fast, durable step functions in your Go application using the standard library. */}
+    {/* Пишите быстрые и надежные пошаговые функции в вашем приложении на Go, используя стандартную библиотеку. */}
   </Card>
 
 </CardGroup>
 
-## Coding agent resources
+## Ресурсы для ИИ-агентов программирования
 
 <CardGroup cols={3}>
   <Card
     href={"/docs/ai-dev-tools/agent-skills"}
-    title={"Agent Skills"}
+    title={"Навыки Агентов"}
     icon={<SkillsMDIcon square={false} className="text-basis h-16 w-32"/>}
     iconPlacement="top"
   >
-    Pre-built skills that teach coding agents how to write, test, and debug Inngest functions.
+    Готовые навыки, которые обучают ИИ-агентов писать, тестировать и отлаживать функции Inngest.
   </Card>
 
   <Card
@@ -84,16 +83,16 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
     icon={<MCPIcon className="text-basis h-16 w-16"/>}
     iconPlacement="top"
   >
-    Connect coding agents directly to your running dev server to list functions, send events, and monitor runs.
+    Подключайте агентов напрямую к запущенному серверу разработки для просмотра списка функций, отправки событий и мониторинга запусков.
   </Card>
 
   <Card
     href={"#llm-docs"}
-    title={"LLM Docs"}
+    title={"Документация для LLM"}
     icon={<LLMsTXTIcon square={false} className="text-basis h-16 w-32"/>}
     iconPlacement="top"
   >
-    Full Inngest documentation in markdown format for LLM context windows. Also available as a table of contents.
+    Полная документация Inngest в формате markdown для контекстных окон LLM. Также доступна в виде оглавления.
   </Card>
 
 </CardGroup>
@@ -102,11 +101,11 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
 <CardGroup cols={1} className="my-10 px-12">
 
   <Card
-    title={"Write reliable workflows"}
+    title={"Пишите надежные воркфлоу"}
   >
     <div className="flex flex-col md:flex-row justify-between">
       <div className="md:max-w-[65%]">
-        Learn how Inngest's Durable Execution Engine ensures that your workflow already run until completion with steps.
+        Узнайте, как движок Durable Execution Engine от Inngest гарантирует выполнение вашего воркфлоу до конца с помощью шагов.
       </div>
       <div className="flex items-end mt-4 md:mt-0 justify-end">
         <Button
@@ -114,7 +113,7 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
           size="sm"
           variant="primaryV2"
         >
-          Learn how Inngest works
+          Узнайте, как работает Inngest
         </Button>
       </div>
     </div>
@@ -123,89 +122,88 @@ Write functions in TypeScript, Python or Go to power background and scheduled jo
 </CardGroup>
 
 
-## Build with Inngest
+## Создавайте с Inngest
 
 <CardGroup cols={3}>
 
   <Card
     href={"/docs/guides/user-defined-workflows"}
-    title={"User-defined Workflows"}
+    title={"Пользовательские воркфлоу"}
     iconPlacement="top"
   >
-    Users today are demanding customization and integrations. Discover how to build a Workflow Engine for your users using Inngest.
+    Современные пользователи требуют кастомизации и интеграций. Узнайте, как создать движок воркфлоу для ваших пользователей с помощью Inngest.
   </Card>
 
   <Card
     href={"/docs/examples/ai-agents-and-rag"}
-    title={"AI Agents and RAG"}
+    title={"ИИ-агенты и RAG"}
     iconPlacement="top"
   >
-    Inngest offers tools to support the development of AI-powered applications. Learn how to build a RAG workflow with Inngest.
+    Inngest предлагает инструменты для поддержки разработки приложений на базе ИИ. Узнайте, как создать воркфлоу RAG с помощью Inngest.
   </Card>
 
 
   <Card
     href={"/docs/examples/email-sequence"}
-    title={"Email sequence"}
+    title={"Email-последовательности"}
     iconPlacement="top"
   >
-    A drip campaign is usually based on your user's behavior.
-    This example will walk you through many examples of email workflows.
+    Капельные кампании обычно основаны на поведении ваших пользователей. Этот пример проведет вас через множество сценариев email-воркфлоу.
   </Card>
 
 </CardGroup>
 
 
-## Explore
+## Изучите
 
 <CardGroup cols={2}>
 
   <Card
     href={"/docs/features/inngest-functions/steps-workflows"}
-    title={"Function steps"}
+    title={"Шаги функций"}
     icon={<RiGuideFill className="text-basis h-4 w-4"/>}
   >
-    Learn how to leverage Function steps to build reliable workflows.
+    Узнайте, как использовать шаги функций для создания надежных воркфлоу.
   </Card>
 
 
   <Card
     href={"/docs/guides/flow-control"}
-    title={"Flow Control"}
+    title={"Управление потоком"}
     icon={<RiGitPullRequestFill className="rotate-90 text-basis h-4 w-4" />}
   >
-    Add multi-tenant aware prioritization, concurrency, throttling, batching, and rate limiting capabilities to your Inngest Functions.
+    Добавьте приоритезацию, конкурентность, троттлинг, пакетную обработку и ограничение частоты запросов с учетом мультиарендности в ваши функции Inngest.
   </Card>
 
   <Card
     href={"/docs/platform/monitor/observability-metrics"}
-    title={"Inngest Platform"}
+    title={"Платформа Inngest"}
     icon={<InngestIcon className="text-basis h-4 w-4"/>}
   >
-    Monitor your deployments with Metrics and Function & Events Logs.
+    Мониторьте свои развертывания с помощью метрик и логов функций и событий.
   </Card>
 
   <Card
     href={"/docs/platform/deployment"}
-    title={"Deploy your Inngest Functions"}
+    title={"Развертывание функций Inngest"}
     icon={<RiCloudLine className="text-basis h-4 w-4"/>}
   >
-    Deploy your Inngest Functions to Vercel, Netlify, Cloudflare Pages and other Cloud Providers.
+    Развертывайте свои функции Inngest на Vercel, Netlify, Cloudflare Pages и других облачных провайдерах.
   </Card>
 
 </CardGroup>
 
-## LLM Docs
+## Документация для LLM
 
-An LLM-friendly version of the Inngest docs is available in two formats: `llms.txt` and `llms-full.txt`. These are useful for passing context to LLMs, AI-enabled IDEs, or similar tools to answer questions about Inngest.
+Версия документации Inngest, удобная для LLM, доступна в двух форматах: `llms.txt` и `llms-full.txt`. Они полезны для передачи контекста LLM, ИИ-IDE или аналогичным инструментам для ответов на вопросы об Inngest.
 
-* [inngest.com/llms.txt](https://www.inngest.com/llms.txt) - A table of contents for the docs, ideal for smaller context windows or tools that can crawl the docs.
-* [inngest.com/llms-full.txt](https://www.inngest.com/llms-full.txt) - The entire docs in markdown format.
+* [inngest.com/llms.txt](https://www.inngest.com/llms.txt) — оглавление документации, идеально подходит для небольших окон контекста или инструментов, которые могут сканировать документацию.
+* [inngest.com/llms-full.txt](https://www.inngest.com/llms-full.txt) — вся документация в формате markdown.
 
-## Community & Support
+## Сообщество и поддержка
 
-If you need help with Inngest, you can reach out to us in the following ways:
+Если вам нужна помощь с Inngest, вы можете связаться с нами следующими способами:
 
-* [Ask your questions in our Discord community](/discord)
-* [Open a ticket in our support center](https://app.inngest.com/support)
-* [Contact our sales engineering team](/contact?ref=docs)
+* [Задайте свои вопросы в нашем сообществе в Discord](/discord)
+* [Откройте тикет в нашем центре поддержки](https://app.inngest.com/support)
+* [Свяжитесь с нашей командой продаж](/contact?ref=docs)

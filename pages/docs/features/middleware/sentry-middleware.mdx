@@ -1,22 +1,22 @@
 import { Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge, LanguageSelector, LanguageSection, Card, CardGroup } from "src/shared/Docs/mdx";
 
-# Sentry Middleware
+# Промежуточное ПО Sentry
 
 
-Using the Sentry middleware is useful to:
-- Capture exceptions for reporting
-- Add tracing to each function run
-- Include useful context for each exception and trace like function ID and event names
+Использование промежуточного ПО Sentry полезно для:
+- Захвата исключений для отчётности
+- Добавления трассировки к каждому запуску функции
+- Включения полезного контекста для каждого исключения и трассировки, например ID функции и имён событий
 
 
-## Installation
+## Установка
 
 <LanguageSelector>
 
 
   <LanguageSection show="python">
 
-    The `SentryMiddleware` is shipped as part of the `inngest` package:
+    `SentryMiddleware` поставляется как часть пакета `inngest`:
 
     ```py
     import inngest
@@ -41,7 +41,7 @@ Using the Sentry middleware is useful to:
 
   <LanguageSection show="typescript">
 
-    Install the [`@inngest/middleware-sentry` package](https://www.npmjs.com/package/@inngest/middleware-sentry) and configure it as follows:
+    Установите [пакет `@inngest/middleware-sentry`](https://www.npmjs.com/package/@inngest/middleware-sentry) и настройте его следующим образом:
 
     ```ts
     import * as Sentry from "@sentry/node";
@@ -58,7 +58,7 @@ Using the Sentry middleware is useful to:
     ```
 
   <Callout>
-    Requires inngest@>=4.0.0 and @sentry/*@>=8.0.0`.
+    Требует `inngest@>=4.0.0` и `@sentry/*@>=8.0.0`.
   </Callout>
 
   </LanguageSection>

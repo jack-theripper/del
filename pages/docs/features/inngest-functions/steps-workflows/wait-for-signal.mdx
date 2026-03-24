@@ -3,15 +3,14 @@ import { Callout, LanguageSelector, LanguageSection, CodeGroup } from "src/share
 {/* Sidebar doesn't work well when LanguageSection have different headings...  */}
 export const hidePageSidebar = true;
 
-# Wait for a signal
+# Ожидание сигнала
 
-You can pause a Function's run until a given signal is received.  This is similar to [wait for event](//docs/features/inngest-functions/steps-workflows/wait-for-event), but only resumes a single
-run at a time - via an API call, instead of via an event. We only recommend this instead of [wait for event](/docs/features/inngest-functions/steps-workflows/wait-for-event) in very specific scenarios.
-Specifically, waitForSignal has slightly lower latency than waitForEvent as the resume API is transactional instead of eventually consistent via events.
+Можно приостановить выполнение функции до получения определённого сигнала. Это похоже на [ожидание события](/docs/features/inngest-functions/steps-workflows/wait-for-event), но возобновляет только один запуск — через API-вызов, а не через событие. Использование этого метода вместо [ожидания события](/docs/features/inngest-functions/steps-workflows/wait-for-event) рекомендуется только в специфических сценариях.
+В частности, `waitForSignal` имеет немного меньшую задержку, чем `waitForEvent`, поскольку API возобновления транзакционный, а не в конечном итоге согласованный через события.
 
-In most cases, you should use [wait for event](/docs/features/inngest-functions/steps-workflows/wait-for-event).
+В большинстве случаев следует использовать [ожидание события](/docs/features/inngest-functions/steps-workflows/wait-for-event).
 
-This is a useful pattern to react to specific user actions (for example, implement "Human in the loop" in AI Agent workflows), or to wait until something happens in external systems.
+Это полезный паттерн для реакции на конкретные действия пользователей (например, реализации «Человека в цепочке» в агентных AI-рабочих процессах) или ожидания событий во внешних системах.
 
 
 <LanguageSelector>
@@ -20,7 +19,7 @@ This is a useful pattern to react to specific user actions (for example, impleme
 
 <LanguageSection show="typescript">
 
-  Use `step.waitForSignal()` to wait for a particular signal to be received before continuing. It returns a `Promise` that is resolved with the signal data or `null` if the event is not received within the timeout.
+  Используйте `step.waitForSignal()` для ожидания получения определённого сигнала перед продолжением. Возвращает `Promise`, который разрешается с данными сигнала или `null`, если событие не получено в течение таймаута.
 
 
 ```ts
@@ -43,7 +42,7 @@ export default inngest.createFunction(
 );
 ```
 
-You can resume functions via `step.sendSignal` in functions, or via the Inngest client:
+Можно возобновлять функции через `step.sendSignal` в функциях или через клиент Inngest:
 
 ```ts
 
@@ -54,13 +53,13 @@ inngest.sendSignal({
 
 ```
 
-Check out the [`step.waitForSignal()` TypeScript reference.](/docs/reference/functions/step-wait-for-signal)
+Смотрите [справочник TypeScript для `step.waitForSignal()`](/docs/reference/functions/step-wait-for-signal).
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-  Use `step.waitForSignal()` to wait for a particular signal to be received before continuing. It either returns the received event data or a `step.ErrSignalNotReceived` error.
+  Используйте `step.waitForSignal()` для ожидания получения определённого сигнала перед продолжением. Возвращает полученные данные события или ошибку `step.ErrSignalNotReceived`.
 
   ```go
   func AccountCreated(ctx context.Context, input inngestgo.Input[AccountCreatedEvent]) (any, error) {
@@ -81,7 +80,7 @@ Check out the [`step.waitForSignal()` TypeScript reference.](/docs/reference/fun
   }
   ```
 
-  Check out the [`step.WaitForSignal()` Go reference.](https://pkg.go.dev/github.com/inngest/inngestgo@v0.15.0/step#WaitForSignal)
+  Смотрите [справочник Go для `step.WaitForSignal()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.15.0/step#WaitForSignal).
 
 </LanguageSection>
 
@@ -90,8 +89,7 @@ Check out the [`step.waitForSignal()` TypeScript reference.](/docs/reference/fun
 
 
 <Callout variant={'warning'}>
-You should prefer using "wait for event" in almost every case, and should only use "wait for signal" for individual
-latency sensitive function pause and resuming.
+В большинстве случаев следует предпочитать «ожидание события» и использовать «ожидание сигнала» только для приостановки и возобновления отдельных функций, чувствительных к задержке.
 </Callout>
 
 

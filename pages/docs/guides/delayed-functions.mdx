@@ -1,34 +1,34 @@
 import { LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-# Delayed Functions
+# Отложенные функции
 
-You can easily run functions in the future with Inngest. There are three ways to delay function execution:
+С помощью Inngest вы можете легко запускать функции в будущем. Существует три способа отложить выполнение функции:
 
-- [**Sleep for a duration**](#sleep-for-a-duration) — Pause mid-function for a set amount of time using `step.sleep()`
-- [**Sleep until a specific time**](#sleep-until-a-specific-time) — Pause mid-function until a date/time using `step.sleepUntil()`
-- [**Schedule a function for later**](#schedule-a-function-for-later) — Delay when a function is first invoked by setting the event's `ts` field
+- [**Пауза на определенную длительность**](#sleep-for-a-duration) — приостановка выполнения внутри функции на заданное время с помощью `step.sleep()`.
+- [**Пауза до определенного времени**](#sleep-until-a-specific-time) — приостановка выполнения внутри функции до указанной даты/времени с помощью `step.sleepUntil()`.
+- [**Планирование запуска функции на потом**](#schedule-a-function-for-later) — задержка первого вызова функции путем установки поля `ts` в событии.
 
-Delays can be up to a year (up to seven days on the free plan). There are some benefits to delaying functions using Inngest:
+Задержки могут составлять до одного года (до семи дней на бесплатном тарифе). Использование Inngest для откладывания функций дает ряд преимуществ:
 
-- It works across any provider or platform
-- Delays are durable and work across server restarts, serverless functions, and redeploys
-- You can schedule functions into the far future
-- Serverless functions are fully supported on all platforms
-- Our SDK bypasses serverless function timeouts on all platforms
-- You never need to manage queues or backlogs
+- Работает с любым провайдером или платформой.
+- Задержки надежны и сохраняются при перезагрузке сервера, использовании серверлесс-функций и повторных развертываниях.
+- Вы можете планировать функции на далекое будущее.
+- Серверлесс-функции полностью поддерживаются на всех платформах.
+- Наш SDK обходит ограничения по времени выполнения (timeouts) серверлесс-функций на всех платформах.
+- Вам никогда не нужно управлять очередями или списками ожидания вручную.
 
-### Platform support
+### Поддержка платформ
 
-**This works across all providers and platforms**, whether you run serverless functions or use servers like express.  **It also bypasses serverless function timeouts** on all platforms, so you can sleep for a longer time than your provider supports.
+**Это работает на всех провайдерах и платформах**, независимо от того, используете ли вы серверлесс-функции или серверы (например, Express). **Это также позволяет обходить тайм-ауты серверлесс-функций** на всех платформах, так как вы можете установить паузу на более длительный срок, чем поддерживает ваш провайдер.
 
-## Sleep for a duration
+## Пауза на определенную длительность
 
 <LanguageSelector>
 
 
 <LanguageSection show="typescript">
 
-You can pause a function for a set amount of time using the [`step.sleep()`](/docs/reference/functions/step-sleep) method:
+Вы можете приостановить выполнение функции на заданное время, используя метод [`step.sleep()`](/docs/reference/functions/step-sleep):
 
 ```ts
 import { Inngest } from "inngest";
@@ -40,19 +40,19 @@ export const fn = inngest.createFunction(
   async ({ event, step }) => {
     await step.sleep("wait-a-moment", "1 hour");
     await step.run("do-some-work-in-the-future", async () => {
-      // This runs after 1 hour
+      // Это выполнится через 1 час
     });
   }
 );
 ```
 
 
-For more information on `step.sleep()` read [the reference](/docs/reference/functions/step-sleep).
+Для получения дополнительной информации о `step.sleep()` прочтите [справочник](/docs/reference/functions/step-sleep).
 
 
-## Sleep until a specific time
+## Пауза до определенного времени
 
-You can pause a function until a specific time using the [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until) method:
+Вы можете приостановить выполнение функции до определенного момента времени, используя метод [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until):
 
 
 ```ts
@@ -65,12 +65,12 @@ export const fn = inngest.createFunction(
   async ({ event, step }) => {
     await step.sleepUntil("wait-for-iso-string", "2023-04-01T12:30:00");
 
-    // You can also sleep until a timestamp within the event data.  This lets you
-    // pass in a time for you to run the job:
-    await step.sleepUntil("wait-for-timestamp", event.data.run_at); // Assuming event.data.run_at is a timestamp.
+    // Вы также можете ждать до времени, указанного в данных события. Это позволяет
+    // передавать время запуска задачи извне:
+    await step.sleepUntil("wait-for-timestamp", event.data.run_at); // Предполагаем, что event.data.run_at — это метка времени.
 
     await step.run("do-some-work-in-the-future", async () => {
-      // This runs at the specified time.
+      // Это выполнится в указанное время.
     });
   }
 );
@@ -78,27 +78,27 @@ export const fn = inngest.createFunction(
 
 
 
-For more information on `step.sleepUntil()` [read the reference](/docs/reference/functions/step-sleep-until).
+Для получения дополнительной информации о `step.sleepUntil()` [прочтите справочник](/docs/reference/functions/step-sleep-until).
 
 
 </LanguageSection>
 <LanguageSection show="go">
 
-You can pause a function for a set amount of time using the [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep) method:
+Вы можете приостановить выполнение функции на заданное время, используя метод [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep):
 
 ```go
 !snippet:path=snippets/go/docs/functions/delayed_function.go
 ```
 
 
-For more information on `step.sleep()` read [the reference](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep).
+Для получения дополнительной информации о `step.sleep()` прочтите [справочник](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep).
 
 
 
 </LanguageSection>
 <LanguageSection show="python">
 
-You can pause a function for a set amount of time using the [`step.sleep()`](http://localhost:3001/docs/reference/python/steps/sleep) method:
+Вы можете приостановить выполнение функции на заданное время, используя метод [`step.sleep()`](http://localhost:3001/docs/reference/python/steps/sleep):
 
 ```python
 import inngest
@@ -114,19 +114,19 @@ async def send_signup_email(ctx: inngest.Context):
     await ctx.step.sleep("wait-for-the-future", timedelta(hours=4))
 
     async def future_work():
-        # Code here runs in the future automatically
+        # Этот код выполнится в будущем автоматически
         pass
 
     await ctx.step.run("do-some-work-in-the-future", future_work)
 ```
 
 
-For more information on `step.sleep()` read [the reference](/docs/reference/functions/step-sleep).
+Для получения дополнительной информации о `step.sleep()` прочтите [справочник](/docs/reference/functions/step-sleep).
 
 
-## Sleep until a specific time
+## Пауза до определенного времени
 
-You can pause a function until a specific time using the [`step.sleep_until()`](/docs/reference/python/steps/sleep-until) method:
+Вы можете приостановить выполнение функции до определенного момента времени, используя метод [`step.sleep_until()`](/docs/reference/python/steps/sleep-until):
 
 
 ```python
@@ -154,7 +154,7 @@ async def send_signup_email(ctx: inngest.Context):
     await ctx.step.sleep_until("wait-for-the-future", "2023-02-01T16:30:00")
 
     async def future_work():
-        # Code here runs in the future automatically
+        # Этот код выполнится в будущем автоматически
         pass
 
     await ctx.step.run("do-some-work-in-the-future", future_work)
@@ -162,43 +162,43 @@ async def send_signup_email(ctx: inngest.Context):
 
 
 
-For more information on `step.sleep_until()` [read the reference](/docs/reference/python/steps/sleep-until).
+Для получения дополнительной информации о `step.sleep_until()` [прочтите справочник](/docs/reference/python/steps/sleep-until).
 
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Schedule a function for later
+## Планирование запуска функции на потом
 
-You can also delay when a function starts by setting the `ts` field in the [event payload](/docs/events#event-payload-format) to a future timestamp (milliseconds since the Unix epoch). Unlike `step.sleep()` or `step.sleepUntil()` which add delays _within_ a function, the `ts` field delays the _start_ of the function run itself.
+Вы также можете отложить время запуска функции, установив поле `ts` в [полезной нагрузке события](/docs/events#event-payload-format) на метку времени в будущем (миллисекунды с начала эпохи Unix). В отличие от `step.sleep()` или `step.sleepUntil()`, которые добавляют задержки _внутри_ функции, поле `ts` задерживает сам _начало_ выполнения функции.
 
-For example, to schedule a function to run 5 minutes from now:
+Например, чтобы запланировать запуск функции через 5 минут:
 
 ```typescript
 await inngest.send({
   name: "notifications/reminder.scheduled",
   data: {
     user: { email: "johnny.utah@fbi.gov" },
-    message: "Don't forget to catch the wave at 3pm",
+    message: "Не забудь поймать волну в 15:00",
   },
-  // Include the timestamp for 5 minutes in the future:
+  // Указываем метку времени для времени через 5 минут в будущем:
   ts: Date.now() + 5 * 60 * 1000,
 });
 ```
 
-For a complete walkthrough, see the [Scheduling a one-off function](/docs/examples/scheduling-one-off-function) example.
+Полный пример см. в руководстве [Планирование разовой функции](/docs/examples/scheduling-one-off-function).
 
-## How it works
+## Как это работает
 
 {/* TODO - Revisit this section after we write a How Inngest Works explainer */}
 
-### `step.sleep()` and `step.sleepUntil()`
+### `step.sleep()` и `step.sleepUntil()`
 
-With `step.sleep()` and `step.sleepUntil()`, **the function controls when it runs**. You control the flow of your code by calling `sleep` or `sleepUntil` within your function directly, instead of using the queue to manage your code's timing. This keeps your logic together and makes your code easier to modify.
+С помощью `step.sleep()` и `step.sleepUntil()` **сама функция управляет временем своего запуска**. Вы контролируете поток выполнения кода, вызывая `sleep` или `sleepUntil` непосредственно внутри функции, вместо того чтобы использовать очередь для управления временем выполнения. Это позволяет держать логику вместе и упрощает изменение кода.
 
-Inngest *stops the function from running* for whatever time is specified. When you call `step.sleep` or `step.sleepUntil` the function automatically stops running any future work. The function then tells the Inngest executor that it should be re-invoked at a future time. We re-call the function at the next step, skipping any previous work. This is how we bypass serverless function time limits and work across server restarts or redeploys.
+Inngest *останавливает выполнение функции* на указанное время. Когда вы вызываете `step.sleep` или `step.sleepUntil`, функция автоматически прекращает выполнение любой дальнейшей работы. Затем функция сообщает исполнителю Inngest, что она должна быть вызвана снова в будущем. Мы повторно вызываем функцию на следующем шаге, пропуская всю предыдущую работу. Именно так мы обходим ограничения по времени выполнения серверлесс-функций и обеспечиваем работу при перезагрузках или повторных развертываниях сервера.
 
-### Event `ts` field
+### Поле `ts` в событии
 
-When you set the `ts` field on an event to a future Unix timestamp, Inngest delays invoking the function until that time. The function itself runs normally — the delay happens before it starts, not within it. This is useful when the delay is known at the time the event is sent and you don't need any logic to run before the wait.
+Когда вы устанавливаете поле `ts` в событии на метку времени Unix в будущем, Inngest откладывает вызов функции до этого времени. Сама функция затем выполняется в обычном режиме — задержка происходит перед ее началом, а не внутри нее. Это полезно, когда задержка известна в момент отправки события и вам не нужно выполнять какую-либо логику перед ожиданием.

@@ -1,23 +1,22 @@
 import { CodeGroup, Row, Col } from "src/shared/Docs/mdx";
-export const description = 'Learn how to cancel long running functions with our API.'
+export const description = 'Узнайте, как отменять длительные функции с помощью нашего API.'
 
-# Bulk Cancellation
+# Массовая отмена
 
 {/* TODO - Link the sleeps and waits to guides when we move those from references to guides */}
-With Inngest, your functions can be running or paused for long periods of time. You may have function with hundreds of steps, or you may be using [`step.sleep`](/docs/reference/functions/step-sleep), [`step.sleepUntil`](/docs/reference/functions/step-sleep-until), or [`step.waitForEvent`](/docs/reference/functions/step-wait-for-event). Sometimes, things happen in your system that make it no longer necessary to complete running the function, which is when cancelling is necessary.
+В Inngest ваши функции могут выполняться или находиться в режиме паузы в течение длительного времени. У вас может быть функция с сотнями шагов, или вы можете использовать [`step.sleep`](/docs/reference/functions/step-sleep), [`step.sleepUntil`](/docs/reference/functions/step-sleep-until) или [`step.waitForEvent`](/docs/reference/functions/step-wait-for-event). Иногда в вашей системе происходят события, из-за которых завершение выполнения функции становится ненужным — в таких случаях требуется отмена.
 
-Inngest provides both a Bulk Cancellation API and UI. The Bulk Cancellation API offers more flexibility with the support of event expression matching
-while the [Bulk Cancellation UI](/docs/platform/manage/bulk-cancellation), available from the Platform, provides a quick way to cancel unwanted Function runs.
+Inngest предоставляет как API для массовой отмены, так и соответствующий интерфейс в панели управления. API для массовой отмены предлагает большую гибкость благодаря поддержке сопоставления выражений событий, в то время как [интерфейс массовой отмены](/docs/platform/manage/bulk-cancellation), доступный на платформе, обеспечивает быстрый способ отмены нежелательных запусков функций.
 
 {/* TODO
-## Cancel in the Inngest dashboard
+## Отмена в панели управления Inngest
 */}
 
-## Bulk cancel via the REST API
+## Массовая отмена через REST API
 
-You can also cancel functions in bulk via the [REST API](https://api-docs.inngest.com/docs/inngest-api). This is useful if you have a large number of functions within a specific range that you need to cancel.
+Вы также можете массово отменять функции через [REST API](https://api-docs.inngest.com/docs/inngest-api). Это полезно, если вам нужно отменить большое количество функций в определенном диапазоне.
 
-With the `POST /cancellations` endpoint, you can cancel functions by specifying the `app_id`, `function_id`, and a `started_after` and `started_before` timestamp range. You can also optionally specify an `if` statement to only cancel functions that match a [given expression](/docs/guides/writing-expressions).
+С помощью эндпоинта `POST /cancellations` вы можете отменять функции, указав `app_id`, `function_id`, а также временной диапазон через метки `started_after` и `started_before`. Вы также можете при желании указать условие `if`, чтобы отменить только те функции, которые соответствуют [заданному выражению](/docs/guides/writing-expressions).
 
 <CodeGroup tag="POST" label="api.inngest.com/v1/cancellations">
 
@@ -36,7 +35,7 @@ curl -X POST https://api.inngest.com/v1/cancellations \
 
 </CodeGroup>
 
-When successful, the response will be returned with the cancellation ID and the cancellation job data:
+При успешном выполнении будет возвращен ответ с ID отмены и данными задачи на отмену:
 
 ```json {{ title: 'Response' }}
 {
@@ -49,4 +48,4 @@ When successful, the response will be returned with the cancellation ID and the 
 }
 ```
 
-To learn more, read the full [REST API reference](https://api-docs.inngest.com/docs/inngest-api).
+Чтобы узнать больше, прочтите полный [справочник по REST API](https://api-docs.inngest.com/docs/inngest-api).

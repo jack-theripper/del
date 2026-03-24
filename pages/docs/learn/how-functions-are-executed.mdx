@@ -1,57 +1,57 @@
 import { Callout } from "shared/Docs/mdx";
 
-export const description = "Learn how Inngest functions are executed using Durable Execution. Understand how steps are executed, how errors are handled, and how state is persisted."
+export const description = "Узнайте, как выполняются функции Inngest с использованием Durable Execution. Поймите, как выполняются шаги, как обрабатываются ошибки и как сохраняется состояние."
 
-# How Inngest functions are executed: Durable Execution
+# Как выполняются функции Inngest: Durable Execution
 
-One of the core features of Inngest is Durable Execution. Durable Execution allows your functions to be fault-tolerant and resilient to failures. The end result is that your code, and therefore, your overall application, is more reliable.
+Одной из основных особенностей Inngest является Durable Execution (Надежное выполнение). Durable Execution позволяет вашим функциям быть отказоустойчивыми и устойчивыми к сбоям. Конечным результатом является то, что ваш код и, следовательно, все ваше приложение становятся более надежными.
 
-This page covers what Durable Execution is, how it works, and how it works with Inngest functions.
+На этой странице рассматривается, что такое Durable Execution, как оно работает и как оно применяется в функциях Inngest.
 
 {/* Note - this page is written a specific way for search optimization */}
-## What is Durable Execution?
+## Что такое Durable Execution?
 
-Durable Execution is a fault-tolerant approach to executing code that is achieved by handling failures and interruptions gracefully with automatic retries and state persistence. This means that your code can continue to run even if there are issues like network failures, timeouts, infrastructure outages, and other transient errors.
+Durable Execution — это отказоустойчивый подход к выполнению кода, который достигается за счет изящной обработки сбоев и прерываний с помощью автоматических повторов и сохранения состояния. Это означает, что ваш код может продолжать работу даже при возникновении таких проблем, как сетевые сбои, тайм-ауты, сбои инфраструктуры и другие временные ошибки.
 
-Key aspects of Durable Execution include:
+Ключевые аспекты Durable Execution включают:
 
-* **State persistance** - Function state is persisted outside of the function execution context. This enables function execution to be resumed from the point of failure on the same _or_ different infrastructure.
-* **Fault-tolerance** - Errors or exceptions are caught by the execution layer and are automatically retried. Retry behavior can be customized to handle the accepted number of retries and handle different types of errors.
+* **Сохранение состояния** — состояние функции сохраняется вне контекста выполнения функции. Это позволяет возобновить выполнение функции с момента сбоя на той же _или_ другой инфраструктуре.
+* **Отказоустойчивость** — ошибки или исключения перехватываются уровнем выполнения и автоматически повторяются. Поведение при повторах можно настроить: задать допустимое количество попыток и способы обработки различных типов ошибок.
 
-In practice, Durable Execution is implemented in the form of "durable functions," sometimes also called "durable workflows." Durable functions can throw errors or exceptions and automatically retry, resuming execution from the point of failure. Durable functions are designed to be long-running and stateful, meaning that they can persist state across function invocations and retries.
+На практике Durable Execution реализуется в форме "надежных функций" (durable functions), которые иногда также называют "надежными рабочими процессами" (durable workflows). Надежные функции могут выдавать ошибки или исключения и автоматически повторять попытки, возобновляя выполнение с момента сбоя. Они спроектированы как длительно работающие и сохраняющие состояние, что означает их способность сохранять данные между вызовами функций и повторными попытками.
 
-## How Inngest functions work
+## Как работают функции Inngest
 
-Inngest functions are durable: they throw errors or exceptions, automatically retry from the point of failure, and can be stateful and long-running.
+Функции Inngest являются надежными (durable): они выбрасывают ошибки или исключения, автоматически повторяют попытки с момента сбоя, могут сохранять состояние и выполняться в течение длительного времени.
 
-Inngest functions use "**Steps**" to define the execution flow of a function. Each step:
+Функции Inngest используют "**Шаги**" (Steps) для определения потока выполнения функции. Каждый шаг:
 
-* Is a unit of work that can be run and retried independently.
-* Captures any error or exception thrown within it.
-* Will not be re-executed if it has already been successfully executed.
-* Returns state (_data_) that can be used by subsequent steps.
-* Can be executed in parallel or sequentially, depending on the function's configuration.
+* Является единицей работы, которая может быть запущена и перезапущена независимо.
+* Перехватывает любую ошибку или исключение, возникшее внутри него.
+* Не будет выполнен повторно, если он уже был успешно выполнен.
+* Возвращает состояние (_данные_), которое может быть использовано последующими шагами.
+* Может выполняться параллельно или последовательно, в зависимости от конфигурации функции.
 
-Complex functions can consist of many steps. This allows a long-running function to be broken down into smaller, more manageable units of work. As each step is retried independently, and the function can be resumed from the point of failure, avoiding unnecessary re-execution of work.
+Сложные функции могут состоять из множества шагов. Это позволяет разбить длительную функцию на более мелкие и управляемые единицы работы. Поскольку каждый шаг повторяется независимо, выполнение функции может быть возобновлено с момента сбоя, что позволяет избежать ненужного повторного выполнения уже проделанной работы.
 
-In comparison, some Durable Execution systems modify the runtime environment to persist state or interrupt errors or exceptions. Inngest SDKs are written using standard language primitives, which enables Inngest functions to run in any environment or runtime - including serverless environments - without modification.
+Для сравнения, некоторые другие системы Durable Execution модифицируют среду выполнения для сохранения состояния или перехвата ошибок. SDK Inngest написаны с использованием стандартных примитивов языка, что позволяет функциям Inngest работать в любой среде или рантайме — включая серверлесс-среды — без модификаций.
 
-### How steps are executed
+### Как выполняются шаги
 
-Inngest functions are defined with a series of steps that define the execution flow of the function. Each step is defined with a unique ID and a function that defines the work to be done. The data returned can be used by subsequent steps.
+Функции Inngest определяются как серия шагов, формирующих поток выполнения. Каждый шаг имеет уникальный ID и функцию, описывающую выполняемую работу. Возвращаемые данные могут использоваться последующими шагами.
 
-Inngest functions execute incrementally, _step by step_. As a function is executed, the results of each step are returned to Inngest and persisted in a managed function state store. The steps that successfully executed are [_memoized_](https://en.wikipedia.org/wiki/Memoization). The function then resumes, skipping any steps that have already been completed and the SDK injects the data returned by the previous step into the function.
+Функции Inngest выполняются инкрементально, _шаг за шагом_. По мере выполнения функции результаты каждого шага возвращаются в Inngest и сохраняются в управляемом хранилище состояний функций. Успешно выполненные шаги [_мемоизируются_](https://ru.wikipedia.org/wiki/Мемоизация). Затем функция возобновляется, пропуская уже завершенные шаги, а SDK внедряет данные, возвращенные предыдущим шагом, в функцию.
 
 <Callout variant="info" skipSearchCrawler>
-Each step in your function is executed as **a separate HTTP request**. Any non-deterministic logic (such as DB calls or API calls) must be placed within a `step.run()` call to ensure it executes efficiently and correctly in the context of the execution model.
+Каждый шаг в вашей функции выполняется как **отдельный HTTP-запрос**. Любая недетерминированная логика (например, вызовы БД или API) должна быть помещена внутри вызова `step.run()`, чтобы гарантировать её эффективное и правильное выполнение в рамках данной модели.
 </Callout>
 
-Let's look at an example of a function and walk through how it is executed:
+Давайте рассмотрим пример функции и разберем, как она выполняется:
 
 ```typescript
 const fn = inngest.createFunction(
   { id: "import-contacts", triggers: { event: "contacts/csv.uploaded" } },
-  // The function handler:
+  // Обработчик функции:
   async ({ event, step }) => {
     const rows = await step.run("parse-csv", async () => {
       return await parseCsv(event.data.fileURI);
@@ -71,48 +71,48 @@ const fn = inngest.createFunction(
 );
 ```
 
-### Initial execution
+### Первое выполнение
 
-1. When the function is first called, the _function handler_ is called with only the `event` payload data sent.
-2. When the first step is discovered, the `"parse-csv"` step is run. As the step has not been executed before, the step's code (the callback function) is run and the result is captured.
-3. The function does not continue executing beyond this step. Each SDK uses a different method to interrupt the function execution before running any more code in your function handler.
-4. Internally, the step's ID (`"parse-csv"`) is hashed as the state identifier to be used in future executions. Additionally, the steps' index (`0` in this case) is also included in the result.
-5. The result is sent back to Inngest and persisted in the function state store.
+1. При первом вызове функции вызывается _обработчик функции_ только с переданными данными `event`.
+2. Когда обнаруживается первый шаг, запускается шаг `"parse-csv"`. Так как шаг ранее не выполнялся, код шага (callback-функция) запускается, и результат фиксируется.
+3. Функция не продолжает выполнение дальше этого шага. Каждый SDK использует свой метод для прерывания выполнения функции перед запуском любого другого кода в вашем обработчике.
+4. Внутренне ID шага (`"parse-csv"`) хешируется как идентификатор состояния для использования в будущих выполнениях. Кроме того, в результат включается индекс шага (`0` в данном случае).
+5. Результат отправляется обратно в Inngest и сохраняется в хранилище состояний функций.
 
-### Secondary executions - Memoization of steps
+### Вторичные выполнения — Мемоизация шагов
 
-Each of the subsequent steps leverages the state of previous executions and memoization. Here's how it works:
+Каждый из последующих шагов использует состояние предыдущих выполнений и мемоизацию. Вот как это работает:
 
-6. The function is re-executed, this time with the `event` payload data and the state of the previous execution in JSON.
-7. The next step is discovered (`"parse-csv"`).
-8. The previous result is found in the state of previous executions. Internally, the SDK uses the hash of the step name to look up the result in the state data.
-9. The step's code is not executed, instead the SDK injects the result into the return value of `step.run`, (in this example, the data will be returned as `rows`).
-10. The function continues execution until the next step is discovered (`"normalize-raw-csv"`).
-11. The step's code is executed and the result is returned to Inngest (in the same approach as steps 2-5 above).
+6. Функция запускается снова, на этот раз с данными `event` и состоянием предыдущего выполнения в формате JSON.
+7. Обнаруживается следующий шаг (`"parse-csv"`).
+8. Предыдущий результат находится в состоянии прошлых выполнений. Внутренне SDK использует хеш имени шага для поиска результата в данных состояния.
+9. Код шага не выполняется, вместо этого SDK внедряет результат в возвращаемое значение `step.run` (в данном примере данные будут возвращены как `rows`).
+10. Функция продолжает выполнение до обнаружения следующего шага (`"normalize-raw-csv"`).
+11. Код шага выполняется, и результат возвращается в Inngest (по той же схеме, что и в шагах 2-5 выше).
 
-### Error handling
+### Обработка ошибок
 
-Some steps may throw errors or exceptions during execution. Here's how error handling works within function execution:
+Некоторые шаги могут выбрасывать ошибки или исключения во время выполнения. Вот как работает обработка ошибок при выполнении функции:
 
-12. If an error occurs during the execution of a step (for example, `"input-contacts"`), the function is interrupted and the error is caught by the SDK.
-13. The error is serialized and returned to Inngest. The number of attempts are logged and the error is persisted in the function state store.
-14. Depending on the number of attempts configured for the function, the function may be retried (see: [Error handling](/docs/guides/error-handling)):
-    * If the the function _has not_ exhausted the number of attempts, the function is re-executed from the point of failure with the state of all previous step executions. The step is re-executed and follows the same process as above (see: steps 6-11).
-    * If the function _has_ exhausted the number of attempts, the function is re-executed with the error thrown. The function can then catch and handle the error as desired (see: [Handling a failing step](/docs/guides/error-handling#handling-a-failing-step)).
+12. Если во время выполнения шага возникает ошибка (например, в `"input-contacts"`), выполнение функции прерывается, и ошибка перехватывается SDK.
+13. Ошибка сериализуется и возвращается в Inngest. Количество попыток логируется, а ошибка сохраняется в хранилище состояний функций.
+14. В зависимости от настроенного количества попыток для функции, может быть инициирован повтор (см.: [Обработка ошибок](/docs/guides/error-handling)):
+    * Если количество попыток _не_ исчерпано, функция запускается снова с момента сбоя со всеми состояниями предыдущих шагов. Шаг выполняется повторно по тому же процессу, что описан выше (см. шаги 6-11).
+    * Если количество попыток _исчерпано_, функция запускается снова с выброшенной ошибкой. Функция может перехватить и обработать ошибку по желанию (см.: [Обработка неудачного шага](/docs/guides/error-handling#handling-a-failing-step)).
 
 {/* TODO - Add how parallel steps are executed differently (more complex topic) */}
 
-To learn about how determinism is handled and how you can version functions, read the [Versioning long running functions](/docs/learn/versioning) guide.
+Чтобы узнать о том, как обрабатывается детерминизм и как можно версионировать функции, прочтите руководство [Версионирование длительно работающих функций](/docs/learn/versioning).
 
-## Conclusion
+## Заключение
 
-Inngest functions use steps and memoization to execute functions incrementally and durably. This approach ensures that functions are fault-tolerant and resilient to failures. By breaking down functions into steps, Inngest functions can be retried and resumed from the point of failure. This approach ensures that your code is more reliable and can handle transient errors gracefully.
+Функции Inngest используют шаги и мемоизацию для инкрементального и надежного выполнения. Этот подход гарантирует отказоустойчивость функций и их устойчивость к сбоям. Разделяя функции на шаги, Inngest позволяет повторять и возобновлять их выполнение с момента сбоя. Такой подход делает ваш код более надежным и позволяет изящно справляться с временными ошибками.
 
-## Further reading
+## Дополнительное чтение
 
-More information on Durable Execution in Inngest:
+Больше информации о Durable Execution в Inngest:
 
-- Blog post: ["How we built a fair multi-tenant queuing system"](/blog/building-the-inngest-queue-pt-i-fairness-multi-tenancy)
-- Blog post: ["Debouncing in Queueing Systems: Optimizing Efficiency in Asynchronous Workflows"](/blog/debouncing-in-queuing-systems-optimizing-efficiency-in-async-workflows)
-- Blog post: ["Accidentally Quadratic: Evaluating trillions of event matches in real-time"](/blog/accidentally-quadratic-evaluating-trillions-of-event-matches-in-real-time)
-- Blog post: ["Queues aren't the right abstraction"](/blog/queues-are-no-longer-the-right-abstraction)
+- Пост в блоге: ["How we built a fair multi-tenant queuing system"](/blog/building-the-inngest-queue-pt-i-fairness-multi-tenancy)
+- Пост в блоге: ["Debouncing in Queueing Systems: Optimizing Efficiency in Asynchronous Workflows"](/blog/debouncing-in-queuing-systems-optimizing-efficiency-in-async-workflows)
+- Пост в блоге: ["Accidentally Quadratic: Evaluating trillions of event matches in real-time"](/blog/accidentally-quadratic-evaluating-trillions-of-event-matches-in-real-time)
+- Пост в блоге: ["Queues aren't the right abstraction"](/blog/queues-are-no-longer-the-right-abstraction)

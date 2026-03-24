@@ -1,54 +1,54 @@
-export const description = 'Set up Clerk webhooks with Inngest and use Clerk events within Inngest functions.'
+export const description = 'Настройте вебхуки Clerk с помощью Inngest и используйте события Clerk внутри функций Inngest.'
 
-# Handling Clerk webhook events
+# Обработка событий вебхуков Clerk
 
-![Clerk logo and graphic showing Clerk webhook events](/assets/docs/guides/clerk-webhook-events/featured-image.png)
+![Логотип Clerk и схема, показывающая события вебхуков Clerk](/assets/docs/guides/clerk-webhook-events/featured-image.png)
 
-Third party authentication providers like [Clerk](https://clerk.com/) are a fantastic way to add auth, user management, and security features to your application. They also provide drop-in components that can get your auth set up quickly. However, with an external source of truth for auth, you'll often need to:
+Сторонние провайдеры аутентификации, такие как [Clerk](https://clerk.com/), — это фантастический способ добавить функции аутентификации, управления пользователями и безопасности в ваше приложение. Они также предоставляют готовые компоненты, которые позволяют быстро настроить аутентификацию. Однако при наличии внешнего источника истины для аутентификации вам часто придется:
 
-* Sync data from Clerk with your database,
-* Provision resources for new accounts, or
-* Trigger other work from events (such as emails).
+* Синхронизировать данные из Clerk с вашей базой данных,
+* Выделять ресурсы для новых аккаунтов или
+* Запускать другие задачи на основе событий (например, отправку писем).
 
-This page offers a guide on setting up a Clerk webhook with Inngest and using Clerk events within Inngest functions.
+Эта страница представляет собой руководство по настройке вебхука Clerk в Inngest и использованию событий Clerk внутри функций Inngest.
 
-## Setting up the Clerk webhook
+## Настройка вебхука Clerk
 
-Clerk enables [sending events to a webhook endpoint](https://clerk.com/docs/integrations/webhooks/overview) when certain events occur. Inngest's [webhook endpoints](/docs/platform/webhooks) allow you to receive these events within your account just like [events that you send](/docs/events) from your own application.
+Clerk позволяет [отправлять события на эндпоинт вебхука](https://clerk.com/docs/integrations/webhooks/overview) при возникновении определенных событий. [Эндпоинты вебхуков](/docs/platform/webhooks) Inngest позволяют получать эти события в вашем аккаунте точно так же, как [события, которые вы отправляете](/docs/events) из собственного приложения.
 
-To set up the Clerk webhook, open the Clerk dashboard and navigate to the "Webhooks" page. Next, select the "Add Endpoint" button.
+Чтобы настроить вебхук Clerk, откройте панель управления Clerk и перейдите на страницу "Webhooks". Затем нажмите кнопку "Add Endpoint".
 
-![The Webhooks page in the Clerk Dashboard. A red arrow points to the button for Add Endpoint.](/assets/docs/guides/clerk-webhook-events/webhook-page.webp)
+![Страница Webhooks в панели управления Clerk. Красная стрелка указывает на кнопку Add Endpoint.](/assets/docs/guides/clerk-webhook-events/webhook-page.webp)
 
-On the next page, select the "Transformation" template tab and the Inngest template, then click on the "Connect to Inngest" button.
+На следующей странице выберите вкладку шаблона "Transformation", выберите шаблон Inngest, а затем нажмите кнопку "Connect to Inngest".
 
-![The Webhooks page in the Clerk Dashboard showing the Inngest transformation template. Red arrows point to the Transformation Template tab, the Inngest template, and the Connect to Inngest button.](/assets/docs/guides/clerk-webhook-events/webhook-transformation-template.webp)
+![Страница Webhooks в панели управления Clerk, показывающая шаблон трансформации Inngest. Красные стрелки указывают на вкладку Transformation Template, шаблон Inngest и кнопку Connect to Inngest.](/assets/docs/guides/clerk-webhook-events/webhook-transformation-template.webp)
 
-A popup window will appear to complete the setup. Select "Approve" to create the webhook.
+Появится всплывающее окно для завершения настройки. Выберите "Approve", чтобы создать вебхук.
 
-![The Inngest permissions popup window showing the Approve button.](/assets/docs/guides/clerk-webhook-events/inngest-permissions-dialog.png)
+![Всплывающее окно разрешений Inngest с кнопкой Approve.](/assets/docs/guides/clerk-webhook-events/inngest-permissions-dialog.png)
 
-After the popup window disappears, the Webhooks page will now display "Connected" with the webhook URL underneath. There is one more step to complete setup.
+После того как всплывающее окно исчезнет, на странице Webhooks отобразится статус "Connected" с URL вебхука под ним. Остался еще один шаг для завершения настройки.
 
-![The Webhooks page in the Clerk Dashboard showing a connected Inngest account. A red arrow points to the Connected button.](/assets/docs/guides/clerk-webhook-events/webhook-endpoint-connected.webp)
+![Страница Webhooks в панели управления Clerk, показывающая подключенный аккаунт Inngest. Красная стрелка указывает на кнопку Connected.](/assets/docs/guides/clerk-webhook-events/webhook-endpoint-connected.webp)
 
-To complete the setup, scroll down and select "Create".
+Чтобы завершить настройку, прокрутите вниз и выберите "Create".
 
-![The Webhooks page in the Clerk Dashboard showing the end of the page to create a new endpoint. A red arrow points to the Create button.](/assets/docs/guides/clerk-webhook-events/webhook-create.webp)
+![Страница Webhooks в панели управления Clerk, показывающая конец страницы для создания нового эндпоинта. Красная стрелка указывает на кнопку Create.](/assets/docs/guides/clerk-webhook-events/webhook-create.webp)
 
-You'll be redirected to the new endpoint. In your Inngest dashboard, you will see a new webhook created in your account's [production environment](https://app.inngest.com/env/production/manage/webhooks).
+Вы будете перенаправлены на новый эндпоинт. В вашей панели управления Inngest вы увидите новый вебхук, созданный в [продакшн-среде](https://app.inngest.com/env/production/manage/webhooks) вашего аккаунта.
 
-## Creating a function to sync a new user to a database
+## Создание функции для синхронизации нового пользователя с базой данных
 
-Often, one key part of integrating with an auth provider like [Clerk](https://clerk.com/) is handling asynchronous updates with a webhook.
+Часто ключевой частью интеграции с провайдером аутентификации, таким как [Clerk](https://clerk.com/), является обработка асинхронных обновлений с помощью вебхука.
 
-Suppose you need to write a function which will insert a new user into the database which will be triggered whenever `clerk/user.created` event occurs. You would use the `inngest.createFunction()` method, like in the example below:
+Предположим, вам нужно написать функцию, которая будет вставлять нового пользователя в базу данных и запускаться всякий раз, когда происходит событие `clerk/user.created`. Вы должны использовать метод `inngest.createFunction()`, как в примере ниже:
 
 ```ts {{ filename: "src/inngest/sync-user.ts" }}
 const syncUser = inngest.createFunction(
   { id: 'sync-user-from-clerk', triggers: { event: 'clerk/user.created' } },
   async ({ event }) => {
-    // The event payload's data will be the Clerk User json object
+    // Полезная нагрузка события (data) будет представлять собой JSON-объект пользователя Clerk
     const { user } = event.data;
     const { id, first_name, last_name } = user;
     const email = user.email_addresses.find(e =>
@@ -59,21 +59,21 @@ const syncUser = inngest.createFunction(
 )
 ```
 
-The `event` object contains all of the relevant data for the event. The `event.data` will match the `data` object from the standard Clerk webhook [payload structure](https://clerk.com/docs/integrations/webhooks/overview#payload-structure). With this `clerk/user.created` event, the `event.data` will be a Clerk User json object.
+Объект `event` содержит все соответствующие данные для события. `event.data` будет соответствовать объекту `data` из стандартной [структуры полезной нагрузки](https://clerk.com/docs/integrations/webhooks/overview#payload-structure) вебхука Clerk. В случае события `clerk/user.created`, `event.data` будет JSON-объектом пользователя Clerk.
 
-As you can see, you can choose which events you want to handle with each function. You might write a separate function for `clerk/user.updated` and `clerk/user.deleted` handling the entire lifecycle end to end.
+Как видите, вы можете выбирать, какие события вы хотите обрабатывать в каждой функции. Вы можете написать отдельные функции для `clerk/user.updated` и `clerk/user.deleted`, обрабатывая весь жизненный цикл от начала до конца.
 
-Note that multiple functions can also listen to the same event. This pattern is called “[fan-out](/docs/guides/fan-out-jobs).”
+Обратите внимание, что несколько функций могут слушать одно и то же событие. Этот паттерн называется «[fan-out (разветвление)](/docs/guides/fan-out-jobs)».
 
-## Creating a function to send a welcome email
+## Создание функции для отправки приветственного письма
 
-Often, applications need to perform additional tasks when a new user is created, like send a welcome email with tips and useful information.
+Часто приложениям требуется выполнять дополнительные задачи при создании нового пользователя, например отправлять приветственное письмо с советами и полезной информацией.
 
-While it is possible to add this logic at the end of your sync function as seen in the [previous section](/docs/guides/clerk-webhook-events#creating-a-function-to-sync-a-new-user-to-a-database), it’s better to decouple unrelated tasks into different functions so issues with one task do not affect the other ones. For example, if your email fails to send, it should not affect starting a trial for that user in Stripe.
+Хотя можно добавить эту логику в конец вашей функции синхронизации, как показано в [предыдущем разделе](/docs/guides/clerk-webhook-events#creating-a-function-to-sync-a-new-user-to-a-database), лучше разделять несвязанные задачи на разные функции, чтобы проблемы с одной задачей не влияли на другие. Например, если письмо не удалось отправить, это не должно мешать запуску пробного периода для этого пользователя в Stripe.
 
-You can make use of the fact that with Inngest, each function has [automatic retries](/docs/functions/retries), so only the code that has issues is re-run.
+Вы можете воспользоваться тем фактом, что в Inngest каждая функция имеет [автоматические повторные попытки](/docs/functions/retries), поэтому повторно запускается только тот код, в котором возникли проблемы.
 
-The code below creates another function using the same `clerk/user.created` event and adds the logic to send the welcome email:
+Код ниже создает еще одну функцию, использующую то же событие `clerk/user.created`, и добавляет логику для отправки приветственного письма:
 
 
 ```ts {{ filename: "src/inngest/send-welcome-email.ts" }}
@@ -90,13 +90,13 @@ const sendWelcomeEmail = inngest.createFunction(
 )
 ```
 
-Now, you have a function that utilizes the same Clerk webhook event for another purpose. Clerk webhook events can be used for all sorts of application lifecycle use cases. For example, adding users to a marketing email list, starting a Stripe trial, or provisioning new account resources.
+Теперь у вас есть функция, которая использует то же самое событие вебхука Clerk для другой цели. События вебхуков Clerk можно использовать для самых разных сценариев жизненного цикла приложения. Например, добавление пользователей в список маркетинговой рассылки, запуск пробного периода Stripe или выделение ресурсов для нового аккаунта.
 
-### Sending a delayed follow-up email
+### Отправка отложенного последующего письма
 
-To send a follow-up email, you can use the [`step.run()`](/docs/reference/functions/step-run). This method will encapsulate specific code that will be automatically retried ensuring that issues with one part of your function don't force the entire function to re-run. Additionally, you will extend the functionality with [`step.sleep()`](/docs/reference/functions/step-sleep).
+Чтобы отправить последующее письмо, вы можете использовать метод [`step.run()`](/docs/reference/functions/step-run). Этот метод инкапсулирует определенный код, который будет автоматически перезапущен в случае ошибки, гарантируя, что проблемы в одной части вашей функции не заставят всю функцию запускаться заново. Кроме того, вы расширите функциональность с помощью [`step.sleep()`](/docs/reference/functions/step-sleep).
 
-The code below sends a welcome email, then uses `step.sleep()` to wait for three days before sending another email offering a free trial:
+Код ниже сначала отправляет приветственное письмо, а затем использует `step.sleep()`, чтобы подождать три дня перед отправкой другого письма с предложением пробного периода:
 
 ```ts {{ filename: "src/inngest/send-welcome-email.ts" }}
 const sendWelcomeEmail = inngest.createFunction(
@@ -108,13 +108,13 @@ const sendWelcomeEmail = inngest.createFunction(
       e.id === user.primary_email_address_id
     ).email;
 
-    // Wrapping each distinct task in step.run() ensures that each
-    // will be retried automatically on error and will not be re-run
+    // Обертывание каждой отдельной задачи в step.run() гарантирует, что каждая из них
+    // будет автоматически перезапущена при ошибке и не будет запускаться повторно без нужды
     await step.run('welcome-email', async () => {
       await emails.sendWelcomeEmail({ email, first_name })
     });
 
-    // wait 3 days before second email
+    // ждем 3 дня перед вторым письмом
     await step.sleep('wait-3-days', '3 days');
 
     await step.run('trial-offer-email', async () => {
@@ -124,11 +124,11 @@ const sendWelcomeEmail = inngest.createFunction(
 )
 ```
 
-## Next steps
+## Следующие шаги
 
-To continue learning about how to get the most out of Clerk webhook events, check out the following:
+Чтобы продолжить изучение того, как извлечь максимум из событий вебхуков Clerk, ознакомьтесь со следующим:
 
-* Platform guide: [Consuming webhooks](/docs/platform/webhooks)
-* Guide: [Fan-out (one-to-many)](/docs/guides/fan-out-jobs)
-* Guide: [Parallel steps](/docs/guides/step-parallelism)
-* Reference: [`step.run()`](/docs/reference/functions/step-run)
+* Руководство по платформе: [Использование вебхуков](/docs/platform/webhooks)
+* Руководство: [Fan-out (один ко многим)](/docs/guides/fan-out-jobs)
+* Руководство: [Параллельные шаги](/docs/guides/step-parallelism)
+* Справочник: [`step.run()`](/docs/reference/functions/step-run)

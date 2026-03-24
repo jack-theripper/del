@@ -1,25 +1,25 @@
 import { CodeGroup } from "src/shared/Docs/mdx";
 
-# Step parallelism
+# Параллелизм шагов
 
-- If you’re using a serverless platform to host, code will run in true parallelism similar to multi-threading (without shared state)
-- Each step will be individually retried
+- При использовании бессерверной платформы код будет выполняться в режиме истинного параллелизма, аналогично многопоточности (без общего состояния)
+- Каждый шаг будет повторяться независимо
 
-### Platform support
+### Поддержка платформ
 
-**Parallelism works across all providers and platforms**.  True parallelism is supported for serverless functions;  if you’re using a single Express server you’ll be splitting all parallel jobs amongst a single-threaded node server.
+**Параллелизм работает на всех провайдерах и платформах.** Истинный параллелизм поддерживается для бессерверных функций; если вы используете одиночный Express-сервер, все параллельные задачи будут выполняться в рамках однопоточного Node-сервера.
 
-## Running steps in parallel
+## Запуск шагов параллельно
 
-You can run steps in parallel via `Promise.all()`:
+Вы можете запускать шаги параллельно через `Promise.all()`:
 
-- Create each step via [`step.run()`](/docs/reference/functions/step-run) without awaiting, which returns an unresolved promise.
-- Await all steps via `Promise.all()`. This triggers all steps to run in parallel via separate executions.
+- Создайте каждый шаг с помощью [`step.run()`](/docs/reference/functions/step-run) без `await` — это вернёт неразрешённый промис.
+- Дождитесь всех шагов через `Promise.all()`. Это запускает все шаги параллельно в отдельных выполнениях.
 
-A common use case is to split work into chunks:
+Типичный сценарий использования — разбиение работы на части:
 
 <CodeGroup>
-```ts 
+```ts
 import { Inngest } from "inngest";
 
 const inngest = new Inngest({ id: "signup-flow" });
@@ -27,8 +27,8 @@ const inngest = new Inngest({ id: "signup-flow" });
 export const fn = inngest.createFunction(
   { id: "post-payment-flow", triggers: { event: "stripe/charge.created" } },
   async ({ event, step }) => {
-    // These steps are not `awaited` and run in parallel when Promise.all
-    // is invoked.
+    // Эти шаги не ожидаются через `await` и выполняются параллельно,
+    // когда вызывается Promise.all.
     const sendEmail = step.run("confirmation-email", async () => {
       const emailID = await sendEmail(event.data.email);
       return emailID;
@@ -38,11 +38,11 @@ export const fn = inngest.createFunction(
       return db.updateUserWithCharge(event);
     });
 
-    // Run both steps in parallel.  Once complete, Promise.all will return all
-    // parallelized state here.
+    // Запускаем оба шага параллельно. После завершения Promise.all вернёт
+    // все параллельные состояния здесь.
     //
-    // This ensures that all steps complete as fast as possible, and we still have
-    // access to each step's data once they're complete.
+    // Это гарантирует, что все шаги завершатся как можно быстрее, и мы
+    // всё равно будем иметь доступ к данным каждого шага после их завершения.
     const [emailID, updates] = await Promise.all([sendEmail, updateUser]);
 
     return { emailID, updates };
@@ -51,13 +51,13 @@ export const fn = inngest.createFunction(
 ```
 </CodeGroup>
 
-When each step is finished, Inngest will aggregate each step's state and re-invoke the function with all state available.
+После завершения каждого шага Inngest агрегирует состояние каждого шага и повторно вызывает функцию со всеми доступными состояниями.
 
-### Step parallelism in Python
+### Параллелизм шагов в Python
 
-Inngest supports parallel steps regardless of whether you're using asynchronous or synchronous code. For both approaches, you can use `step.parallel`:
+Inngest поддерживает параллельные шаги вне зависимости от того, используете ли вы асинхронный или синхронный код. В обоих случаях можно использовать `step.parallel`:
 
-#### async - with `inngest.Step` and `await ctx.group.parallel()` 
+#### async — с `inngest.Step` и `await ctx.group.parallel()`
 ```py
 @client.create_function(
   fn_id="my-fn",
@@ -74,7 +74,7 @@ async def fn(ctx: inngest.Context) -> None:
   )
 ```
 
-#### sync - with `inngest.StepSync` and `group.parallel()` 
+#### sync — с `inngest.StepSync` и `group.parallel()`
 ```py
 @client.create_function(
   fn_id="my-fn",
@@ -91,23 +91,23 @@ def fn(ctx: inngest.ContextSync) -> None:
   )
 ```
 
-## Optimizing parallel step performance
+## Оптимизация производительности параллельных шагов
 
-Without optimized parallelism, parallel steps require 2 requests per step to your application. If you have many parallel steps (e.g., hundreds), this can lead to:
-- High number of HTTP requests to your application
-- Increased ingress bandwidth
-- Higher CPU usage from request parsing
+Без оптимизированного параллелизма параллельные шаги требуют 2 HTTP-запроса на шаг к вашему приложению. При большом количестве параллельных шагов (например, сотнях) это может привести к:
+- Большому количеству HTTP-запросов к вашему приложению
+- Увеличению входящего трафика
+- Более высокой нагрузке на CPU из-за парсинга запросов
 
-Optimized parallelism reduces this to just 1 request per parallel step, significantly improving performance for functions with many parallel operations.
+Оптимизированный параллелизм сокращает это до 1 запроса на параллельный шаг, что значительно улучшает производительность для функций с большим количеством параллельных операций.
 
 ### TypeScript
 
-You can disable optimized parallelism by setting `optimizeParallelism: false` on your client or function.
+Вы можете отключить оптимизированный параллелизм, установив `optimizeParallelism: false` на клиенте или функции.
 
 
-**Important considerations:**
+**Важные замечания:**
 
-- **`Promise.race` behavior**: With optimized parallelism (the default in v4), `Promise.race` waits for all parallel steps to complete before resolving. If you need early resolution behavior, use `group.parallel()`:
+- **Поведение `Promise.race`**: При оптимизированном параллелизме (по умолчанию в v4) `Promise.race` ожидает завершения всех параллельных шагов перед разрешением. Если вам нужно поведение с ранним разрешением, используйте `group.parallel()`:
 
 ```ts
 const winner = await group.parallel(async () => {
@@ -118,7 +118,7 @@ const winner = await group.parallel(async () => {
 });
 ```
 
-- **Sequential steps in parallel groups**: Steps that run sequentially within different parallel branches may not execute in the order you expect. For example:
+- **Последовательные шаги в параллельных группах**: Шаги, выполняющиеся последовательно внутри разных параллельных ветвей, могут выполняться не в ожидаемом порядке. Например:
 
 ```ts
 const stepOrder: string[] = [];
@@ -147,17 +147,17 @@ export const fn = inngest.createFunction(
       })(),
     ]);
 
-    // With optimizeParallelism: ['fast.1', 'slow.1', 'fast.2', 'slow.2']
-    // Without optimizeParallelism: ['fast.1', 'fast.2', 'slow.1', 'slow.2']
+    // С optimizeParallelism: ['fast.1', 'slow.1', 'fast.2', 'slow.2']
+    // Без optimizeParallelism: ['fast.1', 'fast.2', 'slow.1', 'slow.2']
   }
 );
 ```
 
-### Python: Optimized by default with opt-out
+### Python: оптимизация включена по умолчанию с возможностью отключения
 
-Python always uses optimized parallelism by default, as it doesn't have an equivalent to `Promise.race` to worry about. However, you can opt out at the group level if you need sequential steps within parallel groups to run independently.
+Python всегда использует оптимизированный параллелизм по умолчанию, так как у него нет аналога `Promise.race`. Однако вы можете отключить его на уровне группы, если вам нужно, чтобы последовательные шаги внутри параллельных групп выполнялись независимо.
 
-Use the `parallel_mode` parameter to control this behavior:
+Используйте параметр `parallel_mode` для управления этим поведением:
 
 ```py
 import inngest
@@ -176,23 +176,23 @@ async def fn(ctx: inngest.Context) -> None:
         await ctx.step.run("x", lambda: asyncio.sleep(10))
         await ctx.step.run("y", lambda: asyncio.sleep(10))
 
-    # Using RACE mode makes steps run in expected order: a, b, x, y
+    # Использование режима RACE заставляет шаги выполняться в ожидаемом порядке: a, b, x, y
     await ctx.group.parallel(
-        (fast_group, slow_group), 
+        (fast_group, slow_group),
         parallel_mode=inngest.ParallelMode.RACE
     )
 ```
 
-**Without specifying `parallel_mode`**, the steps will run in the order: `a`, `x`, `b`, `y` (optimized mode). Everything is still correct, but step `b` doesn't run until step `x` completes.
+**Без указания `parallel_mode`** шаги будут выполняться в порядке: `a`, `x`, `b`, `y` (оптимизированный режим). Всё остаётся корректным, но шаг `b` не запустится до завершения шага `x`.
 
-**With `parallel_mode=inngest.ParallelMode.RACE`**, the steps run in the expected order: `a`, `b`, `x`, `y`, but with the performance trade-off of more requests.
+**С `parallel_mode=inngest.ParallelMode.RACE`** шаги выполняются в ожидаемом порядке: `a`, `b`, `x`, `y`, но с накладными расходами в виде большего числа запросов.
 
-## Chunking jobs
+## Разбиение задач на части
 
-A common use case is to chunk work. For example, when using OpenAI's APIs you might need to chunk a user's input and run the API on many chunks, then aggregate all data:
+Типичный сценарий использования — разбиение работы на части. Например, при использовании API OpenAI вам может потребоваться разбить входные данные пользователя на фрагменты, запустить API для каждого фрагмента, а затем агрегировать все данные:
 
 <CodeGroup>
-```ts 
+```ts
 import { Inngest } from "inngest";
 
 const inngest = new Inngest({ id: "signup-flow" });
@@ -214,19 +214,19 @@ export const fn = inngest.createFunction(
 ```
 </CodeGroup>
 
-This allows you to run many independent steps, wait until they're all finished, then fetch the results from all steps within a few lines of code. Doing this in a traditional system would require creating many jobs, polling the status of all jobs, and manually combining state.
+Это позволяет запускать множество независимых шагов, дождаться их завершения, а затем получить результаты всех шагов в нескольких строках кода. Реализация этого в традиционной системе потребовала бы создания множества задач, опроса статуса всех задач и ручного объединения состояния.
 
-## Limitations
+## Ограничения
 
-Currently, the total data returned from **all** steps must be under 4MB (eg. a single step can return a max of. 4MB, or 4 steps can return a max of 1MB each).  Functions are also limited to a maximum of 1,000 steps.
+В настоящее время общий объём данных, возвращённых **всеми** шагами, должен быть менее 4 МБ (например, один шаг может вернуть максимум 4 МБ, или 4 шага — максимум по 1 МБ каждый). Функции также ограничены максимум 1000 шагами.
 
-## Parallelism vs fan-out
+## Параллелизм vs. fan-out
 
-Another technique similar to parallelism is fan-out ([read the guide here](/docs/guides/fan-out-jobs)):  when one function sends events to trigger other functions.  Here are the key differences:
+Похожая техника — fan-out ([читайте руководство здесь](/docs/guides/fan-out-jobs)): когда одна функция отправляет события для запуска других функций. Ключевые отличия:
 
-- Both patterns run jobs in parallel
-- You can access the output of steps ran in parallel within your function, whereas with fan-out you cannot
-- Parallelism has a limit of 1,000 steps, though you can create as many functions as you'd like using fan-out
-- You can replay events via fan-out, eg. to test functions locally
-- You can retry individual functions easily if they permanently fail, whereas if a step permanently fails (after retrying) the function itself will fail and terminate.
-- Fan-out splits functionality into different functions, using step functions keeps all related logic in a single, easy to read function
+- Оба паттерна выполняют задачи параллельно
+- Вы можете получить доступ к результатам параллельных шагов внутри своей функции, тогда как при fan-out это невозможно
+- Параллелизм ограничен 1000 шагами, однако с помощью fan-out можно создать столько функций, сколько нужно
+- С помощью fan-out можно воспроизводить события, например для локального тестирования функций
+- При необходимости можно легко повторить отдельные функции после постоянной ошибки, тогда как при постоянном сбое шага (после повторных попыток) сама функция завершится с ошибкой и остановится
+- Fan-out разделяет функциональность на разные функции, тогда как использование step-функций держит всю связанную логику в одной легко читаемой функции

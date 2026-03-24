@@ -1,57 +1,57 @@
 import { Callout, Card, CardGroup, CodeGroup, Col, LanguageSection, LanguageSelector, Info, Row, Tip, VersionBadge } from "shared/Docs/mdx";
 
-export const description = `Serve the Inngest API as an HTTP endpoint in your application.`
+export const description = `Обслуживание API Inngest как HTTP-эндпоинта в вашем приложении.`
 export const hidePageSidebar = true;
 
-# Setting up your Inngest app
+# Настройка вашего приложения Inngest
 
-With Inngest, you define functions or workflows using the SDK and deploy them to whatever platform or cloud provider you want including including serverless and container runtimes.
+С помощью Inngest вы определяете функции или рабочие процессы с использованием SDK и развертываете их на любой платформе или облачном провайдере, включая серверлесс-среды и контейнеры.
 
-For Inngest to remotely execute your functions, you will need to set up a connection between your app and Inngest. This can be done in one of two ways:
+Для того чтобы Inngest мог удаленно выполнять ваши функции, вам необходимо настроить соединение между вашим приложением и Inngest. Это можно сделать одним из двух способов:
 
 <CardGroup>
   <Card title="serve()" href="#serving-inngest-functions">
-    <p className="my-4">Serve your Inngest functions by creating an HTTP endpoint in your application.</p>
+    <p className="my-4">Обслуживайте ваши функции Inngest, создав HTTP-эндпоинт в вашем приложении.</p>
 
-    <p className="my-2">**Ideal for**:</p>
+    <p className="my-2">**Идеально для**:</p>
     <ul className="list-disc list-inside">
-      <li>Serverless platforms like Vercel, Lambda, etc.</li>
-      <li>Adding Inngest to an existing API.</li>
-      <li>Zero changes to your CI/CD pipeline</li>
+      <li>Серверлесс-платформ, таких как Vercel, Lambda и др.</li>
+      <li>Добавления Inngest в существующий API.</li>
+      <li>Нулевых изменений в вашем CI/CD конвейере.</li>
     </ul>
   </Card>
   <Card title="connect()" href="/docs/setup/connect">
-    <p className="my-4">Connect to Inngest's servers using out-bound WebSocket connection.</p>
+    <p className="my-4">Подключайтесь к серверам Inngest с помощью исходящего WebSocket-соединения.</p>
 
-    <p className="my-2">**Ideal for**:</p>
+    <p className="my-2">**Идеально для**:</p>
     <ul className="list-disc list-inside">
-      <li>Container runtimes (Kubernetes, Docker, etc.)</li>
-      <li>Latency sensitive applications</li>
-      <li>Horizontal scaling with workers</li>
+      <li>Контейнерных сред (Kubernetes, Docker и т.д.)</li>
+      <li>Приложений, чувствительных к задержкам (latency)</li>
+      <li>Горизонтального масштабирования с воркерами</li>
     </ul>
   </Card>
 </CardGroup>
 
-Inngest functions are portable, so you can migrate between `serve()` and `connect()` as well as cloud providers.
+Функции Inngest переносимы, поэтому вы можете переключаться между `serve()` и `connect()`, а также между облачными провайдерами.
 
-## Serving Inngest functions
+## Обслуживание функций Inngest
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-Inngest provides a `serve()` handler which adds an API endpoint to your router. You expose your functions to Inngest through this HTTP endpoint. To make automated deploys much easier, **the endpoint needs to be defined at `/api/inngest`** (though you can [change the API path](/docs/reference/serve#serve-client-functions-options)).
+Inngest предоставляет обработчик `serve()`, который добавляет API-эндпоинт в ваш роутер. Вы открываете свои функции для Inngest через этот HTTP-эндпоинт. Чтобы упростить автоматическое развертывание, **эндпоинт должен быть определен по пути `/api/inngest`** (хотя вы можете [изменить путь к API](/docs/reference/serve#serve-client-functions-options)).
 
 ```ts {{ title: "./api/inngest.ts" }}
-// All serve handlers have the same arguments:
+// Все обработчики serve имеют одинаковые аргументы:
 serve({
-  client: inngest, // a client created with new Inngest()
-  functions: [fnA, fnB], // an array of Inngest functions to serve, created with inngest.createFunction()
-  /* Optional extra configuration */
+  client: inngest, // клиент, созданный с помощью new Inngest()
+  functions: [fnA, fnB], // массив функций Inngest для обслуживания, созданных с помощью inngest.createFunction()
+  /* Дополнительная опциональная конфигурация */
 });
 ```
 
-## Supported frameworks and platforms
+## Поддерживаемые фреймворки и платформы
 
 <div className="grid md:grid-cols-3">
 
@@ -89,15 +89,15 @@ serve({
 
 </div>
 
-You can also create a custom serve handler for any framework or platform not listed here - [read more here](#custom-frameworks).
+Вы также можете создать собственный обработчик для любого фреймворка или платформы, не указанных здесь — [подробнее здесь](#custom-frameworks).
 
 <Callout variant="info" skipSearchCrawler>
-  Want us to add support for another framework? Open an issue on [GitHub](https://github.com/inngest/website) or tell us about it on our [Discord](/discord).
+  Хотите, чтобы мы добавили поддержку другого фреймворка? Откройте issue на [GitHub](https://github.com/inngest/website) или расскажите нам об этом в нашем [Discord](/discord).
 </Callout>
 
-### Framework: Astro
+### Фреймворк: Astro
 
-Add the following to `./src/pages/api/inngest.ts`:
+Добавьте следующее в `./src/pages/api/inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -111,13 +111,13 @@ export const { GET, POST, PUT } = serve({
 ```
 </CodeGroup>
 
-See the [Astro example](https://github.com/inngest/inngest-js/tree/main/examples/framework-astro) for more information.
+См. [пример для Astro](https://github.com/inngest/inngest-js/tree/main/examples/framework-astro) для получения дополнительной информации.
 
-### Framework: AWS Lambda
+### Фреймворк: AWS Lambda
 
-We recommend using [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) to trigger your functions, as these require no other configuration or cost.
+Мы рекомендуем использовать [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) для запуска ваших функций, так как они не требуют дополнительной настройки или затрат.
 
-Alternatively, you can use an API Gateway to route requests to your Lambda. The handler supports [API Gateway V1](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) and [API Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html). If you are running API Gateway behind a proxy or have some other configuration, you may have to specify the `serveOrigin` and `servePath` options when calling `serve()` to ensure Inngest knows the URL where you are serving your functions. See [Configuring the API path](/docs/reference/serve#serve-client-functions-options) for more details.
+В качестве альтернативы вы можете использовать API Gateway для маршрутизации запросов к вашей Lambda. Обработчик поддерживает [API Gateway V1](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html) и [API Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html). Если вы используете API Gateway за прокси-сервером или имеете другую специфическую конфигурацию, вам может потребоваться указать параметры `serveOrigin` и `servePath` при вызове `serve()`, чтобы Inngest знал URL, по которому вы обслуживаете свои функции. См. [Настройка пути API](/docs/reference/serve#serve-client-functions-options) для подробностей.
 
 <CodeGroup>
 ```ts
@@ -134,8 +134,7 @@ export const handler = serve({
 
 ### Bun.serve()
 
-You can use the `inngest/bun` handler with `Bun.serve()` for a lightweight
-Inngest server:
+Вы можете использовать обработчик `inngest/bun` с `Bun.serve()` для легковесного сервера Inngest:
 
 ```ts {{ title: "index.ts" }}
 import { serve } from "inngest/bun";
@@ -150,12 +149,12 @@ Bun.serve({
 });
 ```
 
-See the [Bun example](https://github.com/inngest/inngest-js/tree/main/examples/bun) for more information.
+См. [пример для Bun](https://github.com/inngest/inngest-js/tree/main/examples/bun) для получения дополнительной информации.
 
 
-### Framework: Cloudflare Pages Functions
+### Фреймворк: Cloudflare Pages Functions
 
-You can import the Inngest API server when using <a href="https://developers.cloudflare.com/pages/platform/functions/" target="_blank" rel="nofollow">Cloudflare pages functions</a>  within `/functions/api/inngest.js`:
+Вы можете импортировать сервер API Inngest при использовании <a href="https://developers.cloudflare.com/pages/platform/functions/" target="_blank" rel="nofollow">Cloudflare pages functions</a> в файле `/functions/api/inngest.js`:
 
 <CodeGroup>
 ```ts
@@ -170,9 +169,9 @@ export const onRequest = serve({
 ```
 </CodeGroup>
 
-### Framework: Cloudflare Workers
+### Фреймворк: Cloudflare Workers
 
-You can export `"inngest/cloudflare"`'s `serve()` as your Cloudflare Worker:
+Вы можете экспортировать `serve()` из `"inngest/cloudflare"` как ваш Cloudflare Worker:
 
 <CodeGroup>
 ```ts
@@ -184,7 +183,7 @@ export default {
   fetch: serve({
     client: inngest,
     functions: [fnA],
-    // We suggest explicitly defining the path to serve Inngest functions
+    // Мы предлагаем явно определить путь для обслуживания функций Inngest
     servePath: "/api/inngest",
   }),
 };
@@ -192,16 +191,12 @@ export default {
 </CodeGroup>
 
 <Tip>
-  To automatically pass environment variables defined with Wrangler to Inngest function handlers, use the [Cloudflare Workers bindings middleware](/docs/examples/middleware/cloudflare-workers-environment-variables).
+  Чтобы автоматически передавать переменные окружения, определенные в Wrangler, в обработчики функций Inngest, используйте [промежуточное ПО для привязок Cloudflare Workers](/docs/examples/middleware/cloudflare-workers-environment-variables).
 </Tip>
 
-#### Local development with Wrangler
+#### Локальная разработка с Wrangler
 
-When developing locally with Wrangler and the `--remote` flag, your code is
-deployed and run remotely. To use this with a local Inngest Dev Server, you must
-use a tool such as [ngrok](https://ngrok.com/) or
-[localtunnel](https://theboroer.github.io/localtunnel-www/) to allow access to
-the Dev Server from the internet.
+При локальной разработке с использованием Wrangler и флага `--remote` ваш код развертывается и запускается удаленно. Чтобы использовать это с локальным сервером Inngest Dev Server, вы должны использовать такой инструмент, как [ngrok](https://ngrok.com/) или [localtunnel](https://theboroer.github.io/localtunnel-www/), чтобы обеспечить доступ к Dev Server из интернета.
 
 ```sh
 ngrok http 8288
@@ -209,22 +204,22 @@ ngrok http 8288
 
 ```toml {{ title: "wrangler.toml" }}
 [vars]
-# The URL of your tunnel. This enables the "cloud" worker to access the local Dev Server
+# URL вашего туннеля. Это позволяет "облачному" воркеру получить доступ к локальному Dev Server
 INNGEST_DEV = "https://YOUR_TUNNEL_URL.ngrok.app"
-# This may be needed:
-# The URL of your local server. This enables the Dev Server to access the app at this local URL
-# You may have to change this URL to match your local server if running on a different port.
-# Without this, the "cloud" worker may attempt to redirect Inngest to the wrong URL.
+# Это может потребоваться:
+# URL вашего локального сервера. Это позволяет Dev Server получить доступ к приложению по этому локальному URL
+# Вам может потребоваться изменить этот URL, если ваше локальное приложение работает на другом порту.
+# Без этого "облачный" воркер может попытаться перенаправить Inngest на неправильный URL.
 INNGEST_SERVE_ORIGIN = "http://localhost:8787"
 ```
 
-See an example of this in the [Hono framework example on GitHub](https://github.com/inngest/inngest-js/tree/main/examples/framework-hono).
+См. пример этого в [примере фреймворка Hono на GitHub](https://github.com/inngest/inngest-js/tree/main/examples/framework-hono).
 
-### Framework: DigitalOcean Functions
+### Фреймворк: DigitalOcean Functions
 
-The DigitalOcean serve function allows you to deploy Inngest to DigitalOcean serverless functions.
-Because DigitalOcean does not provide the request URL in its function arguments, you **must** include
-the function URL and path when configuring your handler:
+Функция обслуживания DigitalOcean позволяет развертывать Inngest в серверлесс-функциях DigitalOcean.
+Поскольку DigitalOcean не предоставляет URL запроса в аргументах функции, вы **должны** включить
+URL и путь функции при настройке обработчика:
 
 <CodeGroup>
 ```ts
@@ -235,24 +230,24 @@ import fnA from "./src/inngest/fnA"; // Your own function
 const main = serve({
   client: inngest,
   functions: [fnA],
-  // Your digitalocean hostname.  This is required otherwise your functions won't work.
+  // Ваше имя хоста digitalocean.  Это необходимо, иначе ваши функции не будут работать.
   serveOrigin: "https://faas-sfo3-your-url.doserverless.co",
-  // And your DO path, also required.
+  // И ваш путь выполнения также обязателен.
   servePath: "/api/v1/web/fn-your-uuid/inngest",
 });
 
-// IMPORTANT: Makes the function available as a module in the project.
-// This is required for any functions that require external dependencies.
+// ВАЖНО: Делает функцию доступной как модуль в проекте.
+// Это необходимо для любых функций, использующих внешние зависимости.
 module.exports.main = main;
 ```
 </CodeGroup>
 
-Inngest functions can also be deployed to [DigitalOcean's App Platform or Droplets](/docs/deploy/digital-ocean).
+Функции Inngest также могут быть развернуты на [App Platform или Droplets от DigitalOcean](/docs/deploy/digital-ocean).
 
 
-### Framework: ElysiaJS
+### Фреймворк: ElysiaJS
 
-For [deployment options](https://elysiajs.com/patterns/deploy.html), Elysia can compile to a binary or to JavaScript, or you can deploy with Docker or Railway.
+Для [вариантов развертывания](https://elysiajs.com/patterns/deploy.html), Elysia может компилироваться в бинарный файл или в JavaScript, а также вы можете развернуться с помощью Docker или Railway.
 
 
 ```ts {{ title: "src/index.ts" }}
@@ -269,23 +264,19 @@ const inngestHandler = new Elysia().all("/api/inngest", ({ request }) =>
   handler(request)
 );
 
-// register the handler with Elysia
+// зарегистрируйте обработчика в Elysia
 const app = new Elysia()
 .use(inngestHandler)
 
 ```
 
-Elysia's `use` function expects a single argument. We make use of the `all` method for the inngest api route to handle the expected
-methods and then get the request off of the context object passed to elysia handlers.
+Функция `use` в Elysia ожидает один аргумент. Мы используем метод `all` для маршрута API Inngest, чтобы обрабатывать ожидаемые методы, а затем получаем запрос из объекта контекста, передаваемого в обработчики Elysia.
 
-See the [ElysiaJS
-example](https://github.com/inngest/inngest-js/tree/main/examples/framework-elysiajs)
-for more information.
+См. [пример для ElysiaJS](https://github.com/inngest/inngest-js/tree/main/examples/framework-elysiajs) для получения дополнительной информации.
 
-### Framework: Express
+### Фреймворк: Express
 
-You can serve Inngest functions within your existing Express app, deployed to any hosting provider
-like Render, Fly, AWS, K8S, and others:
+Вы можете обслуживать функции Inngest внутри вашего существующего приложения Express, развернутого у любого хостинг-провайдера, такого как Render, Fly, AWS, K8S и др.:
 
 <CodeGroup>
 ```ts
@@ -293,29 +284,25 @@ import { serve } from "inngest/express";
 import { inngest } from "./src/inngest/client";
 import fnA from "./src/inngest/fnA"; // Your own function
 
-// Important:  ensure you add JSON middleware to process incoming JSON POST payloads.
+// Важно: убедитесь, что вы добавили JSON-middleware для обработки входящих JSON-тел в POST-запросах.
 app.use(express.json());
 app.use(
-  // Expose the middleware on our recommended path at `/api/inngest`.
+  // Разместите middleware по нашему рекомендуемому пути `/api/inngest`.
   "/api/inngest",
   serve({ client: inngest, functions: [fnA] })
 );
 ```
 </CodeGroup>
 
-You must ensure you're using the `express.json()` middleware otherwise your functions won't be
-executed. **Note** - You may need to set [`express.json()`'s `limit` option](https://expressjs.com/en/5x/api.html#express.json) to something higher than the default `100kb` to support larger event payloads and function state.
+Вы должны убедиться, что используете middleware `express.json()`, иначе ваши функции не будут выполнены. **Примечание** — вам может потребоваться установить параметр `limit` в `express.json()` выше значения по умолчанию `100kb`, чтобы поддерживать большие полезные нагрузки событий и состояния функций.
 
-See the [Express
-example](https://github.com/inngest/inngest-js/tree/main/examples/framework-express)
-for more information.
+См. [пример для Express](https://github.com/inngest/inngest-js/tree/main/examples/framework-express) для получения дополнительной информации.
 
-#### Streaming
+#### Стриминг
 
-Express can also stream responses back to Inngest, potentially allowing much
-longer timeouts.
+Express также может передавать ответы обратно в Inngest в потоковом режиме, что потенциально позволяет использовать гораздо более длительные тайм-ауты.
 
-To enable this, add the `streaming: true` option to your serve handler:
+Чтобы включить это, добавьте параметр `streaming: true` в ваш обработчик serve:
 
 <CodeGroup>
 ```ts
@@ -327,14 +314,14 @@ const handler = serve({
 ```
 </CodeGroup>
 
-For more information, check out the [Streaming](/docs/streaming) page.
+Для получения дополнительной информации посетите страницу [Стриминг](/docs/streaming).
 
 
-### Framework: Fastify
+### Фреймворк: Fastify
 
-You can serve Inngest functions within your existing Fastify app.
+Вы можете обслуживать функции Inngest внутри вашего существующего приложения Fastify.
 
-We recommend using the exported `inngestFastify` plugin, though we also expose a generic `serve()` function if you'd like to manually create a route.
+Мы рекомендуем использовать экспортируемый плагин `inngestFastify`, хотя мы также предоставляем общую функцию `serve()`, если вы хотите вручную создать маршрут.
 
 <CodeGroup>
 ```ts {{ title: "Plugin" }}
@@ -379,12 +366,11 @@ fastify.listen({ port: 3000 }, function (err, address) {
 ```
 </CodeGroup>
 
-See the [Fastify example](https://github.com/inngest/inngest-js/tree/main/examples/framework-fastify) for more information.
+См. [пример для Fastify](https://github.com/inngest/inngest-js/tree/main/examples/framework-fastify) для получения дополнительной информации.
 
-### Framework: Fresh (Deno)
+### Фреймворк: Fresh (Deno)
 
-Inngest works with Deno's <a href="https://fresh.deno.dev/" target="_blank" rel="nofollow">Fresh
-framework</a> via the `esm.sh` CDN.  Add the serve handler to `./api/inngest.ts` as follows:
+Inngest работает с фреймворком <a href="https://fresh.deno.dev/" target="_blank" rel="nofollow">Fresh</a> от Deno через CDN `esm.sh`. Добавьте обработчик serve в `./api/inngest.ts` следующим образом:
 
 <CodeGroup>
 ```ts
@@ -710,9 +696,9 @@ export const { GET, POST, PUT } = serve({
 
 For more information, check out the [Streaming](/docs/streaming) page.
 
-### Framework: Nitro
+### Фреймворк: Nitro
 
-Add the following to `./server/routes/api/inngest.ts`:
+Добавьте следующее в `./server/routes/api/inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -729,13 +715,13 @@ export default eventHandler(
 ```
 </CodeGroup>
 
-See the [Nitro example](https://github.com/inngest/inngest-js/tree/main/examples/framework-nitro) for more information.
+См. [пример для Nitro](https://github.com/inngest/inngest-js/tree/main/examples/framework-nitro) для получения дополнительной информации.
 
-### Framework: Nuxt
+### Фреймворк: Nuxt
 
-Inngest has first class support for [Nuxt server routes](https://nuxt.com/docs/guide/directory-structure/server#server-routes), allowing you to easily create the Inngest API.
+Inngest имеет первоклассную поддержку [серверных маршрутов Nuxt](https://nuxt.com/docs/guide/directory-structure/server#server-routes), позволяя вам легко создавать API Inngest.
 
-Add the following within `./server/api/inngest.ts`:
+Добавьте следующее в `./server/api/inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -752,12 +738,12 @@ export default defineEventHandler(
 ```
 </CodeGroup>
 
-See the [Nuxt example](https://github.com/inngest/inngest-js/tree/main/examples/framework-nuxt) for more information.
+См. [пример для Nuxt](https://github.com/inngest/inngest-js/tree/main/examples/framework-nuxt) для получения дополнительной информации.
 
 
-### Framework: Redwood
+### Фреймворк: Redwood
 
-Add the following to `api/src/functions/inngest.ts`:
+Добавьте следующее в `api/src/functions/inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -773,12 +759,11 @@ export const handler = serve({
 ```
 </CodeGroup>
 
-You should also update your `redwood.toml` to add `apiUrl = "/api"`, ensuring your API is served
-at the `/api` root.
+Вы также должны обновить ваш `redwood.toml`, добавив `apiUrl = "/api"`, чтобы убедиться, что ваш API обслуживается в корне `/api`.
 
-### Framework: Remix
+### Фреймворк: Remix
 
-Add the following to `./app/routes/api.inngest.ts`:
+Добавьте следующее в `./app/routes/api.inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -796,13 +781,13 @@ export { handler as action, handler as loader };
 ```
 </CodeGroup>
 
-See the [Remix example](https://github.com/inngest/inngest-js/tree/main/examples/framework-remix) for more information.
+См. [пример для Remix](https://github.com/inngest/inngest-js/tree/main/examples/framework-remix) для получения дополнительной информации.
 
-#### Streaming
+#### Стриминг
 
-Remix Edge Functions hosted on [Vercel](/docs/deploy/vercel) can also stream responses back to Inngest, giving you a much higher request timeout of 15 minutes (up from 10 seconds on the Vercel Hobby plan!).
+Edge-функции Remix, размещенные на [Vercel](/docs/deploy/vercel), также могут передавать ответы обратно в Inngest в потоковом режиме, что дает вам гораздо более высокий тайм-аут запроса — 15 минут (вместо 10 секунд на бесплатном тарифе Vercel!).
 
-To enable this, set your runtime to `"edge"` (see [Quickstart for Using Edge Functions | Vercel Docs](https://vercel.com/docs/concepts/functions/edge-functions/quickstart)) and add the `streaming: true` option to your serve handler:
+Чтобы включить это, установите рантайм `"edge"` (см. [Quickstart for Using Edge Functions | Vercel Docs](https://vercel.com/docs/concepts/functions/edge-functions/quickstart)) и добавьте параметр `streaming: true` в ваш обработчик serve:
 
 <CodeGroup>
 ```ts
@@ -818,12 +803,12 @@ const handler = serve({
 ```
 </CodeGroup>
 
-For more information, check out the [Streaming](/docs/streaming) page.
+Для получения дополнительной информации посетите страницу [Стриминг](/docs/streaming).
 
 
-### Framework: Supabase Edge Functions
+### Фреймворк: Supabase Edge Functions
 
-Supabase Edge Functions can use our `inngest/edge` package.
+Функции Supabase Edge могут использовать наш пакет `inngest/edge`.
 
 <CodeGroup>
 ```ts
@@ -839,11 +824,11 @@ Deno.serve(serve({
 ```
 </CodeGroup>
 
-Ensure that `servePath` matches your Supabase Edge Function name. Alternatively, you can set this with the `INNGEST_SERVE_PATH` environment variable. This is necessary because Supabase Edge Functions rewrite the request path.
+Убедитесь, что `servePath` совпадает с именем вашей функции Supabase Edge. В качестве альтернативы вы можете задать это с помощью переменной окружения `INNGEST_SERVE_PATH`. Это необходимо, так как функции Supabase Edge перезаписывают путь запроса.
 
-### Framework: Firebase Cloud Functions
+### Фреймворк: Firebase Cloud Functions
 
-Based on the Google Cloud Function architecture, the Firebase Cloud Functions provide a different API to serve functions using `onRequest`:
+Основываясь на архитектуре Google Cloud Function, Firebase Cloud Functions предоставляют другой API для обслуживания функций с помощью `onRequest`:
 
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -859,9 +844,9 @@ export const inngest = onRequest(
 );
 ```
 
-### Framework: SvelteKit
+### Фреймворк: SvelteKit
 
-Add the following to `./src/routes/api/inngest/+server.ts`:
+Добавьте следующее в `./src/routes/api/inngest/+server.ts`:
 
 <CodeGroup>
 ```ts
@@ -875,11 +860,11 @@ export const PUT = inngestServe.PUT;
 ```
 </CodeGroup>
 
-See the [SvelteKit example](https://github.com/inngest/inngest-js/tree/main/examples/framework-sveltekit) for more information.
+См. [пример для SvelteKit](https://github.com/inngest/inngest-js/tree/main/examples/framework-sveltekit) для получения дополнительной информации.
 
-### Framework: Tanstack Start
+### Фреймворк: Tanstack Start
 
-Add the following to `./src/routes/api/inngest.ts`:
+Добавьте следующее в `./src/routes/api/inngest.ts`:
 
 <CodeGroup>
 ```ts
@@ -902,13 +887,13 @@ export const Route = createFileRoute("/api/inngest")({
 ```
 </CodeGroup>
 
-See the [Tanstack Start example](https://github.com/inngest/inngest-js/tree/main/examples/framework-tanstack-start) for more information.
+См. [пример для Tanstack Start](https://github.com/inngest/inngest-js/tree/main/examples/framework-tanstack-start) для получения дополнительной информации.
 
-### Custom frameworks
+### Кастомные фреймворки
 
-If the framework that your application uses is not included in the above list of first-party supported frameworks, you can create a custom `serve` handler.
+Если фреймворк, который использует ваше приложение, не входит в приведенный выше список официально поддерживаемых, вы можете создать собственный обработчик `serve`.
 
-To create your own handler, check out the [example handler](https://github.com/inngest/inngest-js/blob/main/packages/inngest/src/test/functions/handler.ts) in our SDK's open source repository to understand how it works. Here's an example of a custom handler being created and used:
+Чтобы создать свой собственный обработчик, изучите [пример обработчика](https://github.com/inngest/inngest-js/blob/main/packages/inngest/src/test/functions/handler.ts) в открытом репозитории нашего SDK, чтобы понять, как он работает. Вот пример создания и использования кастомного обработчика:
 
 ```ts
 import { Inngest, InngestCommHandler, type ServeHandlerOptions } from "inngest";
@@ -949,7 +934,7 @@ export default serve({ client: inngest, functions: [fn] });
 <LanguageSection show="go">
 
 
-Inngest enables you to create a HTTP handler for your functions. This handler will be used to serve your functions over HTTP (compatible with `net/http`).
+Inngest позволяет вам создать HTTP-обработчик для ваших функций. Этот обработчик будет использоваться для обслуживания ваших функций через HTTP (совместим с `net/http`).
 
 ```go {{ title: "Go (HTTP)" }}
 package main
@@ -977,7 +962,7 @@ func main() {
 			ID:   "account-created",
 			Name: "Account creation flow",
 		},
-		// Run on every api/account.created event.
+  // Запуск на каждое событие api/account.created.
 		inngestgo.EventTrigger("api/account.created", nil),
 		AccountCreated,
 	)
@@ -992,8 +977,8 @@ func main() {
 
 <LanguageSection show="python">
 
-You expose your functions to Inngest through this HTTP endpoint.
-Inngest provides integrations with Flask and FastAPI.
+Вы открываете свои функции для Inngest через этот HTTP-эндпоинт.
+Inngest предоставляет интеграции с Flask и FastAPI.
 
 <CodeGroup>
 
@@ -1056,20 +1041,17 @@ inngest.fast_api.serve(
 
 </LanguageSelector>
 
-### Signing key
+### Ключ подписи
 
-You'll need to assign your [signing key](/docs/platform/signing-keys) to an [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key) environment variable in your hosting
-provider or `.env` file locally, which lets the SDK securely communicate with Inngest. If you can't
-use an environment variable, you can pass the signing key directly to the Inngest client constructor via the `signingKey` option. [Read
-the reference for more information](/docs/sdk/reference/serve#reference).
+Вам потребуется назначить ваш [ключ подписи](/docs/platform/signing-keys) переменной окружения [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key) у вашего хостинг-провайдера или в локальном файле `.env`, что позволит SDK безопасно взаимодействовать с Inngest. Если вы не можете использовать переменную окружения, вы можете передать ключ подписи напрямую в конструктор клиента Inngest через параметр `signingKey`. [Прочтите справочник для получения дополнительной информации](/docs/sdk/reference/serve#reference).
 
-### Other configuration
+### Другая конфигурация
 
-When using `serve`, allow requests up to 4 MB in size. This is the maximum request size that Inngest will send to your app. Configurating maximum request size is framework-specific, so check the documentation for your framework for more information.
+При использовании `serve` разрешайте запросы размером до 4 МБ. Это максимальный размер запроса, который Inngest будет отправлять в ваше приложение. Настройка максимального размера запроса зависит от фреймворка, поэтому обратитесь к документации вашего фреймворка за подробностями.
 
-## Reference
+## Справочник
 
-For more information about the `serve` handler, read the [the reference guide](/docs/reference/serve), which includes:
+Для получения дополнительной информации об обработчике `serve` прочтите [справочное руководство](/docs/reference/serve), которое включает:
 
-* [`serve()` configuration options](/docs/reference/serve#serve-client-functions-options)
-* [How the serve handler works](/docs/reference/serve#how-the-serve-api-handler-works)
+* [Параметры конфигурации `serve()`](/docs/reference/serve#serve-client-functions-options)
+* [Как работает обработчик serve](/docs/reference/serve#how-the-serve-api-handler-works)

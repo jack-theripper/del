@@ -8,22 +8,22 @@ import {
   RiKeyLine,
 } from "@remixicon/react";
 
-# Creating middleware
+# Создание промежуточного ПО
 
-Creating middleware means defining the lifecycles and subsequent hooks in those lifecycles to run code in. Lifecycles are actions such as a function run or sending events, and individual hooks within those are where we run code, usually with a _before_ and _after_ step.
+Создание промежуточного ПО означает определение жизненных циклов и хуков внутри них для выполнения кода. Жизненные циклы — это действия, такие как запуск функции или отправка событий, а хуки внутри них — это место выполнения кода, обычно с шагами _до_ и _после_.
 
 <LanguageSelector>
 
     <LanguageSection show="go">
 
       <Callout>
-        Support for Middleware in the Go SDK in planned.
+        Поддержка промежуточного ПО в Go SDK планируется.
       </Callout>
 
     </LanguageSection>
 
 <LanguageSection show="typescript">
-    A middleware is created by extending the `Middleware.BaseMiddleware` class.
+    Промежуточное ПО создаётся расширением класса `Middleware.BaseMiddleware`.
 
     **`class MyMiddleware extends Middleware.BaseMiddleware`**
 
@@ -47,7 +47,7 @@ Creating middleware means defining the lifecycles and subsequent hooks in those 
 
 <LanguageSection show="python">
 
-    A Middleware is created using the `inngest.Middleware` class.
+    Промежуточное ПО создаётся с помощью класса `inngest.Middleware`.
 
     **`class MyMiddleware(inngest.Middleware):`**
 
@@ -76,10 +76,10 @@ Creating middleware means defining the lifecycles and subsequent hooks in those 
 
 </LanguageSection>
 
-## Initialization
+## Инициализация
 
 <LanguageSection show="typescript">
-As you can see above, we start with a class that extends `Middleware.BaseMiddleware`. A fresh instance is created for every request, so you can safely use instance properties (`this`) to store per-request state.
+Как видно выше, начинаем с класса, расширяющего `Middleware.BaseMiddleware`. Новый экземпляр создаётся для каждого запроса, поэтому можно безопасно использовать свойства экземпляра (`this`) для хранения состояния запроса.
 
 ```ts
 import { Middleware } from "inngest";
@@ -92,7 +92,7 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 </LanguageSection>
 
 <LanguageSection show="python">
-    As you can see above, we start with the `__init__` method, which is called when the client is initialized.
+    Как видно выше, начинаем с метода `__init__`, вызываемого при инициализации клиента.
 
     ```py
     import inngest
@@ -111,7 +111,7 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 
 
 <LanguageSection show="typescript">
-    Hook methods can be synchronous or `async` functions. For one-time setup like establishing a database connection, use the static `onRegister` hook which runs when the middleware class is registered with a client or function.
+    Методы хуков могут быть синхронными или `async` функциями. Для одноразовой настройки, например установки соединения с базой данных, используйте статический хук `onRegister`, выполняемый при регистрации класса промежуточного ПО с клиентом или функцией.
 
     ```ts
     class MyMiddleware extends Middleware.BaseMiddleware {
@@ -124,7 +124,7 @@ class MyMiddleware extends Middleware.BaseMiddleware {
 
 
 <LanguageSection show="python">
-    Function registration, lifecycles, and hooks can all be with synchronous or `async` functions. This makes it easy for our initialization handler to do some async work, like setting up a database connection.
+    Регистрация функций, жизненные циклы и хуки могут быть синхронными или `async` функциями. Это позволяет обработчику инициализации выполнять асинхронную работу, например установку соединения с базой данных.
 
     ```py
     import inngest
@@ -139,16 +139,16 @@ class MyMiddleware extends Middleware.BaseMiddleware {
     ```
 </LanguageSection>
 
-All lifecycle and hook functions can be synchronous or `async` functions - the SDK will always wait until a middleware's function has resolved before continuing to the next one.
+Все функции жизненного цикла и хуков могут быть синхронными или `async` функциями — SDK всегда ожидает завершения функции промежуточного ПО перед переходом к следующей.
 
 <Callout>
-As it's possible for an application to use multiple Inngest clients, it's recommended to always initialize dependencies within the initializer function/method, instead of in the global scope.
+Поскольку приложение может использовать несколько клиентов Inngest, рекомендуется всегда инициализировать зависимости внутри функции/метода инициализатора, а не в глобальной области видимости.
 </Callout>
 
-## Specifying lifecycles and hooks
+## Определение жизненных циклов и хуков
 
 <LanguageSection show="typescript">
-    Override the hook methods you need directly on your middleware class. See the [Middleware lifecycle reference](/docs/reference/typescript/v4/middleware/lifecycle) for a full list of available hooks.
+    Переопределяйте нужные методы хуков прямо в классе промежуточного ПО. Полный список доступных хуков смотрите в [справочнике жизненного цикла промежуточного ПО](/docs/reference/typescript/v4/middleware/lifecycle).
 
     ```ts
     import { Middleware } from "inngest";
@@ -180,18 +180,17 @@ As it's possible for an application to use multiple Inngest clients, it's recomm
     }
     ```
 
-    Hooks you don't define have zero overhead: the SDK skips them entirely. A fresh instance is created for every request, so you can safely use instance properties (`this`) to store per-request state without worrying about leaks between runs.
+    Неопределённые хуки не создают накладных расходов: SDK полностью их пропускает. Новый экземпляр создаётся для каждого запроса, поэтому можно безопасно использовать свойства экземпляра (`this`) для хранения состояния запроса без риска утечки между запусками.
 
-    Learn more about hooks with:
+    Подробнее о хуках:
 
-    - [Lifecycle](/docs/reference/typescript/v4/middleware/lifecycle) - middleware ordering and see all available hooks
-    - [Examples](/docs/reference/typescript/v4/middleware/examples) - real-world middleware examples
+    - [Жизненный цикл](/docs/reference/typescript/v4/middleware/lifecycle) — порядок промежуточного ПО и все доступные хуки
+    - [Примеры](/docs/reference/typescript/v4/middleware/examples) — практические примеры промежуточного ПО
 
 </LanguageSection>
 
 <LanguageSection show="python">
-    You might have notice that our custom middleware defines custom method such as `before_send_events` and `after_send_events`. Those methods, called hooks, enable your middleware
-    to hook itself to specific steps of the Function and Steps execution lifecycle.
+    Вы могли заметить, что наше промежуточное ПО определяет методы `before_send_events` и `after_send_events`. Эти методы, называемые хуками, позволяют промежуточному ПО встраиваться в определённые этапы жизненного цикла выполнения функций и шагов.
 
     ```py
     import inngest
@@ -214,13 +213,13 @@ As it's possible for an application to use multiple Inngest clients, it's recomm
 
     ```
 
-    You can find the [full list of available hooks in the Python SDK reference](/docs/reference/python/middleware/lifecycle).
+    Полный список доступных хуков смотрите в [справочнике Python SDK](/docs/reference/python/middleware/lifecycle).
 
 </LanguageSection>
 
-## Adding configuration
+## Добавление конфигурации
 
-It's common for middleware to require additional customization or options from developers. For this, we recommend creating a function that takes in some options and returns the middleware.
+Часто промежуточному ПО требуется дополнительная настройка или параметры от разработчиков. Для этого рекомендуется создать функцию, принимающую параметры и возвращающую промежуточное ПО.
 
 <LanguageSection show="typescript">
     ```ts {{ title: "inngest/middleware/myMiddleware.ts" }}
@@ -248,15 +247,15 @@ It's common for middleware to require additional customization or options from d
     ```
 
     <Callout>
-    Make sure to let TypeScript infer the output of the function instead of strictly typing it; this helps Inngest understand changes to input and output of arguments. See [Middleware lifecycle](/docs/reference/typescript/v4/middleware/lifecycle) for more information.
+    Позвольте TypeScript выводить возвращаемый тип функции вместо явной типизации — это помогает Inngest понимать изменения во входных и выходных аргументах. Подробнее смотрите в [жизненном цикле промежуточного ПО](/docs/reference/typescript/v4/middleware/lifecycle).
     </Callout>
 
 </LanguageSection>
 
 <LanguageSection show="python">
-    Adding configuration to a custom middleware can be achieved by adding a `factory()` class method, leveraging the [Factory pattern](https://en.wikipedia.org/wiki/Factory_method_pattern).
+    Добавление конфигурации в пользовательское промежуточное ПО можно реализовать с помощью метода класса `factory()`, используя [паттерн фабрики](https://en.wikipedia.org/wiki/Factory_method_pattern).
 
-    For example, let's add a `secret_key` configuration option to our `MyMiddleware` middleware:
+    Например, добавим параметр конфигурации `secret_key` в промежуточное ПО `MyMiddleware`:
 
     ```py
     import inngest
@@ -295,7 +294,7 @@ It's common for middleware to require additional customization or options from d
             print("Done sending events")
     ```
 
-    Our middleware can now be registered as follow:
+    Теперь промежуточное ПО можно регистрировать следующим образом:
 
     ```py
     inngest_client = inngest.Inngest(
@@ -306,25 +305,25 @@ It's common for middleware to require additional customization or options from d
 </LanguageSection>
 
 
-## Next steps
+## Дальнейшие шаги
 
-Check out our pre-built middleware and examples:
+Ознакомьтесь с нашими готовыми промежуточными ПО и примерами:
 
 <CardGroup cols={2}>
-  <Card title="Dependency Injection" icon={<RiPlugLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/dependency-injection'}>
-    Provide shared client instances (ex, OpenAI) to your Inngest Functions.
+  <Card title="Внедрение зависимостей" icon={<RiPlugLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/dependency-injection'}>
+    Предоставляйте общие экземпляры клиентов (например, OpenAI) функциям Inngest.
   </Card>
-  <Card title="Encryption Middleware" icon={<RiEyeOffLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/encryption-middleware'}>
-    End-to-end encryption for events, step output, and function output.
+  <Card title="Промежуточное ПО шифрования" icon={<RiEyeOffLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/encryption-middleware'}>
+    Сквозное шифрование событий, вывода шагов и вывода функций.
   </Card>
-  <Card title="Sentry Middleware" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/sentry-middleware'}>
-    Quickly setup Sentry for your Inngest Functions.
+  <Card title="Промежуточное ПО Sentry" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/sentry-middleware'}>
+    Быстрая настройка Sentry для функций Inngest.
   </Card>
-  <Card title="Datadog middleware" icon={<RiTerminalBoxLine className="text-basis h-4 w-4"/>} href={'/docs/examples/track-failures-in-datadog'}>
-    Add tracing with Datadog under a few minutes.
+  <Card title="Промежуточное ПО Datadog" icon={<RiTerminalBoxLine className="text-basis h-4 w-4"/>} href={'/docs/examples/track-failures-in-datadog'}>
+    Добавьте трассировку с Datadog за несколько минут.
   </Card>
-  <Card title="Cloudflare Workers & Hono middleware" icon={<RiKeyLine className="text-basis h-4 w-4"/>} href={'/docs/examples/middleware/cloudflare-workers-environment-variables'}>
-    Access environment variables within Inngest functions.
+  <Card title="Промежуточное ПО Cloudflare Workers и Hono" icon={<RiKeyLine className="text-basis h-4 w-4"/>} href={'/docs/examples/middleware/cloudflare-workers-environment-variables'}>
+    Доступ к переменным среды внутри функций Inngest.
   </Card>
 </CardGroup>
 

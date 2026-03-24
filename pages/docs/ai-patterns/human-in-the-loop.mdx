@@ -1,12 +1,12 @@
-export const description = `Create AI workflows that pause for human input before continuing. Use Inngest's "waitForEvent" to build decoupled flows.`
+export const description = `Создавайте ИИ-воркфлоу, которые приостанавливаются для ввода данных человеком перед продолжением. Используйте "waitForEvent" в Inngest для создания слабосвязанных потоков.`
 
-# Human-in-the-loop (HITL)
+# Участие человека в цикле (Human-in-the-loop, HITL)
 
-Use [`step.waitForEvent()`](/docs/features/inngest-functions/steps-workflows/wait-for-event) to pause agent execution for human approval, then resume or abort based on the response.
+Используйте [`step.waitForEvent()`](/docs/features/inngest-functions/steps-workflows/wait-for-event), чтобы приостановить выполнение агента для одобрения человеком, а затем возобновить или прервать работу в зависимости от ответа.
 
-## The basic pattern
+## Базовый паттерн
 
-Create a function that proposes an action, notifies a human, waits for a response, and resumes or aborts:
+Создайте функцию, которая предлагает действие, уведомляет человека, ждет ответа и возобновляет или прерывает выполнение:
 
 ```typescript
 import { inngest } from "./client";
@@ -16,7 +16,7 @@ export const emailApprovalWorkflow = inngest.createFunction(
   async ({ event, step }) => {
     const { recipient, context, userId } = event.data;
 
-    // Step 1: Agent drafts the email
+    // Шаг 1: Агент готовит черновик письма
     const draft = await step.run("draft-email", async () => {
       return await generateEmail({
         recipient,
@@ -25,7 +25,7 @@ export const emailApprovalWorkflow = inngest.createFunction(
       });
     });
 
-    // Step 2: Notify the human via Slack
+    // Шаг 2: Уведомление человека через Slack
     await step.run("request-approval", async () => {
       await sendSlackMessage({
         channel: "#agent-approvals",
@@ -34,7 +34,7 @@ export const emailApprovalWorkflow = inngest.createFunction(
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `*Agent wants to send an email*\n\n*To:* ${recipient}\n*Subject:* ${draft.subject}\n\n${draft.body}`,
+              text: `*Агент хочет отправить письмо*\n\n*Кому:* ${recipient}\n*Тема:* ${draft.subject}\n\n${draft.body}`,
             },
           },
           {
@@ -42,7 +42,7 @@ export const emailApprovalWorkflow = inngest.createFunction(
             elements: [
               {
                 type: "button",
-                text: { type: "plain_text", text: "✅ Approve" },
+                text: { type: "plain_text", text: "✅ Одобрить" },
                 action_id: "approve_email",
                 value: JSON.stringify({
                   approvalId: event.data.approvalId,
@@ -52,7 +52,7 @@ export const emailApprovalWorkflow = inngest.createFunction(
               },
               {
                 type: "button",
-                text: { type: "plain_text", text: "❌ Reject" },
+                text: { type: "plain_text", text: "❌ Отклонить" },
                 action_id: "reject_email",
                 value: JSON.stringify({
                   approvalId: event.data.approvalId,
@@ -66,26 +66,26 @@ export const emailApprovalWorkflow = inngest.createFunction(
       });
     });
 
-    // Step 3: Wait for human response — no compute cost while waiting
+    // Шаг 3: Ожидание ответа человека — без затрат на вычисления во время ожидания
     const approval = await step.waitForEvent("wait-for-approval", {
       event: "agent/approval.response",
       match: "data.approvalId",
       timeout: "24h",
     });
 
-    // Step 4: Handle the response
-    // No event means it timed out
+    // Шаг 4: Обработка ответа
+    // Если событие не получено, значит время ожидания истекло
     if (!approval) {
       await step.run("notify-timeout", async () => {
         await sendSlackMessage({
           channel: "#agent-approvals",
-          text: `⏰ Email approval timed out. Draft discarded.\n*To:* ${recipient}\n*Subject:* ${draft.subject}`,
+          text: `⏰ Время ожидания одобрения письма истекло. Черновик удален.\n*Кому:* ${recipient}\n*Тема:* ${draft.subject}`,
         });
       });
       return { status: "timed_out", action: "email_not_sent" };
     }
 
-    // The event payload can be used with whatever parameters that you send
+    // Полезную нагрузку события можно использовать с любыми параметрами, которые вы отправляете
     if (approval.data.approved) {
       await step.run("send-email", async () => {
         await sendEmail({
@@ -99,16 +99,16 @@ export const emailApprovalWorkflow = inngest.createFunction(
 
     return {
       status: "rejected",
-      reason: approval.data.reason || "No reason provided",
+      reason: approval.data.reason || "Причина не указана",
       action: "email_not_sent",
     };
   }
 );
 ```
 
-The `match` field correlates the response to the correct waiting function — if you have 50 pending approvals, each resolves independently. The function is suspended while waiting, so there's no compute cost while a human reviews.
+Поле `match` соотносит ответ с нужной функцией ожидания — если у вас 50 ожидающих одобрений, каждое из них разрешается независимо. Во время ожидания функция приостанавливается, поэтому вычислительные ресурсы не тратятся, пока человек проверяет запрос.
 
-## Send the approval response back
+## Отправка ответа об одобрении обратно
 
 When the human clicks a button (Slack, email, dashboard, etc.), send an event to Inngest so `step.waitForEvent()` resolves.
 

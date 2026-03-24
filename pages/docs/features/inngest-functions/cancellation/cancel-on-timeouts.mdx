@@ -1,24 +1,24 @@
 import { CodeGroup, Row, Col, LanguageSelector, LanguageSection, Callout, VersionBadge } from "src/shared/Docs/mdx";
-export const description = 'Learn how to cancel long running functions with events.'
+export const description = 'Узнайте, как отменять долго выполняющиеся функции с помощью событий.'
 
-# Cancel on timeouts
+# Отмена по таймауту
 
-It's possible to force runs to cancel if they take too long to start, or if the runs execute for too long.  The `timeouts` configuration property allows you to automatically cancel functions based off of two timeout properties:
+Можно принудительно отменять запуски, если они слишком долго ожидают начала выполнения или выполняются слишком долго. Параметр конфигурации `timeouts` позволяет автоматически отменять функции на основе двух свойств таймаута:
 
-- `timeouts.start`, which controls how long a function can stay "queued" before they start
-- `timeouts.finish`, which controls how long a function can execute once started
+- `timeouts.start` — определяет, как долго функция может находиться в очереди до начала выполнения
+- `timeouts.finish` — определяет, как долго функция может выполняться после запуска
 
 
-In the following examples, we'll explore how to configure the timeout property and how this works.
+В следующих примерах рассмотрим, как настроить свойство `timeouts` и как это работает.
 
 <LanguageSelector>
 
 
-## `timeouts.start` - Adding timeouts to queued runs (before start)
+## `timeouts.start` — Таймаут для запусков в очереди (до начала выполнения)
 
-Runs may stay in the queue waiting to start due to concurrency backlogs, throttling configurations, or other delays. You can automatically cancel these runs if they are queued for too long prior to starting.
+Запуски могут находиться в очереди ожидания из-за накопления задач вследствие ограничения параллелизма, настроек троттлинга или других задержек. Такие запуски можно автоматически отменять, если они слишком долго ожидают начала выполнения.
 
-The `timeouts.start` configuration property controls this timeout. This example forces runs to cancel if it takes over 10 seconds to successfully start the first step of a run:
+Свойство `timeouts.start` управляет этим таймаутом. В следующем примере запуски принудительно отменяются, если первый шаг не начал выполняться в течение 10 секунд:
 
 <LanguageSection show="typescript">
 ```ts {{ title: "inngest/function.ts" }}
@@ -47,11 +47,11 @@ const scheduleReminder = inngest.createFunction(
 ```
 </LanguageSection>
 
-## `timeouts.finish` - Adding timeouts to executing runs
+## `timeouts.finish` — Таймаут для выполняющихся запусков
 
-You may want to limit the overall duration of a run after the run starts executing. You can cancel functions automatically if they're executing for too long.
+Может потребоваться ограничить общую продолжительность запуска после его начала. Функции можно автоматически отменять, если они выполняются слишком долго.
 
-The `timeouts.finish` configuration property controls this timeout. This example forces runs to cancel if it takes over 30 seconds to finish, once started:
+Свойство `timeouts.finish` управляет этим таймаутом. В следующем примере запуски принудительно отменяются, если после начала выполнения прошло более 30 секунд:
 
 <LanguageSection show="typescript">
 ```ts {{ title: "inngest/function.ts" }}
@@ -84,15 +84,15 @@ const scheduleReminder = inngest.createFunction(
 
 </LanguageSelector>
 
-## Tips
+## Советы
 
-* The `timeouts.start` duration limits how long a run waits in the queue for the first step to start
-* Once the first attempt of a step begins, the `timeouts.start` property no longer applies.  Instead, the `timeouts.finish` duration begins.
-* Once started, the `timeouts.finish` duration limits how long a run can execute
-* Both properties can be stacked to control the overall length of a function run
-* Runs that are cancelled due to a timeout trigger an [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled) event
+* `timeouts.start` ограничивает время ожидания запуска в очереди до начала первого шага
+* Как только начинается первая попытка выполнения шага, свойство `timeouts.start` перестаёт действовать. Вместо него начинает отсчитываться таймаут `timeouts.finish`.
+* После начала выполнения `timeouts.finish` ограничивает, как долго может выполняться запуск
+* Оба свойства можно комбинировать для контроля общей продолжительности запуска функции
+* Запуски, отменённые по таймауту, генерируют событие [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled)
 
-## Limitations
+## Ограничения
 
-- Step duration is unaffected by timeouts. For example, a 5 minute timeout will not prematurely cancel a step after 5 minutes.
-- Concurrency can delay timeouts. For example, if a function is configured with a 5 minute timeout but concurrency delays the function run for 10 minutes, then the run will take 10 minutes to cancel.
+- Продолжительность шага не зависит от таймаутов. Например, 5-минутный таймаут не прервёт шаг досрочно по истечении 5 минут.
+- Ограничение параллелизма может задержать применение таймаутов. Например, если функция настроена с 5-минутным таймаутом, но ограничение параллелизма задерживает запуск на 10 минут, отмена займёт 10 минут.

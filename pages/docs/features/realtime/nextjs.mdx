@@ -1,13 +1,13 @@
 import { CardGroup, Card } from "src/shared/Docs/mdx";
 import { RiGithubFill } from "@remixicon/react";
 
-export const description = 'How to use Realtime in your Next.js app.'
+export const description = 'Как использовать Realtime в приложении Next.js.'
 
-# Realtime in Next.js
+# Реальное время в Next.js
 
-Realtime provides a direct compatibility with Next.js API Routes's streaming capabilities.
+Realtime обеспечивает прямую совместимость с возможностями потоковой передачи Next.js API Routes.
 
-A `stream` returned by the `subscribe()` helper can be used to create a HTTP stream response:
+`stream`, возвращаемый хелпером `subscribe()`, можно использовать для создания HTTP-потокового ответа:
 
 ```tsx {{ filename: "app/api/simple-search/route.ts" }}
 import crypto from "crypto";
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 }
 ```
 
-On the client, you can consume the stream using a simple `fetch()`:
+На стороне клиента поток можно потреблять с помощью обычного `fetch()`:
 
 ```tsx {{ filename: "app/components/Chat.tsx" }}
 "use client";
@@ -105,25 +105,25 @@ export function SimpleSearch() {
 
   <Card
     href={"https://github.com/inngest/inngest-js/tree/main/examples/realtime-demos#readme"}
-    title={"See the complete example source code"}
+    title={"Смотрите полный исходный код примера"}
     icon={<RiGithubFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-     Explore our Next.js Realtime demo applications.
+     Изучите наши демо-приложения Next.js Realtime.
   </Card>
 
 </CardGroup>
 
 
-## FAQ
+## Часто задаваемые вопросы
 
-### How do I consume the stream on the client?
-A stream return by a Vercel Function can be consumed by the client using the `fetch()` API.
+### Как потреблять поток на стороне клиента?
+Поток, возвращённый функцией Vercel, можно потреблять клиентом с помощью API `fetch()`.
 
-From the `fetch()` response, you can get a `Reader` object, which you can use to read the stream's content using:
-- a loop to read the stream's content chunk by chunk
-- a `TextDecoder` to decode the stream's content into a string
-- a `JSON.parse()` to parse the stream's content into a JSON object
+Из ответа `fetch()` можно получить объект `Reader`, который используется для чтения содержимого потока с помощью:
+- цикла для чтения содержимого потока по частям
+- `TextDecoder` для декодирования содержимого потока в строку
+- `JSON.parse()` для преобразования содержимого потока в JSON-объект
 
 ```ts
 const response = await fetch("/api/simple-search", {
@@ -154,12 +154,12 @@ while (true) {
 }
 ```
 
-Depending on your use case, you might want to handle the stream's termination differently (see below for an example).
+В зависимости от варианта использования может потребоваться по-разному обрабатывать завершение потока (смотрите пример ниже).
 
-### How do I handle the termination of the stream?
+### Как обработать завершение потока?
 
-By default, an Inngest Realtime stream will remain open until explicitly closed by the client.
-For this reason, you should handle the stream's termination by publishing a specific message from your Inngest function and handling it in the client's stream reader.
+По умолчанию поток Inngest Realtime остаётся открытым до явного закрытия клиентом.
+По этой причине следует обрабатывать завершение потока, публикуя специальное сообщение из функции Inngest и обрабатывая его в ридере потока на клиенте.
 
 ```ts {{ filename: "app/inngest/functions/streaming-workflow.ts" }}
 import { inngest } from "../client";
@@ -240,8 +240,8 @@ export function SimpleSearch() {
 ```
 
 
-### Is it compatible with Vercel's AI `useChat()`?
+### Совместим ли он с `useChat()` от Vercel AI?
 
-An Inngest Function publishing messages matching the `useChat()` hook's signature will be compatible with it.
+Функция Inngest, публикующая сообщения в формате, соответствующем сигнатуре хука `useChat()`, будет совместима с ним.
 
-See the [`Message`](https://sdk.vercel.ai/docs/reference/ai-sdk-ui/use-chat#messages) reference for the expected message format.
+Смотрите [справочник `Message`](https://sdk.vercel.ai/docs/reference/ai-sdk-ui/use-chat#messages) для ожидаемого формата сообщений.

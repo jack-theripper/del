@@ -2,67 +2,67 @@ import { ResourceGrid, Resource } from 'src/shared/Docs/Resources'
 
 export const hidePageSidebar = true;
 
-# Guides
+# Руководства
 
-Learn how to build with Inngest:
+Узнайте, как создавать приложения с помощью Inngest:
 
-## Patterns
+## Паттерны
 
 <ResourceGrid cols={3}>
 
 <Resource resource={{
   href: "/docs/guides/background-jobs",
-  name: "Background jobs",
+  name: "Фоновые задачи",
   icon: "paper-airplane",
-  description: "Run long-running tasks in the background out of the critical path of a request.",
+  description: "Запускайте длительные задачи в фоновом режиме вне критического пути запроса.",
   pattern: 0,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/delayed-functions",
-  name: "Enqueueing future jobs",
+  name: "Отложенные задачи",
   icon: "chevron-double-right",
-  description: "Schedule or delay functions to run in the future.",
+  description: "Планируйте или откладывайте запуск функций на будущее.",
   pattern: 1,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/step-parallelism",
-  name: "Parallelize steps",
+  name: "Параллельные шаги",
   icon: "parallel",
-  description: "Run function steps in parallel to speed up execution.",
+  description: "Запускайте шаги функции параллельно для ускорения выполнения.",
   pattern: 2,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/fan-out-jobs",
-  name: "Fan-out",
+  name: "Fan-out (Разветвление)",
   icon: "arrows-pointing-out",
-  description: "Use events to trigger multiple functions at once.",
+  description: "Используйте события для одновременного запуска нескольких функций.",
   pattern: 3,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/batching",
-  name: "Batching events",
+  name: "Пакетная обработка",
   icon: "square-3-stack-3d",
-  description: "Improve efficiency with high-load systems by processing batches of events at once.",
+  description: "Повышайте эффективность высоконагруженных систем, обрабатывая группы событий за раз.",
   pattern: 2,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/scheduled-functions",
-  name: "Scheduled functions",
+  name: "Запланированные функции",
   icon: "clock",
-  description: "Run functions periodically on a cron schedule.",
+  description: "Запускайте функции периодически по расписанию cron.",
   pattern: 1,
 }}/>
 
 <Resource resource={{
   href: "/docs/guides/invoking-functions-directly",
-  name: "Invoking functions directly",
+  name: "Прямой вызов функций",
   icon: "rectangle-group",
-  description: "Call one function from another across multiple apps.",
+  description: "Вызывайте одну функцию из другой в рамках нескольких приложений.",
   pattern: 0
 }}/>
 

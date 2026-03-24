@@ -1,12 +1,12 @@
-export const description = "Build a durable AI agent loop with Inngest where each LLM call and tool execution is a retriable, checkpointed step."
+export const description = "Создайте устойчивый цикл ИИ-агента с Inngest, где каждый вызов LLM и выполнение инструмента являются отказоустойчивым шагом с контрольной точкой (checkpoint)."
 
-# Build an Agent Tool Loop
+# Создание цикла инструментов агента (Agent Tool Loop)
 
-This guide walks you through building a ReAct-style agent loop (Reason → Act → Observe → Repeat) where each iteration is a durable, retriable step.
+В этом руководстве вы узнаете, как создать цикл агента в стиле ReAct (Рассуждение → Действие → Наблюдение → Повторение), где каждая итерация является надежным и отказоустойчивым шагом.
 
-## The basic loop
+## Базовый цикл
 
-Create a function that takes a user message, calls an LLM, executes any requested tools, and repeats until the LLM returns a final answer:
+Создайте функцию, которая принимает сообщение пользователя, вызывает LLM, выполняет запрошенные инструменты и повторяет процесс до тех пор, пока LLM не вернет окончательный ответ:
 
 ```ts
 import { inngest } from "./client";
@@ -18,7 +18,7 @@ export const agent = inngest.createFunction(
   { id: "agent-loop", triggers: [{ event: "agent/message.received" }] },
   async ({ event, step }) => {
     const messages: Anthropic.MessageParam[] = [
-	  // Prepare your initial messages array w/ system, user prompts
+	  // Подготовьте начальный массив сообщений с системными и пользовательскими промптами
       { role: "user", content: event.data.message },
     ];
 
@@ -29,25 +29,25 @@ export const agent = inngest.createFunction(
     while (!done && iterations < MAX_ITERATIONS) {
       iterations++;
 
-      // 1. Think — ask the LLM what to do next
+      // 1. Рассуждение (Think) — спрашиваем LLM, что делать дальше
       const llmResult = await step.run(`think`, async () => {
         return await anthropic.messages.create({
           model: "claude-opus-4-6",
           max_tokens: 4096,
-          // Use your own expertly crafted prompt:
-          system: "You are a helpful assistant with access to tools.",
+          // Используйте свой мастерски составленный промпт:
+          system: "Вы — полезный помощник с доступом к инструментам.",
           messages,
-          tools, // your tool definitions
+          tools, // определения ваших инструментов
         });
       });
 
-      // 2. Check if the LLM wants to use tools
+      // 2. Проверка, хочет ли LLM использовать инструменты
       const toolCalls = llmResult.content.filter(
         (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
       );
 
       if (toolCalls.length === 0) {
-        // No tools — we're done
+        // Инструменты не требуются — завершаем
         const text = llmResult.content.find(
           (b): b is Anthropic.TextBlock => b.type === "text"
         );
@@ -55,7 +55,7 @@ export const agent = inngest.createFunction(
         return { response: text?.text ?? "", iterations };
       }
 
-      // 3. Act — execute each tool
+      // 3. Действие (Act) — выполнение каждого инструмента
       messages.push({ role: "assistant", content: llmResult.content });
       const toolResults: Anthropic.ToolResultBlockParam[] = [];
 
@@ -71,44 +71,44 @@ export const agent = inngest.createFunction(
         });
       }
 
-      // 4. Observe — feed results back and loop
+      // 4. Наблюдение (Observe) — передаем результаты обратно и повторяем цикл
       messages.push({ role: "user", content: toolResults });
     }
 
-    return { response: "Reached iteration limit", iterations };
+    return { response: "Достигнут лимит итераций", iterations };
   }
 );
 ```
 
-Implement `executeTool` however you want. It can be a switch statement, a map of functions, a plugin system. It takes a tool name and input, and returns a string result.
+Реализуйте `executeTool` любым удобным способом. Это может быть оператор `switch`, карта функций или система плагинов. Она принимает название инструмента и входные данные, а возвращает строковый результат.
 
-That's the entire pattern. Everything below breaks down each piece and how to tune it.
+Это весь паттерн. Ниже мы разберем каждую часть и способы ее настройки.
 
-## Make LLM calls durable
+## Надежность вызовов LLM
 
-Wrap every LLM call in [`step.run()`](/docs/reference/typescript/v4/functions/step-run) to make it retriable and checkpointed:
+Оборачивайте каждый вызов LLM в [`step.run()`](/docs/reference/typescript/v4/functions/step-run), чтобы сделать его отказоустойчивым и сохранять состояние:
 
 ```ts
-// ✅ Durable — retries on failure, result is checkpointed
+// ✅ Надежно — повтор при сбое, результат сохраняется в контрольной точке
 const result = await step.run("think", async () => {
   return await anthropic.messages.create({ /* ... */ });
 });
 
-// ❌ Not durable — if this fails, you lose all prior work
+// ❌ Ненадежно — при сбое вы потеряете всю предыдущую работу
 const result = await anthropic.messages.create({ /* ... */ });
 ```
 
-When an LLM call fails (rate limit, timeout, network error), Inngest retries just that step. Previous iterations, tool results — everything else is preserved.
+Когда вызов LLM завершается ошибкой (ограничение частоты, таймаут, сетевая ошибка), Inngest повторяет только этот шаг. Предыдущие итерации, результаты инструментов — всё остальное сохраняется.
 
-## Run each tool as a step
+## Выполнение каждого инструмента как шага
 
-Wrap each tool execution in its own `step.run()` so tools retry independently from the LLM call and from each other. Using `step.run()` provides:
+Оборачивайте выполнение каждого инструмента в собственный `step.run()`, чтобы инструменты повторялись независимо от вызова LLM и друг от друга. Использование `step.run()` обеспечивает:
 
-- **Independent retries** — a failing tool doesn't re-run the LLM call
-- **Granular observability** — see exactly which tool failed in the dashboard
-- **Parallel execution** — tools that don't depend on each other can run concurrently
+- **Независимые повторы** — сбой инструмента не приводит к повторному вызову LLM.
+- **Детальная наблюдаемость** — вы видите в панели управления, какой именно инструмент дал сбой.
+- **Параллельное выполнение** — инструменты, не зависящие друг от друга, могут запускаться одновременно.
 
-Sequential execution (most common):
+Последовательное выполнение (самый частый случай):
 
 ```ts
 for (const toolCall of toolCalls) {
@@ -120,7 +120,7 @@ for (const toolCall of toolCalls) {
 }
 ```
 
-To run independent tools in parallel, use `Promise.all`. Include the index to make each step ID unique and easier to debug parallel calls:
+Для параллельного запуска независимых инструментов используйте `Promise.all`. Добавьте индекс, чтобы сделать ID каждого шага уникальным и облегчить отладку параллельных вызовов:
 
 ```ts
 const results = await Promise.all(
@@ -133,15 +133,15 @@ const results = await Promise.all(
 );
 ```
 
-## Control the loop
+## Управление циклом
 
-### Set a max iteration count
+### Ограничение количества итераций
 
-Always cap iterations. Choose the limit based on task complexity — simple Q&A might need 2–3, a coding agent that reads, edits, and tests might need 15–20.
+Всегда устанавливайте лимит итераций. Выбирайте лимит в зависимости от сложности задачи: простым Q&A может хватить 2–3, а кодинг-агенту, который читает, редактирует и тестирует код, может понадобиться 15–20.
 
-### Track token usage
+### Отслеживание использования токенов
 
-To stop before exceeding your budget, accumulate usage across iterations:
+Чтобы не превысить бюджет, накапливайте использование токенов по итерациям:
 
 ```ts
 let totalInputTokens = 0;
@@ -153,16 +153,16 @@ while (!done && iterations < MAX_ITERATIONS) {
 
   totalInputTokens += llmResult.usage.input_tokens;
   if (totalInputTokens > 500_000) {
-    return { response: "Token budget exceeded", iterations };
+    return { response: "Превышен бюджет токенов", iterations };
   }
 
-  // ... rest of loop
+  // ... остальная часть цикла
 }
 ```
 
-### Detect stuck loops
+### Обнаружение зацикливания
 
-If the agent keeps calling the same tool repeatedly, break the loop:
+Если агент многократно вызывает один и тот же инструмент, прервите цикл:
 
 ```ts
 if (iterations > 3 && lastThreeTools.every(t => t === prevTool)) {
@@ -170,9 +170,9 @@ if (iterations > 3 && lastThreeTools.every(t => t === prevTool)) {
 }
 ```
 
-## Prune context as the loop grows
+## Сокращение контекста при росте цикла
 
-As your agent loops, the message array grows with each iteration. To avoid hitting context window limits, keep the original user message and recent messages, and drop the middle:
+По мере работы агента массив сообщений увеличивается с каждой итерацией. Чтобы не превысить лимит контекстного окна, сохраняйте исходное сообщение пользователя и последние сообщения, удаляя промежуточные:
 
 ```ts
 function pruneMessages(messages, maxMessages) {
@@ -183,10 +183,10 @@ function pruneMessages(messages, maxMessages) {
 }
 ```
 
-{/*For LLM-powered conversation compaction and other advanced techniques, see the [Context Management guide](/docs/ai-patterns/context-management).*/}
+{/*Для сжатия диалогов с помощью LLM и других продвинутых техник см. [Руководство по управлению контекстом](/docs/ai-patterns/context-management).*/}
 
-## Next steps
+## Следующие шаги
 
-- [Delegate subtasks to child agents](/docs/ai-patterns/sub-agent-delegation) with `step.invoke()`
-- [Pause the loop for user approval](/docs/ai-patterns/human-in-the-loop) with `step.waitForEvent()`
-- [How to build a durable AI agent with Inngest](/blog/ai-agents-inngest-durable-steps) — a deep dive covering context loading, session management, and observability
+- [Делегируйте подзадачи дочерним агентам](/docs/ai-patterns/sub-agent-delegation) с помощью `step.invoke()`.
+- [Приостанавливайте цикл для одобрения пользователем](/docs/ai-patterns/human-in-the-loop) с помощью `step.waitForEvent()`.
+- [Как создать надежного ИИ-агента с Inngest](/blog/ai-agents-inngest-durable-steps) — глубокое погружение, охватывающее загрузку контекста, управление сессиями и наблюдаемость.

@@ -1,8 +1,8 @@
 import { Callout, Properties, Property } from "src/shared/Docs/mdx";
 
-# Referencing functions
+# Ссылки на функции
 
-Using [`step.invoke()`](/docs/reference/functions/step-invoke), you can directly call one Inngest function from another and handle the result. You can use this with `referenceFunction` to call Inngest functions located in other apps, or to avoid importing dependencies of functions within the same app.
+Используя [`step.invoke()`](/docs/reference/functions/step-invoke), вы можете напрямую вызвать одну функцию Inngest из другой и обработать результат. Вы можете использовать это вместе с `referenceFunction`, чтобы вызывать функции Inngest, расположенные в других приложениях, или чтобы избежать импорта зависимостей функций в рамках одного приложения.
 
 ```ts
 // @/inngest/compute.ts
@@ -10,16 +10,16 @@ import { referenceFunction } from "inngest";
 import { z } from "zod";
 import { type computePi } from "@/inngest/computePi";
 
-// Create a local reference to a function without importing dependencies
+// Создаём локальную ссылку на функцию без импорта её зависимостей
 export const computePi = referenceFunction<typeof computePi>({
   functionId: "compute-pi",
 });
 
-// Create a reference to a function in another application
+// Создаём ссылку на функцию в другом приложении
 export const computeSquare = referenceFunction({
   appId: "my-python-app",
   functionId: "compute-square",
-  // Schemas are optional, but provide types for your call if specified
+  // Схемы необязательны, но при указании задают типизацию вызова
   schemas: {
     data: z.object({
       number: z.number(),
@@ -33,20 +33,20 @@ export const computeSquare = referenceFunction({
 
 ```ts
 // @/inngest/someFn.ts
-import { computeSquare } from "@/inngest/compute"; // import the referenece
+import { computeSquare } from "@/inngest/compute"; // импортируем ссылку
 
-// square.result is typed as a number
+// square.result имеет тип number
 const square = await step.invoke("compute-square-value", {
   function: computeSquare,
-  data: { number: 4 }, // input data is typed, requiring input if it's needed
+  data: { number: 4 }, // входные данные типизированы и обязательны при необходимости
 });
 ```
 
-## How to use `referenceFunction`
+## Как использовать `referenceFunction`
 
-The simplest reference just contains a `functionId`. When used, this will invoke the function with the given ID in the same app that is used to invoke it.
+Простейшая ссылка содержит только `functionId`. При использовании она вызовет функцию с указанным ID в том же приложении, из которого производится вызов.
 
-The input and output types are `unknown`.
+Типы входных и выходных данных имеют значение `unknown`.
 
 ```ts
 import { referenceFunction } from "inngest";
@@ -58,7 +58,7 @@ await step.invoke("start-process", {
 });
 ```
 
-If referencing a function in a different application, specify an `appId` too:
+При ссылке на функцию в другом приложении также укажите `appId`:
 
 ```ts
 import { referenceFunction } from "inngest";
@@ -71,10 +71,10 @@ await step.invoke("start-process", {
 });
 ```
 
-You can optionally provide `schemas`, which are a collection of [Standard Schemas](https://standardschema.dev/) used to provide typing to the input and output of the referenced function.
+Дополнительно можно указать `schemas` — набор [стандартных схем (Standard Schemas)](https://standardschema.dev/), обеспечивающих типизацию входных и выходных данных вызываемой функции.
 
 <Callout>
-In the future, this will also _validate_ the input and output.
+В будущем это также будет _валидировать_ входные и выходные данные.
 </Callout>
 
 ```ts
@@ -97,11 +97,11 @@ await step.invoke("start-process", {
 });
 ```
 
-Even if functions are within the same app, this can also be used to avoid importing the dependencies of one function into another, which is useful for frameworks like Next.js where edge and serverless logic can be colocated but require different dependencies.
+Даже если функции находятся в одном приложении, это также можно использовать для избежания импорта зависимостей одной функции в другую. Это особенно удобно для фреймворков вроде Next.js, где логика edge и serverless может находиться в одном месте, но требовать разных зависимостей.
 
 ```ts
 import { referenceFunction } from "inngest";
-import { type someInngestFn } from "@/inngest/someFn"; // import only the type
+import { type someInngestFn } from "@/inngest/someFn"; // импортируем только тип
 
 await step.invoke("start-process", {
   function: referenceFunction<typeof someInngestFn>({
@@ -110,28 +110,28 @@ await step.invoke("start-process", {
 });
 ```
 
-## Configuration
+## Конфигурация
 
 <Properties>
      <Property name="functionId" type="string" required>
-          The ID of the function to reference. This can be either a local function ID or the ID of a function that exists in another app.
+          ID функции, на которую создаётся ссылка. Это может быть как локальный ID функции, так и ID функции из другого приложения.
 
-          If the latter, `appId` must also be provided. If `appId` is not provided, the function ID will be assumed to be a local function ID (the app ID of the calling app will be used).
+          В последнем случае также необходимо указать `appId`. Если `appId` не указан, предполагается, что ID функции является локальным (будет использован ID приложения вызывающей стороны).
      </Property>
      <Property name="appId" type="string">
-          The ID of the app that the function belongs to. This is only required if the function being refenced exists in another app.
+          ID приложения, которому принадлежит функция. Обязателен только в том случае, если указываемая функция находится в другом приложении.
      </Property>
      <Property name="schemas" type="object">
-          The schemas of the referenced function, providing typing to the input `data` and `return` of invoking the referenced function.
+          Схемы указываемой функции, обеспечивающие типизацию входных данных `data` и возвращаемого значения `return` при вызове.
 
-          If not provided and a local function type is not being passed as a generic into `referenceFunction()`, the schemas will be inferred as `unknown`.
+          Если не указаны и локальный тип функции не передаётся как обобщённый тип в `referenceFunction()`, схемы будут выведены как `unknown`.
 
           <Properties nested>
                <Property name="data" type="zod">
-                    The [Standard Schema](https://standardschema.dev/) to use to provide typing to the `data` payload required by the referenced function.
+                    [Стандартная схема (Standard Schema)](https://standardschema.dev/) для типизации полезной нагрузки `data`, требуемой указываемой функцией.
                </Property>
                <Property name="return" type="zod">
-                    The [Standard Schema](https://standardschema.dev/) to use to provide typing to the return value of the referenced function when invoked.
+                    [Стандартная схема (Standard Schema)](https://standardschema.dev/) для типизации возвращаемого значения указываемой функции при вызове.
                </Property>
           </Properties>
      </Property>

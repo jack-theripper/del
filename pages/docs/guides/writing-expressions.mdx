@@ -1,150 +1,150 @@
 import { Info } from "src/shared/Docs/mdx";
 
-# Writing expressions
+# Написание выражений
 
-Expressions are used in a number of ways for configuring your functions. They are used for:
+Выражения используются несколькими способами для настройки ваших функций. Они применяются для:
 
-* Defining keys based on event properties for [concurrency](/docs/functions/concurrency), [rate limiting](/docs/reference/functions/rate-limit), [debounce](/docs/reference/functions/debounce), or [idempotency](/docs/guides/handling-idempotency)
-* Conditionally matching events for [wait for event](/docs/reference/functions/step-wait-for-event), [cancellation](/docs/guides/cancel-running-functions), or the [function trigger's `if` option](/docs/reference/functions/create#trigger)
-* Returning values for function [run priority](/docs/reference/functions/run-priority)
+* Определения ключей на основе свойств событий для [параллелизма (concurrency)](/docs/functions/concurrency), [ограничения частоты (rate limiting)](/docs/reference/functions/rate-limit), [debounce](/docs/reference/functions/debounce) или [идемпотентности (idempotency)](/docs/guides/handling-idempotency)
+* Условного сопоставления событий для [ожидания события (wait for event)](/docs/reference/functions/step-wait-for-event), [отмены (cancellation)](/docs/guides/cancel-running-functions) или [параметра `if` триггера функции](/docs/reference/functions/create#trigger)
+* Возврата значений для [приоритета запуска](/docs/reference/functions/run-priority) функции
 
-All expressions are defined using the [Common Expression Language (CEL)](https://github.com/google/cel-go). CEL offers simple, fast, non-turing complete expressions. It allows Inngest to evaluate millions of expressions for all users at scale.
+Все выражения определяются с использованием [Common Expression Language (CEL)](https://github.com/google/cel-go). CEL предлагает простые, быстрые, нетьюринг-полные выражения. Это позволяет Inngest оценивать миллионы выражений для всех пользователей в масштабе.
 
-## Types of Expressions
+## Типы выражений
 
-Within the scope of Inngest, expressions should evaluate to either a boolean or a value:
+В контексте Inngest выражения должны вычисляться либо в булево значение, либо в значение:
 
-* **Booleans** - Any expression used for conditional matching should return a boolean value. These are used in wait for event, cancellation, and the function trigger's `if` option.
-* **Values** - Other expressions can return any value which might be used as keys (for example, concurrency, rate limit, debounce or [idempotency keys](/docs/guides/handling-idempotency)) or a dynamic value (for example, run priority).
+* **Булевы значения** — любое выражение, используемое для условного сопоставления, должно возвращать булево значение. Они используются в ожидании события, отмене и параметре `if` триггера функции.
+* **Значения** — другие выражения могут возвращать любое значение, которое может использоваться как ключи (например, для параллелизма, ограничения частоты, debounce или [ключей идемпотентности](/docs/guides/handling-idempotency)) или динамическое значение (например, приоритет запуска).
 
-## Variables
+## Переменные
 
-- `event` refers to the event that triggered the function run, in every case.
-- `async` refers to a new event in `step.waitForEvent` and [cancellation](/docs/guides/cancel-running-functions).  It's the incoming event which is matched asynchronously.  This is only present when matching new events in a function run.
+- `event` — ссылается на событие, запустившее выполнение функции, во всех случаях.
+- `async` — ссылается на новое событие в `step.waitForEvent` и [отмене](/docs/guides/cancel-running-functions). Это входящее событие, которое сопоставляется асинхронно. Присутствует только при сопоставлении новых событий в запуске функции.
 
-## Examples
+## Примеры
 
-Most expressions are given the `event` payload object as the input. Expressions that match additional events (for example, wait for event, cancellation) will also have the `async` object for the matched event payload. To learn more, consult this [reference of all the operators available in CEL](https://github.com/google/cel-spec/blob/master/doc/langdef.md#list-of-standard-definitions).
+В большинстве выражений в качестве входных данных используется объект payload `event`. Выражения, сопоставляющие дополнительные события (например, ожидание события, отмена), также будут иметь объект `async` для payload сопоставляемого события. Подробнее см. в [справочнике всех операторов, доступных в CEL](https://github.com/google/cel-spec/blob/master/doc/langdef.md#list-of-standard-definitions).
 
-### Boolean Expressions
+### Булевы выражения
 
 ```js
-// Match a field to a string
+// Сопоставить поле со строкой
 "event.data.billingPlan == 'enterprise'"
 
-// Number comparison
+// Числовое сравнение
 "event.data.amount > 1000"
 
-// Combining multiple conditions
+// Объединение нескольких условий
 "event.data.billingPlan == 'enterprise' && event.data.amount > 1000"
 "event.data.billingPlan != 'pro' || event.data.amount < 300"
 
-// Compare the function trigger with an inbound event (for wait for event or cancellation)
+// Сравнить триггер функции с входящим событием (для ожидания события или отмены)
 "event.data.userId == async.data.userId"
 
-// Alternatively, you can use JavaScript string interpolation for wait for event
+// Альтернативно, можно использовать интерполяцию строк JavaScript для ожидания события
 `${userId} == async.data.userId` // => "user_1234 == async.data.userId"
 ```
 {/* Omit macros until we review support individually
 ```js
-// Advanced CEL methods (see reference linked above):
-// Check if a string contains a substring
+// Расширенные методы CEL (см. справочник выше):
+// Проверить, содержит ли строка подстроку
 "event.data.email.contains('gmail.com')"
 
-// Check that a field is set
+// Проверить, установлено ли поле
 "has(event.data.email)"
 
-// Compare timestamps
+// Сравнить временные метки
 "timestamp(event.data.created) > timestamp('2024-01-01T00:00:00Z')"
 "timestamp(event.data.createdAt) + duration('5m') > timestamp(event.data.expireAt)"
 ```
 */}
 
-### Value Expressions
+### Выражения значений
 
-#### Keys
+#### Ключи
 
 ```js
-// Use the user's id as a concurrency key
+// Использовать id пользователя как ключ параллелизма
 "event.data.id" // => "1234"
 
-// Concatenate two strings together to create a unique key
+// Конкатенировать две строки для создания уникального ключа
 `event.data.userId + "-" + event.type` // => "user_1234-signup"
 ```
 {/* Omit macros until we review support individually
 ```js
-// Advanced CEL methods (see reference linked above):
-// Convert a number to a string for concatenation
+// Расширенные методы CEL (см. справочник выше):
+// Преобразовать число в строку для конкатенации
 `string(event.data.amount) + "-" event.data.planId`
 ```
 */}
 
-#### Dynamic Values
+#### Динамические значения
 
 ```js
-// Return a 0 priority if the billing plan is enterprise, otherwise return 1800
+// Вернуть приоритет 0, если тарифный план enterprise, иначе вернуть 1800
 `event.data.billingPlan == 'enterprise' ? 0 : 1800`
 
-// Return a value based on multiple conditions
+// Вернуть значение на основе нескольких условий
 `event.data.billingPlan == 'enterprise' && event.data.requestNumber < 10 ? 0 : 1800`
 ```
 {/* Omit macros until we review support individually
 ```js
-// Advanced CEL methods (see reference linked above):
-// Return a priority if the value is set in the payload
+// Расширенные методы CEL (см. справочник выше):
+// Вернуть приоритет, если значение задано в payload
 `has(event.data.priority) ? event.data.priority : 0`
 ```
 */}
 
-## Tips
+## Советы
 
-* Use `+` to concatenate strings
-* Use `==` for equality checks
-* You can use single `'` or double quotes `"` for strings, but we recommend sticking with one for code consistency
-* When working with the TypeScript SDK, write expressions within backticks `` ` `` to use quotes in your expression or use JavaScript's string interpolation.
-* Use ternary operators to return default values
-* When using the or operator (`||`), CEL will always return a boolean. This is different from JavaScript, where the or operator returns the value of the statement left of the operator if truthy. Use the ternary operator (`?`) instead of `||` for conditional returns.
+* Используйте `+` для конкатенации строк
+* Используйте `==` для проверки равенства
+* Можно использовать одинарные `'` или двойные кавычки `"` для строк, но рекомендуем придерживаться одного варианта для единообразия кода
+* При работе с TypeScript SDK пишите выражения в обратных кавычках `` ` ``, чтобы использовать кавычки внутри выражения, или используйте интерполяцию строк JavaScript
+* Используйте тернарные операторы для возврата значений по умолчанию
+* При использовании оператора or (`||`) CEL всегда возвращает булево значение. Это отличается от JavaScript, где оператор or возвращает значение выражения слева от оператора, если оно истинно. Используйте тернарный оператор (`?`) вместо `||` для условных возвратов.
 
 <Info>
-  Please note that while CEL supports a wide range of helpers and macros, Inngest only supports a subset of these to ensure a high level of performance and reliability.
+  Обратите внимание, что хотя CEL поддерживает широкий спектр вспомогательных функций и макросов, Inngest поддерживает только их подмножество для обеспечения высокого уровня производительности и надёжности.
 </Info>
 
 {/* TODO - Omit these advanced macros for now until we review support individually
 
-### CEL Helpers & Macros
+### Вспомогательные функции и макросы CEL
 
-This is a non-exhaustive list of CEL [helpers](https://github.com/google/cel-spec/blob/master/doc/langdef.md#list-of-standard-definitions) and [macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) that are useful for writing expressions:
+Это неисчерпывающий список CEL [вспомогательных функций](https://github.com/google/cel-spec/blob/master/doc/langdef.md#list-of-standard-definitions) и [макросов](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros), полезных для написания выражений:
 
 ```js
-// Check if a field is set
+// Проверить, установлено ли поле
 "has(event.data.email)"
 
-// Convert a number to a string
+// Преобразовать число в строку
 "string(event.data.count)"
 
-// Convert a string to an int
+// Преобразовать строку в целое число
 "int(event.data.amount)"
 
-// Get the first item in an array
+// Получить первый элемент массива
 "event.data.items[0]"
 
-// Check if an item exists in an array
+// Проверить, существует ли элемент в массиве
 "event.data.items.exists(e, e == 'shirt_1234')"
 
-// Check if only one item matches a condition
+// Проверить, соответствует ли только один элемент условию
 "event.data.items.exists_one(e, e.starsWith('shirt_'))"
 
-// Check if all items in an array match a condition
+// Проверить, соответствуют ли все элементы массива условию
 "event.data.amounts.all(n, n > 10)"
 
-// Convert a timestamp to an int (unix timestamp)
+// Преобразовать временную метку в целое число (unix timestamp)
 "int(timestamp(event.data.createdAt))"
 
-// Add a duration to a timestamp
+// Добавить продолжительность к временной метке
 "timestamp(event.data.createdAt) + duration('5m')"
 ```
 */}
 
-## Testing out expressions
+## Тестирование выражений
 
-You can test out expressions on [Undistro's CEL Playground](https://playcel.undistro.io/). It's a great way to quickly test out more complex expressions, especially with conditional returns.
+Вы можете тестировать выражения на [CEL Playground от Undistro](https://playcel.undistro.io/). Это отличный способ быстро проверить более сложные выражения, особенно с условными возвратами.

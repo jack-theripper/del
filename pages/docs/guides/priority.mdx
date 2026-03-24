@@ -1,16 +1,16 @@
 import { CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = 'Dynamically adjust the execution order of functions based on any data. Ideal for pushing critical work to the front of the queue.'
+export const description = 'Динамически настраивайте порядок выполнения функций на основе любых данных. Идеально подходит для перемещения критически важных задач в начало очереди.'
 
-# Priority
+# Приоритет
 
-Priority allows you to dynamically execute some runs ahead or behind others based on any data. This allows you to prioritize some jobs ahead of others without the need for a separate queue. Some use cases for priority include:
+Приоритет позволяет динамически выполнять одни запуски функций раньше или позже других на основе любых данных. Это позволяет приоритизировать одни задачи перед другими без необходимости создания отдельной очереди. Некоторые сценарии использования приоритета включают:
 
-* Giving higher priority based on a user's subscription level, for example, free vs. paid users.
-* Ensuring that critical work is executed before other work in the queue.
-* Prioritizing certain jobs during onboarding to give the user a better first-run experience.
+* Повышение приоритета на основе уровня подписки пользователя (например, бесплатные пользователи против платных).
+* Гарантия того, что критически важные задачи выполняются раньше других задач в очереди.
+* Приоритизация определенных задач во время онбординга для улучшения первого опыта пользователя.
 
-## How to configure priority
+## Как настроить приоритет
 
 <CodeGroup forceTabs>
 ```ts
@@ -18,15 +18,15 @@ export default inngest.createFunction(
   {
     id: "ai-generate-summary",
     priority: {
-      // For enterprise accounts, a given function run will be prioritized
-      // ahead of functions that were enqueued up to 120 seconds ago.
-      // For all other accounts, the function will run with no priority.
+      // Для корпоративных аккаунтов (enterprise) запуск функции будет приоритизирован
+      // перед задачами, которые были поставлены в очередь до 120 секунд назад.
+      // Для всех остальных аккаунтов функция будет запускаться без приоритета.
       run: "event.data.account_type == 'enterprise' ? 120 : 0",
     },
     triggers: { event: "ai/summary.requested" },
   },
   async ({ event, step }) => {
-    // This function will be prioritized based on the account type
+    // Эта функция будет приоритизирована на основе типа аккаунта
   }
 );
 ```
@@ -42,7 +42,7 @@ inngestgo.CreateFunction(
 	},
 	inngestgo.EventTrigger("ai/summary.requested", nil),
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// This function will be prioritized based on the account type
+		// Эта функция будет приоритизирована на основе типа аккаунта
 		return nil, nil
 	},
 )
@@ -57,61 +57,61 @@ inngestgo.CreateFunction(
   trigger=inngest.Trigger(event="ai/summary.requested")
 )
 async def ai_generate_summary(ctx: inngest.Context):
-    # This function will be prioritized based on the account type
+    # Эта функция будет приоритизирована на основе типа аккаунта
 ```
 
 </CodeGroup>
 
-### Configuration reference
+### Справочник по конфигурации
 
-* `run` - A dynamic factor [expression](/docs/guides/writing-expressions), that evaluates to seconds, to prioritize the function by. Returning a positive number will increase that priority ahead of other jobs already in the queue. Returning a negative number will delay the function run's jobs by the given value in seconds.
+* `run` — [выражение](/docs/guides/writing-expressions) динамического фактора, вычисляемое в секундах, по которому приоритизируется функция. Возврат положительного числа повысит этот приоритет перед другими задачами, уже находящимися в очереди. Возврат отрицательного числа отложит выполнение задачи на указанное количество секунд.
 
-## How priority works
+## Как работает приоритет
 
-Functions are scheduled in a priority queue based on the time they should run. By default, all functions are enqueued at the current time (a factor of `0`). If a function has `priority` configured, Inngest evaluates the `run` expression for each new function run based on the input event's data. The `run` expression should return a factor, in seconds, (positive or negative) to adjust the priority of the function run.
+Функции планируются в очереди с приоритетами на основе времени, в которое они должны запуститься. По умолчанию все функции ставятся в очередь в текущее время (фактор `0`). Если для функции настроен `priority`, Inngest вычисляет выражение `run` для каждого нового запуска функции на основе данных входного события. Выражение `run` должно возвращать фактор в секундах (положительный или отрицательный) для корректировки приоритета запуска функции.
 
-Expressions that return a **positive** number will **increase the priority** of the function run ahead of other jobs already in the queue by the given value in seconds. The function will be run ahead of other jobs that were enqueued up to that many seconds ago. For example, if a function run is scheduled with a factor of `120`, it will run ahead of any jobs enqueued in the last 120 seconds, given that they are still in the queue and have not completed.
+Выражения, возвращающие **положительное** число, **повышают приоритет** запуска функции перед другими задачами, уже находящимися в очереди, на указанное значение в секундах. Функция будет запущена раньше других задач, поставленных в очередь до этого количества секунд назад. Например, если запуск функции запланирован с фактором `120`, он будет выполнен раньше любых задач, поставленных в очередь в последние 120 секунд, при условии, что они всё еще находятся в очереди и не завершены.
 
-Expressions that return a **negative** number will **delay** the function run by the given value in seconds.
+Выражения, возвращающие **отрицательное** число, **откладывают** запуск функции на указанное значение в секундах.
 
-### Practical example
+### Практический пример
 
-Given we have three jobs in the queue, each which was enqueued at the following times:
+Предположим, у нас есть три задачи в очереди, каждая из которых была поставлена в очередь в следующее время:
 
 ```plaintext
-Jobs:          [A,        B,        C       ]
-Priority/Time: [12:00:10, 12:00:40, 12:02:10]
+Задачи:         [A,        B,        C       ]
+Приоритет/Время: [12:00:10, 12:00:40, 12:02:10]
 ```
 
-If the current time is `12:02:30`, and two new jobs are enqueued with the following `run` factors:
+Если текущее время — `12:02:30`, и ставятся две новые задачи со следующими факторами `run`:
 
 ```plaintext
-- Job X: factor 0
-- Job Y: factor 120
+- Задача X: фактор 0
+- Задача Y: фактор 120
 ```
 
-Then Job Y will run ahead of Job X. Job Y will also run before any jobs scheduled 120 seconds beforehand. The queue will look like this:
+Тогда Задача Y будет запущена раньше Задачи X. Задача Y также будет запущена раньше любых задач, запланированных на 120 секунд ранее. Очередь будет выглядеть так:
 
 ```plaintext
-Jobs:          [A,        Y,        B,        C,        X     ]
-Priority/Time: [12:00:10, 12:00:30, 12:00:40, 12:02:10, 12:02:30]
+Задачи:         [A,        Y,        B,        C,        X     ]
+Приоритет/Время: [12:00:10, 12:00:30, 12:00:40, 12:02:10, 12:02:30]
                           │                             │
                           └ 12:02:30 - 120s = 12:00:30  └ 12:02:30 - 0s = 12:02:30
 ```
 
-Job Y was successfully prioritized by a factor of `120` seconds ahead of other jobs in the queue.
+Задача Y была успешно приоритизирована на фактор `120` секунд перед другими задачами в очереди.
 
-## Combining with concurrency
+## Сочетание с конкурентностью
 
-Prioritization is most useful when combined with a flow control option that limits throughput, such as [concurrency](/docs/guides/concurrency). Jobs often wait in the queue when limiting throughput, so prioritization allows you to control the order in which jobs are executed in that backlog.
+Приоритизация наиболее полезна в сочетании с опцией управления потоком, ограничивающей пропускную способность, такой как [конкурентность (concurrency)](/docs/guides/concurrency). При ограничении пропускной способности задачи часто ждут в очереди, и приоритизация позволяет вам контролировать порядок выполнения задач в этом бэклоге.
 
-## Limitations
+## Ограничения
 
-* The highest priority is `600` (seconds).
-* The lowest priority is `-600` (seconds).
-* Not compatible with [batching](/docs/guides/batching).
+* Максимальный приоритет составляет `600` (секунд).
+* Минимальный приоритет составляет `-600` (секунд).
+* Несовместимо с [пакетной обработкой (batching)](/docs/guides/batching).
 
-## Further reference
+## Дополнительные справочные материалы
 
-* [TypeScript SDK Reference](/docs/reference/functions/run-priority)
-* [Python SDK Reference](/docs/reference/python/functions/create#configuration)
+* [Справочник по TypeScript SDK](/docs/reference/functions/run-priority)
+* [Справочник по Python SDK](/docs/reference/python/functions/create#configuration)

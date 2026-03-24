@@ -11,20 +11,20 @@ import TypeScriptIcon from 'src/shared/Icons/TypeScript';
 import PythonIcon from 'src/shared/Icons/Python';
 import GoIcon from 'src/shared/Icons/Go';
 
-# Inngest Functions
+# Функции Inngest
 
-Inngest functions enable developers to run reliable background logic, from background jobs to complex workflows.
-An Inngest Function is composed of 3 main parts that provide robust tools for retrying, scheduling, and coordinating complex sequences of operations:
+Функции Inngest позволяют разработчикам запускать надежную фоновую логику — от фоновых задач до сложных рабочих процессов.
+Функция Inngest состоит из 3 основных частей, которые предоставляют мощные инструменты для повторов, планирования и координации сложных последовательностей операций:
 
 <CardGroup cols={3}>
-  <Card title="Triggers" icon={<EventIcon className="text-basis h-4 w-4"/>} href={'/docs/features/events-triggers'}>
-    A list of Events, Cron schedules or webhook events that trigger Function runs.
+  <Card title="Триггеры" icon={<EventIcon className="text-basis h-4 w-4"/>} href={'/docs/features/events-triggers'}>
+    Список событий, расписаний Cron или событий вебхуков, которые запускают выполнение функции.
   </Card>
-  <Card title="Flow Control" icon={<RiGitPullRequestFill className="rotate-90 text-basis h-4 w-4" />} href={'/docs/guides/flow-control'}>
-    Control how Function runs get distributed in time with Concurrency, Throttling and more.
+  <Card title="Управление потоком" icon={<RiGitPullRequestFill className="rotate-90 text-basis h-4 w-4" />} href={'/docs/guides/flow-control'}>
+    Контролируйте распределение запусков функций во времени с помощью параллелизма, троттлинга и многого другого.
   </Card>
-  <Card title="Steps" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/features/inngest-functions/steps-workflows'}>
-    Transform your Inngest Function into a workflow with retriable checkpoints.
+  <Card title="Шаги" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/features/inngest-functions/steps-workflows'}>
+    Превратите вашу функцию Inngest в рабочий процесс с контрольными точками и возможностью повтора.
   </Card>
 </CardGroup>
 
@@ -35,18 +35,18 @@ An Inngest Function is composed of 3 main parts that provide robust tools for re
 ```ts
 inngest.createFunction({
     id: "sync-systems",
-    // A Function is triggered by events
+    // Функция запускается событиями
     triggers: { event: "auto/sync.request" },
-    // Easily add Throttling with Flow Control
+    // Легко добавьте троттлинг с помощью управления потоком
     throttle: { limit: 3, period: "1min"},
   },
   async ({ step }) => {
-    // step is retried if it throws an error
+    // шаг будет перезапущен в случае ошибки
     const data = await step.run("get-data", async () => {
       return getDataFromExternalSource();
     });
 
-    // Steps can reuse data from previous ones
+    // Шаги могут повторно использовать данные из предыдущих
     await step.run("save-data", async () => {
       return db.syncs.insertOne(data);
     });
@@ -61,14 +61,14 @@ inngest.createFunction({
 ```python
 @inngest_client.create_function(
     id="sync-systems",
-    # trigger (event or cron)
+    # триггер (событие или cron)
     trigger=inngest.TriggerEvent(event="auto/sync.request"),
 )
 def sync_systems(ctx: inngest.ContextSync) -> None:
-    # step is retried if it throws an error
+    # шаг будет перезапущен в случае ошибки
     data = ctx.step.run("Get data", get_data_from_external_source)
 
-    # Steps can reuse data from previous ones
+    # Шаги могут повторно использовать данные из предыдущих
     ctx.step.run("Save data", db.syncs.insert_one, data)
 ```
 
@@ -86,48 +86,48 @@ def sync_systems(ctx: inngest.ContextSync) -> None:
 
 
 {/* 
-Increase your Inngest Functions durability by leveraging:
+Повысьте надежность ваших функций Inngest, используя:
 
-- **[Retries features](/docs/guides/error-handling)** - Configure a custom retry policy, handle rollbacks and idempotency.
-- **[Cancellation features](/docs/features/inngest-functions/cancellation)** - Dynamically or manually cancel in-progress runs to prevent unnecessary work.
-- **[Versioning best practices](/docs/learn/versioning)** - Strategies to gracefully introducing changes in your Inngest Functions.
+- **[Функции повторов](/docs/guides/error-handling)** - Настройте кастомную политику повторов, обрабатывайте откаты и идемпотентность.
+- **[Функции отмены](/docs/features/inngest-functions/cancellation)** - Динамически или вручную отменяйте выполняющиеся запуски, чтобы предотвратить ненужную работу.
+- **[Лучшие практики версионирования](/docs/learn/versioning)** - Стратегии для изящного внесения изменений в ваши функции Inngest.
  */}
 
-## Using Inngest Functions
+## Использование функций Inngest
 
-Start using Inngest Functions by using the pattern that fits your use case:
+Начните использовать функции Inngest, выбрав паттерн, который подходит для вашего случая:
 
 <CardGroup cols={2}>
-  <Card title="Background jobs" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/guides/background-jobs'}>
-    Run long-running tasks out of the critical path of a request.
+  <Card title="Фоновые задачи" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/guides/background-jobs'}>
+    Запускайте длительные задачи вне критического пути запроса.
   </Card>
-  <Card title="Delayed Functions" icon={<RiCalendarLine className="text-basis h-4 w-4"/>} href={'/docs/guides/delayed-functions'}>
-    Schedule Functions that run in the future.
+  <Card title="Отложенные функции" icon={<RiCalendarLine className="text-basis h-4 w-4"/>} href={'/docs/guides/delayed-functions'}>
+    Планируйте функции, которые запустятся в будущем.
   </Card>
-  <Card title="Cron Functions" icon={<RiTimeLine className="text-basis h-4 w-4"/>} href={'/docs/guides/scheduled-functions'}>
-    Build Inngest Functions as CRONs.
+  <Card title="Cron-функции" icon={<RiTimeLine className="text-basis h-4 w-4"/>} href={'/docs/guides/scheduled-functions'}>
+    Создавайте функции Inngest, работающие по расписанию CRON.
   </Card>
-  <Card title="Workflows" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/guides/multi-step-functions'}>
-    Start creating workflows by leveraging Inngest Function Steps.
+  <Card title="Рабочие процессы" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/guides/multi-step-functions'}>
+    Создавайте рабочие процессы, используя шаги функций Inngest.
   </Card>
 </CardGroup>
 
 
-## Learn more about Functions and Steps
+## Узнайте больше о функциях и шагах
 
-Functions and Steps are powered by Inngest's Durable Execution Engine. Learn about its inner working by reading the following guides:
+Функции и шаги работают на базе движка Durable Execution Engine от Inngest. Узнайте о его внутреннем устройстве, прочитав следующие руководства:
 
 <CardGroup cols={1}>
-  <Card title="How Functions are executed" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/learn/how-functions-are-executed'}>
-    A deep dive into Inngest's Durable Execution Engine with a step-by-step workflow run example.
+  <Card title="Как выполняются функции" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/learn/how-functions-are-executed'}>
+    Глубокое погружение в Inngest Durable Execution Engine с пошаговым примером выполнения рабочего процесса.
   </Card>
-  <Card title="Thinking in Steps" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/guides/multi-step-functions'}>
-    Discover by example how steps enable more reliable and flexible functions with step-level error handling, conditional steps and waits.
+  <Card title="Мышление шагами" icon={<RiGuideFill className="text-basis h-4 w-4"/>} href={'/docs/guides/multi-step-functions'}>
+    Узнайте на примерах, как шаги обеспечивают более надежные и гибкие функции с обработкой ошибок на уровне шагов, условными шагами и ожиданиями.
   </Card>
 </CardGroup>
 
 
-## SDK References
+## Справочники SDK
 
 
 <CardGroup cols={3}>
@@ -137,7 +137,7 @@ Functions and Steps are powered by Inngest's Durable Execution Engine. Learn abo
     title={"TypeScript SDK"}
     icon={<TypeScriptIcon className="text-basis"/>}
   >
-  API reference
+  Справочник API
   </Card>
 
   <Card 
@@ -145,7 +145,7 @@ Functions and Steps are powered by Inngest's Durable Execution Engine. Learn abo
     title={"Python SDK"}
     icon={<PythonIcon className="text-basis"/>}
   >
-    API reference
+    Справочник API
   </Card>
 
 
@@ -154,7 +154,7 @@ Functions and Steps are powered by Inngest's Durable Execution Engine. Learn abo
     title={"Go SDK"}
     icon={<GoIcon className="text-basis"/>}
   >
-    Go API reference
+    Справочник Go API
   </Card>
 
 </CardGroup>

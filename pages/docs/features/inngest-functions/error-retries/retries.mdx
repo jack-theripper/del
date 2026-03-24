@@ -1,10 +1,10 @@
 import { CardGroup, Card, Callout, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-# Retries
+# Повторные попытки
 
-By default, in _addition_ to the **initial attempt**, Inngest will retry a function or a step up to 4 times until it succeeds. This means that for a function with a default configuration, it will be attempted 5 times in total.
+По умолчанию, _в дополнение_ к **первой попытке**, Inngest повторяет выполнение функции или шага до 4 раз до успешного завершения. Это означает, что для функции с конфигурацией по умолчанию будет выполнено в общей сложности 5 попыток.
 
-For the function below, if the database write fails then it'll be retried up to 4 times until it succeeds:
+Для функции ниже, если запись в базу данных завершится с ошибкой, она будет повторена до 4 раз до успешного завершения:
 
 <LanguageSelector>
 
@@ -50,7 +50,7 @@ def record_click(ctx: inngest.Context) -> None:
 
 </LanguageSection>
 
-You can configure the number of `retries` by specifying it in your function configuration. Setting the value to `0` will disable retries.
+Количество `retries` можно настроить, указав его в конфигурации функции. Установка значения `0` отключит повторные попытки.
 
 <LanguageSection show="typescript">
 
@@ -100,17 +100,17 @@ def click_recorder(ctx: inngest.Context) -> None:
 
 </LanguageSection>
 
-You can customize the behavior of your function based on the number of retries using the `attempt` argument. `attempt` is passed in the function handler's context and is zero-indexed, meaning the first attempt is `0`, the second is `1`, and so on. The `attempt` is incremented every time the function throws an error and is retried, and is reset when steps complete. This allows you to handle attempt numbers differently in each step.
+Поведение функции можно настраивать в зависимости от количества повторных попыток с помощью аргумента `attempt`. `attempt` передаётся в контексте обработчика функции и индексируется с нуля: первая попытка — `0`, вторая — `1` и так далее. `attempt` увеличивается каждый раз, когда функция выбрасывает ошибку и выполняется повторно, и сбрасывается при успешном завершении шагов.
 
-Retries will be performed with backoff according to [the default schedule](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
+Повторные попытки выполняются с задержкой в соответствии с [расписанием по умолчанию](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
 
-## Steps and Retries
+## Шаги и повторные попытки
 
-A function can be broken down into multiple steps, where each step is individually executed and retried.
+Функцию можно разбить на несколько шагов, каждый из которых выполняется и повторяется независимо.
 
-**Each `step.run()` has its own independent retry counter.** The retry configuration you set on your function applies to each individual step, not as a shared pool across all steps. For example, if you configure a function with 5 retries, each `step.run()` will be retried up to 5 times independently.
+**Каждый `step.run()` имеет собственный независимый счётчик повторных попыток.** Конфигурация `retries` функции применяется к каждому отдельному шагу, а не является общим пулом для всех шагов. Например, если функция настроена с 5 повторными попытками, каждый `step.run()` будет повторяться до 5 раз независимо.
 
-In the example below, both the "_get-data_" and "_save-data_" steps each get their own set of 4 retries (5 total attempts including the initial attempt). If the "_save-data_" step fails all 5 attempts, it doesn't affect the retry count of the "_get-data_" step - they are completely independent.
+В примере ниже оба шага — «_get-data_» и «_save-data_» — имеют собственный набор из 4 повторных попыток (5 попыток в общей сложности, включая первую). Если шаг «_save-data_» не выполнится после всех 5 попыток, это не повлияет на счётчик повторных попыток шага «_get-data_» — они полностью независимы.
 
 <LanguageSection show="typescript">
 
@@ -182,16 +182,16 @@ def sync_systems(ctx: inngest.ContextSync) -> None:
 </LanguageSection>
 
 <Callout>
-**Important:** Each step gets its own independent retry counter. You can configure the number of [`retries`](/docs/reference/functions/create#inngest-create-function-configuration-trigger-handler-inngest-function) for each function. This excludes the initial attempt. A retry count of `4` means that **each individual step** will be attempted up to 5 times (1 initial attempt + 4 retries).
+**Важно:** Каждый шаг имеет собственный независимый счётчик повторных попыток. Количество [`retries`](/docs/reference/functions/create#inngest-create-function-configuration-trigger-handler-inngest-function) можно настроить для каждой функции. Это не учитывает первую попытку. Счётчик повторов `4` означает, что **каждый отдельный шаг** будет выполнен до 5 раз (1 первая попытка + 4 повтора).
 
-For example, if you have a function with 3 steps and `retries: 4` configured, each of the 3 steps can be retried up to 4 times independently. This means you could theoretically have up to 15 total attempts across all steps (5 attempts × 3 steps) if every step fails every time.
+Например, если функция содержит 3 шага с `retries: 4`, каждый из 3 шагов может быть повторён до 4 раз независимо. Это означает, что теоретически может быть до 15 попыток в общей сложности (5 попыток × 3 шага), если каждый шаг каждый раз завершается ошибкой.
 </Callout>
 
-## Preventing retries with Non-retriable errors
+## Предотвращение повторов с помощью невоспроизводимых ошибок
 
-You can throw a [non-retriable error](/docs/reference/typescript/functions/errors#non-retriable-error) from a step or a function, which will bypass any remaining retries and fail the step or function it was thrown from.
+Можно выбросить [невоспроизводимую ошибку](/docs/reference/typescript/functions/errors#non-retriable-error) из шага или функции, что обходит все оставшиеся повторные попытки и завершает шаг или функцию с ошибкой.
 
-This is useful for when you know an error is permanent and want to stop all execution. In this example, the user doesn't exist, so there's no need to continue to email them.
+Это полезно, когда ошибка является постоянной и нужно остановить всё выполнение. В этом примере пользователь не существует, поэтому нет смысла продолжать его оповещать.
 
 <LanguageSection show="typescript">
 
@@ -276,11 +276,11 @@ def user_weekly_digest(ctx: inngest.ContextSync) -> None:
 
 </LanguageSection>
 
-## Customizing retry times
+## Настройка времени повтора
 
-Retries are executed with exponential back-off with some jitter, but it's also possible to specify exactly when you'd like a step or function to be retried.
+Повторные попытки выполняются с экспоненциальной задержкой и некоторым джиттером, но также можно точно указать время следующей попытки.
 
-In this example, an external API provided `Retry-After` header with information on when requests can be made again, so you can tell Inngest to retry your function then.
+В этом примере внешний API предоставил заголовок `Retry-After` с информацией о том, когда запросы снова можно выполнять, — поэтому можно указать Inngest повторить функцию в это время.
 
 <LanguageSection show="typescript">
 
@@ -300,10 +300,10 @@ inngest.createFunction(
       if (!success && retryAfter) {
         throw new RetryAfterError("Hit Twilio rate limit", retryAfter);
       }
-      
+
       return { message };
     });
-    
+
   },
 );
 ```

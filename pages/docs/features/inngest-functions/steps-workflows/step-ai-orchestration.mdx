@@ -1,40 +1,40 @@
 import { Callout, CodeGroup, VersionBadge, Card, CardGroup } from "src/shared/Docs/mdx";
 import Github from "src/shared/Icons/Github";
 
-# AI Inference <VersionBadge version="TypeScript and Python only" />
+# AI Инференс <VersionBadge version="TypeScript and Python only" />
 
-You can build complex AI workflows and call model providers as steps using two-step methods, `step.ai.infer()` and `step.ai.wrap()`, or our AgentKit SDK.  They work with any model provider, and all offer full AI observability:
+Можно создавать сложные AI-рабочие процессы и вызывать провайдеров моделей как шаги, используя два метода шагов — `step.ai.infer()` и `step.ai.wrap()` — или наш SDK AgentKit. Они работают с любым провайдером моделей и обеспечивают полную наблюдаемость AI:
 
-- `step.ai.wrap()`  wraps other AI SDKs (OpenAI, Anthropic, and Vercel AI SDK) as a step, augmenting the observability of your Inngest Functions with information such as prompts and tokens used.
-- `step.ai.infer()` offloads the inference request to Inngest's infrastructure, pausing your function execution until the request finishes.  This can be a significant cost saver if you deploy to serverless functions
-- [AgentKit](https://agentkit.inngest.com) allows you to easily create single model calls or agentic workflows.
+- `step.ai.wrap()` оборачивает другие AI SDK (OpenAI, Anthropic и Vercel AI SDK) как шаг, дополняя наблюдаемость функций Inngest информацией об использованных промптах и токенах.
+- `step.ai.infer()` передаёт запрос на инференс в инфраструктуру Inngest, приостанавливая выполнение функции до завершения запроса. Это может существенно сэкономить средства при развёртывании в бессерверных функциях.
+- [AgentKit](https://agentkit.inngest.com) позволяет легко создавать как единичные вызовы модели, так и агентные рабочие процессы.
 
-For building a full ReAct-style agent loop where each LLM call and tool execution is a retriable step, see the [agent tool loop pattern](/docs/ai-patterns/agent-tool-loops). To expand your system with [sub-agent delegation](/docs/ai-patterns/sub-agent-delegation), use `step.invoke()` and `step.sendEvent()`.
+Для создания полного агентного цикла в стиле ReAct, где каждый вызов LLM и выполнение инструмента являются повторяемым шагом, смотрите [паттерн агентного цикла инструментов](/docs/ai-patterns/agent-tool-loops). Для расширения системы с помощью [делегирования подагентам](/docs/ai-patterns/sub-agent-delegation) используйте `step.invoke()` и `step.sendEvent()`.
 
-### Benefits
+### Преимущества
 
-Using `step.ai` or [AgentKit](https://agentkit.inngest.com) allows you to:
+Использование `step.ai` или [AgentKit](https://agentkit.inngest.com) позволяет:
 
-- Automatically monitor AI usage in production to ensure quality output
-- Easily iterate and test prompts in the dev server
-- Track requests and responses from foundational inference providers
-- Track how inference calls work together in multi-step or agentic workflows
+- Автоматически отслеживать использование AI в production для обеспечения качества вывода
+- Легко итерировать и тестировать промпты в dev server
+- Отслеживать запросы и ответы от базовых провайдеров инференса
+- Отслеживать взаимодействие вызовов инференса в многошаговых или агентных рабочих процессах
 
 <br />
 
-## Step tools: `step.ai`  <VersionBadge version="TypeScript" /> <VersionBadge version="Python v0.5+" />
+## Инструменты шагов: `step.ai`  <VersionBadge version="TypeScript" /> <VersionBadge version="Python v0.5+" />
 
 ### `step.ai.infer()`
 
-Using `step.ai.infer()` allows you to call any inference provider's endpoints by offloading it to Inngest's infrastructure.
-All requests and responses are automatically tracked within your workflow traces.
+Использование `step.ai.infer()` позволяет вызывать эндпоинты любого провайдера инференса, передавая запрос в инфраструктуру Inngest.
+Все запросы и ответы автоматически отслеживаются в трассировках вашего рабочего процесса.
 
-**Request offloading**
+**Передача запросов**
 
-On serverless environments, your function is not executing while the request is in progress — which means you don't pay for function execution while waiting for the provider's response.
-Once the request finishes, your function restarts with the inference result's data.  Inngest never logs or stores your API keys or authentication headers.  Authentication originates from your own functions.
+В бессерверных средах функция не выполняется, пока запрос обрабатывается — это означает, что вы не платите за выполнение функции в ожидании ответа провайдера.
+После завершения запроса функция перезапускается с данными результата инференса. Inngest никогда не логирует и не хранит ваши API-ключи или заголовки аутентификации. Аутентификация исходит из ваших собственных функций.
 
-Here's an example which calls OpenAI:
+Вот пример вызова OpenAI:
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -70,18 +70,18 @@ export default inngest.createFunction(
 
   <Card
     href={"https://github.com/inngest/inngest-js/tree/main/examples//step-ai/anthropic-claude-pdf-processing/#readme"}
-    title={"PDF processing with Claude Sonnet and step.ai.infer()"}
+    title={"Обработка PDF с Claude Sonnet и step.ai.infer()"}
     icon={<Github className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-  Use `step.ai.infer()` to process a PDF with Claude Sonnet.
+  Используйте `step.ai.infer()` для обработки PDF с Claude Sonnet.
   </Card>
 
 </CardGroup>
 
-### `step.ai.wrap()`  (TypeScript only)
+### `step.ai.wrap()` (только TypeScript)
 
-Using `step.ai.wrap()` allows you to wrap other TypeScript AI SDKs, treating each inference call as a step.  This allows you to easily convert AI calls to steps with full observability without changing much application-level code:
+Использование `step.ai.wrap()` позволяет оборачивать другие TypeScript AI SDK, обрабатывая каждый вызов инференса как шаг. Это позволяет легко преобразовывать AI-вызовы в шаги с полной наблюдаемостью без существенного изменения кода на уровне приложения:
 
 <CodeGroup>
 ```ts {{ title: "Vercel AI SDK" }}
@@ -123,24 +123,23 @@ export default inngest.createFunction(
 ```
 </CodeGroup>
 
-In this case, instead of calling the SDK directly, you specify the SDK function you want to call and the function's arguments separately within `step.ai.wrap()`.
+В этом случае, вместо прямого вызова SDK, указывается SDK-функция, которую нужно вызвать, и аргументы функции отдельно внутри `step.ai.wrap()`.
 
-### Supported providers
+### Поддерживаемые провайдеры
 
-The list of current providers supported for `step.ai.infer()` is:
+Текущий список провайдеров, поддерживаемых для `step.ai.infer()`:
 
-- `openai`, including any OpenAI compatible API such as Perplexity
+- `openai`, включая любые совместимые с OpenAI API, такие как Perplexity
 - `gemini`
 - `anthropic`
 - `grok`
 - `azure-openai`
 
-### Limitations
+### Ограничения
 
-- Streaming responses from providers is coming soon, alongside real-time support with Inngest functions.
+- Потоковые ответы от провайдеров скоро будут доступны вместе с поддержкой реального времени в функциях Inngest.
 
-- When using `step.ai.wrap` with sdk clients that require client instance context to be preserved between
-invocations, currently it's necessary to bind the client call outside the `step.ai.wrap` call like so:
+- При использовании `step.ai.wrap` с клиентами SDK, требующими сохранения контекста экземпляра клиента между вызовами, необходимо привязывать вызов клиента вне `step.ai.wrap`:
 
 <CodeGroup>
 ```ts {{ title: "Wrap Anthropic SDK" }}
@@ -228,8 +227,8 @@ export const openAIWrapCompletionCreate = inngest.createFunction(
 ```
 </CodeGroup>
 
-- When using `step.ai.wrap`, you can edit prompts and rerun steps in the dev server.
-But, arguments must be JSON serializable.
+- При использовании `step.ai.wrap` можно редактировать промпты и перезапускать шаги в dev server.
+Но аргументы должны быть JSON-сериализуемыми.
 
 <CodeGroup>
 ```ts {{ title: "Vercel AI SDK" }}
@@ -270,12 +269,9 @@ export const vercelWrapGenerateText = inngest.createFunction(
 ```
 </CodeGroup>
 
-- `step.ai.wrap's` Typescript definition will for the most part infer allowable inputs based on the
-signature of the wrapped function. However, in some cases where the wrapped function contains complex
-overloads, such as Vercel's `generateObject`, it may be necessary to type cast.
+- Определение TypeScript для `step.ai.wrap` в большинстве случаев корректно выводит допустимые входные данные на основе сигнатуры обёрнутой функции. Однако в некоторых случаях, когда обёрнутая функция содержит сложные перегрузки, например `generateObject` от Vercel, может потребоваться явное приведение типов.
 
-*Note*: Future version of the Typescript SDK will correctly infer these complex types, but for now we
-require type casting to ensure backward compatibility.
+*Примечание*: В будущих версиях TypeScript SDK будут правильно выводиться эти сложные типы, но пока требуется приведение типов для обратной совместимости.
 
 <CodeGroup>
 ```ts {{ title: "Vercel AI SDK" }}
@@ -327,11 +323,11 @@ export const vercelWrapSchema = inngest.createFunction(
 
 
 
-## AgentKit: AI and agent orchestration <VersionBadge version="TypeScript only" />
+## AgentKit: оркестрация AI и агентов <VersionBadge version="TypeScript only" />
 
-AgentKit is a simple, standardized way to implement model calling — either as individual calls, a complex workflow, or agentic flows.
+AgentKit — простой стандартизированный способ реализации вызовов моделей: как единичных вызовов, так и сложных рабочих процессов или агентных потоков.
 
-Here's an example of a single model call:
+Пример единичного вызова модели:
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -357,4 +353,4 @@ export default inngest.createFunction(
 ```
 </CodeGroup>
 
-[Read the full AgentKit docs here](https://agentkit.inngest.com) and [see the code on GitHub](https://github.com/inngest/agent-kit).
+[Читайте полную документацию AgentKit здесь](https://agentkit.inngest.com) и [смотрите код на GitHub](https://github.com/inngest/agent-kit).

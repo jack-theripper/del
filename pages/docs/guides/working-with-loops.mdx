@@ -1,21 +1,21 @@
 import { CodeGroup, Callout, LanguageSection, LanguageSelector } from "shared/Docs/mdx";
-export const description = 'Implement loops in your Inngest functions and avoid common pitfalls.';
+export const description = 'Реализация циклов в функциях Inngest и избежание типичных ошибок.';
 
-# Working with Loops in Inngest
+# Работа с циклами в Inngest
 
-In Inngest each step in your function is executed as a separate HTTP request.  This means that for every step in your function, the function is re-entered, starting from the beginning, up to the point where the next step is executed. This [execution model](/docs/learn/how-functions-are-executed) helps in managing retries, timeouts, and ensures robustness in distributed systems.
+В Inngest каждый шаг вашей функции выполняется как отдельный HTTP-запрос. Это означает, что для каждого шага функция вызывается повторно, начиная с самого начала, вплоть до точки выполнения следующего шага. Эта [модель выполнения](/docs/learn/how-functions-are-executed) помогает управлять повторными попытками, тайм-аутами и обеспечивает надёжность в распределённых системах.
 
-This page covers how to implement loops in your Inngest functions and avoid common pitfalls.
+На этой странице описано, как реализовать циклы в функциях Inngest и избежать типичных ошибок.
 
 
-## Simple function example
+## Простой пример функции
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
 
-Let's start with a simple example to illustrate the concept:
+Начнём с простого примера для иллюстрации концепции:
 
 ```javascript
 inngest.createFunction(
@@ -30,13 +30,13 @@ inngest.createFunction(
 );
 ```
 
-In the above example, you will see "hello" printed four times, once for the initial function entry and once for each step execution (`a`, `b`, and `c`).
+В примере выше вы увидите «hello», напечатанное четыре раза: один раз при начальном входе в функцию и по одному разу для каждого выполнения шага (`a`, `b` и `c`).
 
 
 <CodeGroup forceTabs>
-```bash {{ title: "✅ How Inngest executes the code" }}
+```bash {{ title: "✅ Как Inngest выполняет код" }}
 
-# This is how Inngest executes the code above:
+# Вот как Inngest выполняет приведённый выше код:
 
 <run start>
 "hello"
@@ -51,10 +51,10 @@ In the above example, you will see "hello" printed four times, once for the init
 "c"
 <run complete>
 ```
-```bash {{ title: "❌ Common incorrect misconception" }}
+```bash {{ title: "❌ Распространённое заблуждение" }}
 
-# This is a common assumption of how Inngest executes the code above.
-# It is not correct.
+# Это распространённое предположение о том, как Inngest выполняет код выше.
+# Оно неверно.
 
 <run start>
 
@@ -67,9 +67,9 @@ In the above example, you will see "hello" printed four times, once for the init
 ```
 </CodeGroup>
 
-Any non-deterministic logic (like database calls or API calls) must be placed inside a `step.run` call to ensure it is executed correctly within each step.
+Любая недетерминированная логика (например, обращения к базе данных или API) должна быть помещена внутрь вызова `step.run`, чтобы гарантировать корректное выполнение в рамках каждого шага.
 
-With this in mind, here is how the previous example can be fixed:
+С учётом этого, вот как можно исправить предыдущий пример:
 
 ```ts
 inngest.createFunction(
@@ -89,13 +89,13 @@ inngest.createFunction(
 // c
 ```
 
-Now, "hello" is printed only once, as expected.
+Теперь «hello» печатается только один раз, как и ожидалось.
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-Let's start with a simple example to illustrate the concept:
+Начнём с простого примера для иллюстрации концепции:
 
 ```go
 import (
@@ -140,13 +140,13 @@ inngestgo.CreateFunction(
 )
 ```
 
-In the above example, you will see "hello" printed four times, once for the initial function entry and once for each step execution (`a`, `b`, and `c`).
+В примере выше вы увидите «hello», напечатанное четыре раза: один раз при начальном входе в функцию и по одному разу для каждого выполнения шага (`a`, `b` и `c`).
 
 
 <CodeGroup forceTabs>
-```bash {{ title: "✅ How Inngest executes the code" }}
+```bash {{ title: "✅ Как Inngest выполняет код" }}
 
-# This is how Inngest executes the code above:
+# Вот как Inngest выполняет приведённый выше код:
 
 <run start>
 "hello"
@@ -161,10 +161,10 @@ In the above example, you will see "hello" printed four times, once for the init
 "c"
 <run complete>
 ```
-```bash {{ title: "❌ Common incorrect misconception" }}
+```bash {{ title: "❌ Распространённое заблуждение" }}
 
-# This is a common assumption of how Inngest executes the code above.
-# It is not correct.
+# Это распространённое предположение о том, как Inngest выполняет код выше.
+# Оно неверно.
 
 <run start>
 
@@ -177,9 +177,9 @@ In the above example, you will see "hello" printed four times, once for the init
 ```
 </CodeGroup>
 
-Any non-deterministic logic (like database calls or API calls) must be placed inside a `step.run` call to ensure it is executed correctly within each step.
+Любая недетерминированная логика (например, обращения к базе данных или API) должна быть помещена внутрь вызова `step.run`, чтобы гарантировать корректное выполнение в рамках каждого шага.
 
-With this in mind, here is how the previous example can be fixed:
+С учётом этого, вот как можно исправить предыдущий пример:
 
 ```go
 import (
@@ -226,17 +226,17 @@ inngestgo.CreateFunction(
 )
 
 // hello
-// a 
+// a
 // b
 // c
 ```
 
-Now, "hello" is printed only once, as expected.
+Теперь «hello» печатается только один раз, как и ожидалось.
 
 </LanguageSection>
 
 <LanguageSection show="python">
-Let's start with a simple example to illustrate the concept:
+Начнём с простого примера для иллюстрации концепции:
 
 ```python
 @inngest_client.create_function(
@@ -251,7 +251,7 @@ async def simple_function(ctx: inngest.Context):
     await ctx.step.run("a", step_a)
 
     async def step_b():
-        print("b") 
+        print("b")
     await ctx.step.run("b", step_b)
 
     async def step_c():
@@ -259,13 +259,13 @@ async def simple_function(ctx: inngest.Context):
     await ctx.step.run("c", step_c)
 ```
 
-In the above example, you will see "hello" printed four times, once for the initial function entry and once for each step execution (`a`, `b`, and `c`).
+В примере выше вы увидите «hello», напечатанное четыре раза: один раз при начальном входе в функцию и по одному разу для каждого выполнения шага (`a`, `b` и `c`).
 
 
 <CodeGroup forceTabs>
-```bash {{ title: "✅ How Inngest executes the code" }}
+```bash {{ title: "✅ Как Inngest выполняет код" }}
 
-# This is how Inngest executes the code above:
+# Вот как Inngest выполняет приведённый выше код:
 
 <run start>
 "hello"
@@ -280,10 +280,10 @@ In the above example, you will see "hello" printed four times, once for the init
 "c"
 <run complete>
 ```
-```bash {{ title: "❌ Common incorrect misconception" }}
+```bash {{ title: "❌ Распространённое заблуждение" }}
 
-# This is a common assumption of how Inngest executes the code above.
-# It is not correct.
+# Это распространённое предположение о том, как Inngest выполняет код выше.
+# Оно неверно.
 
 <run start>
 
@@ -296,9 +296,9 @@ In the above example, you will see "hello" printed four times, once for the init
 ```
 </CodeGroup>
 
-Any non-deterministic logic (like database calls or API calls) must be placed inside a `step.run` call to ensure it is executed correctly within each step.
+Любая недетерминированная логика (например, обращения к базе данных или API) должна быть помещена внутрь вызова `step.run`, чтобы гарантировать корректное выполнение в рамках каждого шага.
 
-With this in mind, here is how the previous example can be fixed:
+С учётом этого, вот как можно исправить предыдущий пример:
 
 ```python
 import inngest
@@ -312,7 +312,7 @@ async def simple_function(ctx: inngest.Context):
     await ctx.step.run("hello", lambda: print("hello"))
 
     await ctx.step.run("a", lambda: print("a"))
-    await ctx.step.run("b", lambda: print("b")) 
+    await ctx.step.run("b", lambda: print("b"))
     await ctx.step.run("c", lambda: print("c"))
 
 # hello
@@ -321,18 +321,18 @@ async def simple_function(ctx: inngest.Context):
 # c
 ```
 
-Now, "hello" is printed only once, as expected.
+Теперь «hello» печатается только один раз, как и ожидалось.
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Loop example
+## Пример с циклом
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
-Here's [an example](/blog/import-ecommerce-api-data-in-seconds) of an Inngest function that imports all products from a Shopify store into a local system. This function iterates over all pages combining all products into a single array.
+Вот [пример](/blog/import-ecommerce-api-data-in-seconds) функции Inngest, которая импортирует все товары из магазина Shopify в локальную систему. Эта функция перебирает все страницы, объединяя все товары в единый массив.
 
 ```typescript
 export default inngest.createFunction(
@@ -342,9 +342,9 @@ export default inngest.createFunction(
     let cursor = null
     let hasMore = true
 
-    // Use the event's "data" to pass key info like IDs
-    // Note: in this example is deterministic across multiple requests
-    // If the returned results must stay in the same order, wrap the db call in step.run()
+    // Используем «data» события для передачи ключевой информации, например ID
+    // Примечание: в данном примере это детерминировано между несколькими запросами
+    // Если возвращаемые результаты должны сохранять одинаковый порядок, оберните вызов db в step.run()
     const session = await database.getShopifySession(event.data.storeId)
 
     while (hasMore) {
@@ -354,7 +354,7 @@ export default inngest.createFunction(
           since_id: cursor,
         })
       })
-      // Combine all of the data into a single list
+      // Объединяем все данные в единый список
       allProducts.push(...page.products)
       if (page.products.length === 50) {
         cursor = page.products[49].id
@@ -363,34 +363,34 @@ export default inngest.createFunction(
       }
     }
 
-    // Now we have the entire list of products within allProducts!
+    // Теперь у нас есть полный список товаров в allProducts!
   }
 )
 ```
 
-In the example above, each iteration of the loop is managed using `step.run()`, ensuring that **all non-deterministic logic (like fetching products from Shopify) is encapsulated within a step**. This approach guarantees that if the request fails, it will be retried automatically, in the correct order. This structure aligns with Inngest's execution model, where each step is a separate HTTP request, ensuring robust and consistent loop behavior.
+В примере выше каждая итерация цикла управляется с помощью `step.run()`, гарантируя, что **вся недетерминированная логика (например, получение товаров из Shopify) инкапсулирована внутри шага**. Такой подход гарантирует, что при сбое запроса он будет автоматически повторён в правильном порядке. Эта структура соответствует модели выполнения Inngest, где каждый шаг — отдельный HTTP-запрос, обеспечивая надёжное и согласованное поведение цикла.
 
-Note that in the example above `getShopifySession` is deterministic across multiple requests (and it's added to all API calls for authorization). If the returned results must stay in the same order, wrap the database call in `step.run()`.
+Обратите внимание, что в примере выше `getShopifySession` детерминирована между несколькими запросами (и добавляется ко всем API-вызовам для авторизации). Если возвращаемые результаты должны сохранять одинаковый порядок, оберните вызов базы данных в `step.run()`.
 
-Read more about this use case in the [blog post](/blog/import-ecommerce-api-data-in-seconds).
+Подробнее об этом сценарии — в [записи блога](/blog/import-ecommerce-api-data-in-seconds).
 
 </LanguageSection>
 <LanguageSection show="go">
-Here's an example of an Inngest function that imports all products from a Shopify store into a local system. This function iterates over all pages combining all products into a single array.
+Вот пример функции Inngest, которая импортирует все товары из магазина Shopify в локальную систему. Эта функция перебирает все страницы, объединяя все товары в единый массив.
 
 ```go
 !snippet:path=snippets/go/v0_11/examples/working-with-loops.go
 ```
 
-In the example above, each iteration of the loop is managed using `step.Run()`, ensuring that **all non-deterministic logic (like fetching products from Shopify) is encapsulated within a step**. This approach guarantees that if the request fails, it will be retried automatically, in the correct order. This structure aligns with Inngest's execution model, where each step is a separate HTTP request, ensuring robust and consistent loop behavior.
+В примере выше каждая итерация цикла управляется с помощью `step.Run()`, гарантируя, что **вся недетерминированная логика (например, получение товаров из Shopify) инкапсулирована внутри шага**. Такой подход гарантирует, что при сбое запроса он будет автоматически повторён в правильном порядке. Эта структура соответствует модели выполнения Inngest, где каждый шаг — отдельный HTTP-запрос, обеспечивая надёжное и согласованное поведение цикла.
 
-Note that in the example above `getShopifySession` is deterministic across multiple requests (and it's added to all API calls for authorization). If the returned results must stay in the same order, wrap the database call in `step.Run()`.
+Обратите внимание, что в примере выше `getShopifySession` детерминирована между несколькими запросами (и добавляется ко всем API-вызовам для авторизации). Если возвращаемые результаты должны сохранять одинаковый порядок, оберните вызов базы данных в `step.Run()`.
 
-Read more about this use case in the [blog post](/blog/import-ecommerce-api-data-in-seconds).
+Подробнее об этом сценарии — в [записи блога](/blog/import-ecommerce-api-data-in-seconds).
 
 </LanguageSection>
 <LanguageSection show="python">
-Here's an example of an Inngest function that imports all products from a Shopify store into a local system. This function iterates over all pages combining all products into a single array.
+Вот пример функции Inngest, которая импортирует все товары из магазина Shopify в локальную систему. Эта функция перебирает все страницы, объединяя все товары в единый массив.
 
 ```python
 @inngest.create_function(
@@ -402,9 +402,9 @@ async def shopify_product_import(ctx: inngest.Context):
     cursor = None
     has_more = True
 
-    # Use the event's "data" to pass key info like IDs
-    # Note: in this example is deterministic across multiple requests
-    # If the returned results must stay in the same order, wrap the db call in step.run()
+    # Используем «data» события для передачи ключевой информации, например ID
+    # Примечание: в данном примере это детерминировано между несколькими запросами
+    # Если возвращаемые результаты должны сохранять одинаковый порядок, оберните вызов db в step.run()
     session = await database.get_shopify_session(ctx.event.data["store_id"])
 
     while has_more:
@@ -412,44 +412,44 @@ async def shopify_product_import(ctx: inngest.Context):
             session=session,
             since_id=cursor
         ))
-        # Combine all of the data into a single list
+        # Объединяем все данные в единый список
         all_products.extend(page.products)
         if len(page.products) == 50:
             cursor = page.products[49].id
         else:
             has_more = False
 
-    # Now we have the entire list of products within all_products!
+    # Теперь у нас есть полный список товаров в all_products!
 ```
 
-In the example above, each iteration of the loop is managed using `step.run()`, ensuring that **all non-deterministic logic (like fetching products from Shopify) is encapsulated within a step**. This approach guarantees that if the request fails, it will be retried automatically, in the correct order. This structure aligns with Inngest's execution model, where each step is a separate HTTP request, ensuring robust and consistent loop behavior.
+В примере выше каждая итерация цикла управляется с помощью `step.run()`, гарантируя, что **вся недетерминированная логика (например, получение товаров из Shopify) инкапсулирована внутри шага**. Такой подход гарантирует, что при сбое запроса он будет автоматически повторён в правильном порядке. Эта структура соответствует модели выполнения Inngest, где каждый шаг — отдельный HTTP-запрос, обеспечивая надёжное и согласованное поведение цикла.
 
-Note that in the example above `get_shopify_session` is deterministic across multiple requests (and it's added to all API calls for authorization). If the returned results must stay in the same order, wrap the database call in `step.run()`.
+Обратите внимание, что в примере выше `get_shopify_session` детерминирована между несколькими запросами (и добавляется ко всем API-вызовам для авторизации). Если возвращаемые результаты должны сохранять одинаковый порядок, оберните вызов базы данных в `step.run()`.
 
-Read more about this use case in the [blog post](/blog/import-ecommerce-api-data-in-seconds).
+Подробнее об этом сценарии — в [записи блога](/blog/import-ecommerce-api-data-in-seconds).
 
 </LanguageSection>
 
 </LanguageSelector>
 
-## Best practices: implementing loops in Inngest
+## Лучшие практики: реализация циклов в Inngest
 
-To ensure your loops run correctly within [Inngest's execution model](/docs/learn/how-functions-are-executed):
+Чтобы циклы корректно работали в рамках [модели выполнения Inngest](/docs/learn/how-functions-are-executed):
 
-### 1. Treat each loop iterations as a single step
+### 1. Рассматривайте каждую итерацию цикла как отдельный шаг
 
-In a typical programming environment, loops maintain their state across iterations. In Inngest, each step re-executes the function from the beginning to ensure that only the failed steps will be re-tried. To handle this, treat each loop iteration as a separate step. This way, the loop progresses correctly, and each iteration builds on the previous one.
+В обычной среде программирования циклы сохраняют своё состояние между итерациями. В Inngest каждый шаг повторно выполняет функцию с самого начала, чтобы гарантировать повтор только неудавшихся шагов. Для корректной работы рассматривайте каждую итерацию цикла как отдельный шаг. Таким образом цикл будет продвигаться правильно, и каждая итерация будет строиться на предыдущей.
 
-### 2. Place non-deterministic logic inside steps
+### 2. Помещайте недетерминированную логику внутрь шагов
 
-Place non-deterministic logic (like API calls, database queries, or random number generation) inside `step.run` calls. This ensures that such operations are executed correctly and consistently within each step, preventing repeated execution with each function re-entry.
+Помещайте недетерминированную логику (например, API-вызовы, запросы к базе данных или генерацию случайных чисел) внутрь вызовов `step.run`. Это гарантирует корректное и согласованное выполнение таких операций в рамках каждого шага, предотвращая повторное выполнение при каждом повторном входе в функцию.
 
-### 3. Use sleep effectively
+### 3. Эффективно используйте sleep
 
-When using `step.sleep` inside a loop, ensure it is combined with structuring the loop to handle each iteration as a separate step. This prevents the function from appearing to restart and allows for controlled timing between iterations.
+При использовании `step.sleep` внутри цикла убедитесь, что он сочетается со структурированием цикла таким образом, чтобы каждая итерация обрабатывалась как отдельный шаг. Это предотвращает кажущийся перезапуск функции и обеспечивает контролируемые интервалы между итерациями.
 
-## Next steps
+## Следующие шаги
 
-- Docs explanation: [Inngest execution model](/docs/learn/how-functions-are-executed).
-- Docs guide: [multi-step functions](/docs/guides/multi-step-functions).
-- Blog post: ["How to import 1000s of items from any E-commerce API in seconds with serverless functions"](/blog/import-ecommerce-api-data-in-seconds).
+- Документация: [Модель выполнения Inngest](/docs/learn/how-functions-are-executed).
+- Руководство: [Многошаговые функции](/docs/guides/multi-step-functions).
+- Запись блога: [«Как импортировать тысячи товаров из любого E-commerce API за секунды с помощью бессерверных функций»](/blog/import-ecommerce-api-data-in-seconds).

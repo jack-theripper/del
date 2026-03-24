@@ -1,9 +1,9 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-# Create Function
+# Создание функции
 
 
-Define your functions using the `createFunction` method on the [Inngest client](/docs/reference/typescript/v4/client/create).
+Определяйте функции с помощью метода `createFunction` на [клиенте Inngest](/docs/reference/typescript/v4/client/create).
 
 ```ts
 import { inngest } from "./client";
@@ -14,7 +14,7 @@ export default inngest.createFunction(
     triggers: { event: "shop/product.imported" },
   },
   async ({ event, step, runId }) => {
-    // Your function code
+    // Код вашей функции
   }
 );
 ```
@@ -23,193 +23,191 @@ export default inngest.createFunction(
 
 ## `inngest.createFunction(configuration, handler): InngestFunction`
 
-The `createFunction` method accepts a series of arguments to define your function.
+Метод `createFunction` принимает ряд аргументов для определения вашей функции.
 
-### Configuration
+### Конфигурация
 
 <Properties>
   <Property name="id" type="string" required>
-    A unique identifier for your function. This should not change between deploys.
+    Уникальный идентификатор вашей функции. Не должен меняться между деплоями.
   </Property>
   <Property name="name" type="string">
-    A name for your function. If defined, this will be shown in the UI as a friendly display name instead of the ID.
+    Название функции. Если задано, будет отображаться в UI как понятное имя вместо ID.
   </Property>
   <Property name="triggers" type="Trigger | Trigger[]">
-    One or more triggers. [Trigger helpers](/docs/reference/typescript/v4/functions/triggers) like `eventType()` and `cron()` are recommended, but you can also use normal objects.
+    Один или несколько триггеров. Рекомендуем использовать [вспомогательные функции триггеров](/docs/reference/typescript/v4/functions/triggers), такие как `eventType()` и `cron()`, но также можно использовать обычные объекты.
   </Property>
 
   <Property name="concurrency" type="number | object | [object, object]">
-    Limit the number of concurrently running functions ([reference](/docs/functions/concurrency))
+    Ограничить количество параллельно выполняемых функций ([справочник](/docs/functions/concurrency))
 
     <Properties nested={true} collapse={true}>
       <Property name="limit" type="number" required>
-        The maximum number of concurrently running steps.
+        Максимальное количество параллельно выполняемых шагов.
       </Property>
       <Property name="scope" type="'account' | 'env' | 'fn'">
-        The scope for the concurrency limit, which impacts whether concurrency is managed on an individual function, across an environment, or across your entire account.
-    
-        * `fn` (default):  only the runs of this function affects the concurrency limit
-        * `env`:  all runs within the same environment that share the same evaluated key value will affect the concurrency limit.  This requires setting a `key` which evaluates to a virtual queue name.
-        * `account`:  every run that shares the same evaluated key value will affect the concurrency limit, across every environment.  This requires setting a `key` which evaluates to a virtual queue name.
+        Область применения лимита параллелизма, влияющая на то, управляется ли параллелизм для отдельной функции, в пределах среды или всего аккаунта.
+
+        * `fn` (по умолчанию): только запуски этой функции влияют на лимит параллелизма
+        * `env`: все запуски в одной среде с одинаковым значением ключа влияют на лимит параллелизма. Требует установки `key`.
+        * `account`: каждый запуск с одинаковым значением ключа влияет на лимит параллелизма во всех средах. Требует установки `key`.
       </Property>
       <Property name="key" type="string">
-        A unique key expression for which to restrict concurrently running steps to. The expression is evaluated for each triggering event and a unique key is generated. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info.
+        Уникальное ключевое выражение для ограничения параллельно выполняемых шагов. Выражение вычисляется для каждого триггерного события, генерируя уникальный ключ. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions).
       </Property>
     </Properties>
   </Property>
 
   <Property name="throttle" type="object">
-    Limits the number of new function runs started over a given period of time ([guide](/docs/guides/throttling)).
+    Ограничивает количество новых запусков функций за заданный период времени ([руководство](/docs/guides/throttling)).
 
     <Properties nested={true} collapse={true}>
       <Property name="limit" type="number" required>
-        The total number of runs allowed to start within the given `period`.
+        Общее количество разрешённых запусков за заданный `period`.
       </Property>
       <Property name="period" type="string" required>
-        The period within which the `limit` will be applied.
+        Период, в течение которого применяется `limit`.
       </Property>
       <Property name="burst" type="number">
-        The number of additional runs allowed to start in the given window in a single burst. This is added on top of the limit, which ensures high throughput within the period.
+        Количество дополнительных запусков, допустимых в данном окне за один всплеск. Добавляется к лимиту, обеспечивая высокую пропускную способность в пределах периода.
       </Property>
       <Property name="key" type="string">
-        A unique expression for which to apply the throttle limit to. The expression is evaluated for each triggering event and will be applied for each unique value. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info.
+        Уникальное выражение для применения лимита троттлинга. Выражение вычисляется для каждого триггерного события. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions).
       </Property>
     </Properties>
   </Property>
 
   <Property name="idempotency" type="string">
-    A key expression which is used to prevent duplicate events from triggering a function more than once in 24 hours. This is equivalent to setting `rateLimit` with a `key`, a `limit` of `1`  and `period` of `24hr`. [Read the idempotency guide here](/docs/guides/handling-idempotency).
+    Ключевое выражение для предотвращения повторного запуска функции при дублирующихся событиях более одного раза за 24 часа. Эквивалентно установке `rateLimit` с `key`, `limit` равным `1` и `period` равным `24hr`. [Читайте руководство по идемпотентности](/docs/guides/handling-idempotency).
 
-    Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+    Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-    * Only run once for each customer id: `'event.data.customer_id'`
-    * Only run once for each account and email address: `'event.data.account_id + "-" + event.user.email'`
+    * Запускать только один раз для каждого ID клиента: `'event.data.customer_id'`
+    * Запускать только один раз для каждого аккаунта и email: `'event.data.account_id + "-" + event.user.email'`
   </Property>
 
   <Property name="rateLimit" type="object">
-    Options to configure how to rate limit function execution ([reference](/docs/reference/typescript/v4/functions/rate-limit))
+    Параметры для настройки ограничения частоты выполнения функций ([справочник](/docs/reference/typescript/v4/functions/rate-limit))
 
     <Properties nested={true} collapse={true}>
       <Property name="limit" type="number" required>
-        The maximum number of functions to run in the given time period.
+        Максимальное количество функций, запускаемых за заданный период времени.
       </Property>
       <Property name="period" type="string" required>
-        The time period of which to set the limit. The period begins when the first matching event is received.
-        Current permitted values are from `1s` to `60s`.
+        Период времени для применения лимита. Период начинается при получении первого соответствующего события.
+        Допустимые значения: от `1s` до `60s`.
       </Property>
       <Property name="key" type="string">
-        A unique key expression to apply the limit to. The expression is evaluated for each triggering event.
+        Уникальное ключевое выражение для применения лимита. Выражение вычисляется для каждого триггерного события.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Rate limit per customer id: `'event.data.customer_id'`
-        * Rate limit per account and email address: `'event.data.account_id + "-" + event.user.email'`
+        * Ограничение по ID клиента: `'event.data.customer_id'`
+        * Ограничение по аккаунту и email: `'event.data.account_id + "-" + event.user.email'`
       </Property>
     </Properties>
   </Property>
 
   <Property name="debounce" type="object">
-    Options to configure function debounce ([reference](/docs/reference/typescript/v4/functions/debounce))
+    Параметры для настройки дебаунса функции ([справочник](/docs/reference/typescript/v4/functions/debounce))
     <Properties nested={true} collapse={true}>
       <Property name="period" type="string" required>
-        The time period of which to set the limit. The period begins when the first matching event is received.
-        Current permitted values are from `1s` to `7d` (`168h`).
+        Период времени для применения лимита. Период начинается при получении первого соответствующего события.
+        Допустимые значения: от `1s` до `7d` (`168h`).
       </Property>
       <Property name="key" type="string">
-        A unique key expression to apply the debounce to. The expression is evaluated for each triggering event.
+        Уникальное ключевое выражение для применения дебаунса. Выражение вычисляется для каждого триггерного события.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Debounce per customer id: `'event.data.customer_id'`
-        * Debounce per account and email address: `'event.data.account_id + "-" + event.user.email'`
+        * Дебаунс по ID клиента: `'event.data.customer_id'`
+        * Дебаунс по аккаунту и email: `'event.data.account_id + "-" + event.user.email'`
       </Property>
     </Properties>
   </Property>
 
   <Property name="priority" type="object">
-    Options to configure how to prioritize functions
+    Параметры для настройки приоритета функций
 
     <Properties nested={true} collapse={true}>
       <Property name="run" type="string">
-        An expression which must return an integer between -600 and 600 (by default), with higher return values resulting in a higher priority.
+        Выражение, возвращающее целое число от -600 до 600 (по умолчанию); большие значения означают более высокий приоритет.
 
-        Examples:
-        * Return the priority within an event directly: `event.data.priority` (where
-    `event.data.priority` is an int within your account's range)
-        * Rate limit by a string field: `event.data.plan == 'enterprise' ? 180 : 0`
+        Примеры:
+        * Вернуть приоритет непосредственно из события: `event.data.priority` (где `event.data.priority` — целое число в допустимом диапазоне аккаунта)
+        * Ограничить по строковому полю: `event.data.plan == 'enterprise' ? 180 : 0`
 
-        See [reference](/docs/reference/typescript/v4/functions/run-priority) for more information.
+        Смотрите [справочник](/docs/reference/typescript/v4/functions/run-priority) для подробностей.
       </Property>
     </Properties>
   </Property>
 
   <Property name="batchEvents" type="object">
-    Configure how the function should consume batches of events ([reference](/docs/guides/batching))
+    Настройка обработки батчей событий ([справочник](/docs/guides/batching))
 
-    <Properties nested={true} collapse={true}>  
+    <Properties nested={true} collapse={true}>
       <Property name="maxSize" type="number" required>
-        The maximum number of events a batch can have. Current limit is `100`.
+        Максимальное количество событий в батче. Текущий лимит: `100`.
       </Property>
       <Property name="timeout" type="string" required>
-        How long to wait before invoking the function with the batch even if it's not full.
-        Current permitted values are from `1s` to `60s`.
+        Время ожидания перед вызовом функции с батчем, даже если батч не полный.
+        Допустимые значения: от `1s` до `60s`.
       </Property>
       <Property name="key" type="string">
-        A unique key expression to apply the batching to. The expression is evaluated for each triggering event.
+        Уникальное ключевое выражение для применения батчинга. Выражение вычисляется для каждого триггерного события.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Batch events per customer id: `'event.data.customer_id'`
-        * Batch events per account and email address: `'event.data.account_id + "-" + event.user.email'`
+        * Батчинг событий по ID клиента: `'event.data.customer_id'`
+        * Батчинг событий по аккаунту и email: `'event.data.account_id + "-" + event.user.email'`
       </Property>
       <Property name="if" type="string">
-        A boolean expression to conditionally batch events that evaluate to true on this expression. The expression is evaluated for each triggering event.
+        Булево выражение для условного батчинга событий, которые вычисляются как true. Выражение вычисляется для каждого триггерного события.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Batch events for free account types: `'event.data.account_type == "free"'`
+        * Батчинг событий для бесплатных аккаунтов: `'event.data.account_type == "free"'`
       </Property>
     </Properties>
   </Property>
   <Property name="retries" type="number">
-    Configure the number of times the function will be retried from `0` to `20`. Default: `4`
+    Настройка количества повторных попыток функции от `0` до `20`. По умолчанию: `4`
   </Property>
   <Property name="onFailure" type="function">
-    A function that will be called only when this Inngest function fails after all retries have been attempted ([reference](/docs/reference/typescript/v4/functions/handling-failures))
+    Функция, вызываемая только когда эта функция Inngest завершается ошибкой после всех попыток повтора ([справочник](/docs/reference/typescript/v4/functions/handling-failures))
   </Property>
   <Property name="cancelOn" type="array of objects">
-    Define events that can be used to cancel a running or sleeping function ([reference](/docs/reference/typescript/v4/functions/cancel-on))
+    Определяет события, которые могут отменить выполняющуюся или спящую функцию ([справочник](/docs/reference/typescript/v4/functions/cancel-on))
     <Properties nested={true} collapse={true}>
       <Property name="event" type="string | EventType" required>
-        The event that will be used to cancel. This can be a string event name (e.g. `"app/user.deleted"`) or an event object created with `eventType()`
+        Событие для отмены. Может быть строковым именем события (например, `"app/user.deleted"`) или объектом события, созданным с помощью `eventType()`
       </Property>
       <Property name="match" type="string">
-        The property to match the event trigger and the cancelling event, using dot-notation, for example, `data.userId`. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info.
+        Свойство для сопоставления триггерного события и отменяющего события с использованием точечной нотации, например `data.userId`. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions).
       </Property>
       <Property name="if" type="string">
-        An expression on which to conditionally match the original event trigger (`event`) and the wait event (`async`). Cannot be combined with `match`.
+        Выражение для условного сопоставления исходного триггерного события (`event`) и ожидаемого события (`async`). Нельзя комбинировать с `match`.
 
-        Expressions are defined using the Common Expression Language (CEL) with the events accessible using dot-notation. Read our [guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
         * `event.data.userId == async.data.userId && async.data.billing_plan == 'pro'`
       </Property>
       <Property name="timeout" type="string">
-        The amount of time to wait to receive the cancelling event. A time string compatible with the [ms](https://npm.im/ms) package, e.g. `"30m"`, `"3 hours"`, or `"2.5d"`
+        Время ожидания отменяющего события. Строка времени, совместимая с пакетом [ms](https://npm.im/ms), например `"30m"`, `"3 hours"` или `"2.5d"`
       </Property>
     </Properties>
   </Property>
 
   <Property name="timeouts" type="object">
-    Options to configure timeouts for cancellation ([reference](/docs/features/inngest-functions/cancellation/cancel-on-timeouts))
+    Параметры для настройки таймаутов отмены ([справочник](/docs/features/inngest-functions/cancellation/cancel-on-timeouts))
     <Properties nested={true} collapse={true}>
       <Property name="start" type="string">
-        The timeout for starting a function run.  If the time between scheduling and starting a function exceeds this duration, the function will be cancelled.
-        Examples are: `10s`, `45m`, `18h30m`.
+        Таймаут запуска функции. Если время между планированием и запуском превышает эту длительность, функция будет отменена.
+        Примеры: `10s`, `45m`, `18h30m`.
       </Property>
       <Property name="finish" type="string">
-        The timeout for executing a run.  If a run takes longer than this duration to execute, the run will be cancelled.  This does not include the
-        time waiting for the function to start (see `timeouts.start`).
-        Examples are: `10s`, `45m`, `18h30m`.
+        Таймаут выполнения запуска. Если запуск выполняется дольше этой длительности, он будет отменён. Не включает время ожидания запуска (см. `timeouts.start`).
+        Примеры: `10s`, `45m`, `18h30m`.
       </Property>
     </Properties>
   </Property>
@@ -217,9 +215,9 @@ The `createFunction` method accepts a series of arguments to define your functio
 </Properties>
 
 
-#### Triggers
+#### Триггеры
 
-You can use [trigger helper functions](/docs/reference/typescript/v4/functions/triggers) to define typed triggers with optional runtime validation:
+Вы можете использовать [вспомогательные функции триггеров](/docs/reference/typescript/v4/functions/triggers) для определения типизированных триггеров с опциональной валидацией во время выполнения:
 
 ```ts
 import { eventType, cron } from "inngest";
@@ -235,43 +233,42 @@ inngest.createFunction(
     triggers: [orderPlaced, cron("0 * * * *")],
   },
   async ({ event, step }) => {
-    // event.data is fully typed
+    // event.data полностью типизирован
   }
 );
 ```
 
-Alternatively, you can specify an array of up to 10 of the following triggers to invoke
-your function with multiple events or crons. See the [Multiple Triggers](/docs/guides/multiple-triggers) guide.
+Альтернативно можно задать массив до 10 триггеров для вызова функции несколькими событиями или cron-расписаниями. Смотрите [руководство по нескольким триггерам](/docs/guides/multiple-triggers).
 
 <Callout>
-Cron triggers with overlapping schedules for a single function will be deduplicated.
+Cron-триггеры с перекрывающимися расписаниями для одной функции будут дедуплицированы.
 </Callout>
 
 <Properties>
   <Property name="event" type="string | EventType">
-    The event that will trigger this function to run. This can be a string event name (e.g. `"app/user.created"`) or an event object created with `eventType()`.
+    Событие, которое запустит эту функцию. Может быть строковым именем (например, `"app/user.created"`) или объектом события, созданным с помощью `eventType()`.
   </Property>
   <Property name="cron" type="string">
-    A [unix-cron](https://crontab.guru/) compatible schedule string. <br/>Optional timezone prefix, e.g. `TZ=Europe/Paris 0 12 * * 5`.
+    Строка расписания в формате [unix-cron](https://crontab.guru/). <br/>Опциональный префикс часового пояса, например `TZ=Europe/Paris 0 12 * * 5`.
   </Property>
 </Properties>
 
-When using an `event` trigger, you can optionally combine it with the `if` option to filter events:
+При использовании триггера `event` можно опционально комбинировать его с опцией `if` для фильтрации событий:
 
-<Properties nested={true} name="Additional options">
+<Properties nested={true} name="Дополнительные параметры">
   <Property name="if" type="string">
-    A comparison expression that returns true or false whether the function should handle or ignore a given matching event.
+    Выражение сравнения, возвращающее true или false — должна ли функция обработать или проигнорировать данное подходящее событие.
 
-    Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+    Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
     * `'event.data.action == "published"'`
     * `'event.data.priority >= 4'`
   </Property>
 </Properties>
 
-### Handler
+### Обработчик
 
-The handler is your code that runs whenever the trigger occurs. Every function handler receives a single object argument which can be deconstructed. The key arguments are `event` and `step`. Note, that scheduled functions that use a `cron` trigger will not receive an `event` argument.
+Обработчик — это ваш код, выполняемый при каждом срабатывании триггера. Каждый обработчик функции получает единственный объект-аргумент, который можно деструктурировать. Ключевые аргументы: `event` и `step`. Обратите внимание, что плановые функции с триггером `cron` не получают аргумент `event`.
 
 ```ts
 function handler({ event, events, step, runId, logger, attempt }) {/* ... */}
@@ -279,7 +276,7 @@ function handler({ event, events, step, runId, logger, attempt }) {/* ... */}
 
 #### `event`
 
-The event payload `object` that triggered the given function run. The event payload object will match what you send with [`inngest.send()`](/docs/reference/typescript/v4/events/send). Below is an example event payload object:
+Объект полезной нагрузки события, запустившего данный запуск функции. Соответствует тому, что вы отправили с помощью [`inngest.send()`](/docs/reference/typescript/v4/events/send). Пример:
 
 ```ts
 {
@@ -294,27 +291,27 @@ The event payload `object` that triggered the given function run. The event payl
 
 #### `events`
 
-`events` is an array of `event` payload objects that's accessible when the `batchEvents` is set on the function configuration.
-If batching is not configured, the array contains a single event payload matching the `event` argument.
+`events` — массив объектов полезной нагрузки событий, доступный когда в конфигурации функции задан `batchEvents`.
+Если батчинг не настроен, массив содержит одно событие, совпадающее с аргументом `event`.
 
 #### `step`
 
-The `step` object has methods that enable you to define
+Объект `step` содержит методы для определения:
 
-- [`step.run()`](/docs/reference/typescript/v4/functions/step-run) - Run synchronous or asynchronous code as a retriable step in your function
-- [`step.sleep()`](/docs/reference/typescript/v4/functions/step-sleep) - Sleep for a given amount of time
-- [`step.sleepUntil()`](/docs/reference/typescript/v4/functions/step-sleep-until) - Sleep until a given time
-- [`step.invoke()`](/docs/reference/typescript/v4/functions/step-invoke) - Invoke another Inngest function as a step, receiving the result of the invoked function
-- [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event) - Pause a function's execution until another event is received
-- [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event) - Send event(s) reliably within your function. Use this instead of `inngest.send()` to ensure reliable event delivery from within functions.
+- [`step.run()`](/docs/reference/typescript/v4/functions/step-run) — Выполнение синхронного или асинхронного кода как повторяемого шага в функции
+- [`step.sleep()`](/docs/reference/typescript/v4/functions/step-sleep) — Приостановить выполнение на заданное время
+- [`step.sleepUntil()`](/docs/reference/typescript/v4/functions/step-sleep-until) — Приостановить выполнение до заданного времени
+- [`step.invoke()`](/docs/reference/typescript/v4/functions/step-invoke) — Вызвать другую функцию Inngest как шаг, получая результат вызванной функции
+- [`step.waitForEvent()`](/docs/reference/typescript/v4/functions/step-wait-for-event) — Приостановить выполнение функции до получения другого события
+- [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event) — Надёжно отправить события внутри функции. Используйте вместо `inngest.send()` для гарантированной доставки событий.
 
 #### `runId`
 
-The unique ID for the given function run. This can be useful for logging and looking up specific function runs in the Inngest dashboard.
+Уникальный ID данного запуска функции. Полезен для логирования и поиска конкретных запусков в панели управления Inngest.
 
 #### `logger`
 
-The `logger` object exposes the following interfaces.
+Объект `logger` предоставляет следующие интерфейсы.
 
 ```ts
 export interface Logger {
@@ -325,8 +322,8 @@ export interface Logger {
 }
 ```
 
-It is a proxy object that is either backed by `console` or the logger you provided ([reference](/docs/guides/logging)).
+Это прокси-объект, работающий либо через `console`, либо через предоставленный вами логгер ([справочник](/docs/guides/logging)).
 
 #### `attempt`
 
-The current zero-indexed attempt number for this function execution. The first attempt will be 0, the second 1, and so on. The attempt number is incremented every time the function throws an error and is retried.
+Текущий номер попытки (начиная с нуля) для данного выполнения функции. Первая попытка имеет номер 0, вторая — 1 и так далее. Номер попытки увеличивается при каждом сбое функции и повторном запуске.

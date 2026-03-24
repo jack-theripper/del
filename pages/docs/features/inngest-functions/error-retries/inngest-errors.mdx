@@ -3,18 +3,18 @@ import { Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge, Langu
 export const hidePageSidebar = true;
 
 
-# Inngest Errors
+# Ошибки Inngest
 
-Inngest automatically handles errors and retries for you. You can use standard errors or use included Inngest errors to control how Inngest handles errors.
+Inngest автоматически обрабатывает ошибки и повторные попытки. Можно использовать стандартные ошибки или специальные ошибки Inngest для управления поведением при сбоях.
 
 <LanguageSelector>
 
 
-## Standard errors
+## Стандартные ошибки
 
 <LanguageSection show="typescript">
 
-All `Error` objects are handled by Inngest and [retried automatically](/docs/features/inngest-functions/error-retries/retries). This includes all standard errors like `TypeError` and custom errors that extend the `Error` class. You can throw errors in the function handler or within a step.
+Все объекты `Error` обрабатываются Inngest и [автоматически повторяются](/docs/features/inngest-functions/error-retries/retries). Это включает все стандартные ошибки, такие как `TypeError`, и пользовательские ошибки, расширяющие класс `Error`. Ошибки можно выбрасывать как в обработчике функции, так и внутри шага.
 
 ```typescript
 export default inngest.createFunction(
@@ -41,7 +41,7 @@ export default inngest.createFunction(
 
 <LanguageSection show="python">
 
-All thrown Errors are handled by Inngest and [retried automatically](/docs/features/inngest-functions/error-retries/retries). This includes all standard errors like `ValueError` and custom errors that extend the `Exception` class. You can throw errors in the function handler or within a step.
+Все выброшенные ошибки обрабатываются Inngest и [автоматически повторяются](/docs/features/inngest-functions/error-retries/retries). Это включает все стандартные ошибки, такие как `ValueError`, и пользовательские ошибки, расширяющие класс `Exception`. Ошибки можно выбрасывать как в обработчике функции, так и внутри шага.
 
 ```python
 @client.create_function(
@@ -61,7 +61,7 @@ async def fn_async(ctx: inngest.Context) -> None:
 
 <LanguageSection show="go">
 
-All Errors returned by your Inngest Functions are handled by Inngest and [retried automatically](/docs/features/inngest-functions/error-retries/retries). 
+Все ошибки, возвращаемые функциями Inngest, обрабатываются Inngest и [автоматически повторяются](/docs/features/inngest-functions/error-retries/retries).
 
 ```go
 import (
@@ -95,11 +95,11 @@ inngestgo.CreateFunction(
 ```
 </LanguageSection>
 
-## Prevent any additional retries
+## Отключение повторных попыток
 
 <LanguageSection show="typescript">
 
-Use `NonRetriableError` to prevent Inngest from retrying the function _or_ step. This is useful when the type of error is not expected to be resolved by a retry, for example, when the error is caused by an invalid input or when the error is expected to occur again if retried.
+Используйте `NonRetriableError`, чтобы Inngest не повторял выполнение функции _или_ шага. Это полезно, когда ошибка не может быть устранена повторной попыткой — например, если она вызвана некорректными входными данными или ожидается снова при повторе.
 
 ```typescript
 import { NonRetriableError } from "inngest";
@@ -121,7 +121,7 @@ export default inngest.createFunction(
 );
 ```
 
-### Parameters
+### Параметры
 
 ```ts
 new NonRetriableError(message: string, options?: { cause?: Error }): NonRetriableError
@@ -129,12 +129,12 @@ new NonRetriableError(message: string, options?: { cause?: Error }): NonRetriabl
 
 <Properties>
   <Property name="message" type="string" required>
-    The error message.
+    Сообщение об ошибке.
   </Property>
   <Property name="options" type="object">
     <Properties nested={true} collapse={true}>
       <Property name="cause" type="Error">
-        The original error that caused the non-retriable error.
+        Исходная ошибка, вызвавшая невоспроизводимую ошибку.
       </Property>
     </Properties>
   </Property>
@@ -144,7 +144,7 @@ new NonRetriableError(message: string, options?: { cause?: Error }): NonRetriabl
 
 <LanguageSection show="python">
 
-Use `NonRetriableError` to prevent Inngest from retrying the function _or_ step. This is useful when the type of error is not expected to be resolved by a retry, for example, when the error is caused by an invalid input or when the error is expected to occur again if retried.
+Используйте `NonRetriableError`, чтобы Inngest не повторял выполнение функции _или_ шага. Это полезно, когда ошибка не может быть устранена повторной попыткой — например, если она вызвана некорректными входными данными или ожидается снова при повторе.
 
 ```python
 @client.create_function(
@@ -157,13 +157,13 @@ async def fn_async(ctx: inngest.Context) -> None:
         raise inngest.NonRetriableError("non-retriable-step-error")
 
     ctx.step.run("step_1", step_1)
-``` 
+```
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-Use `inngestgo.NoRetryError` to prevent Inngest from retrying the function. This is useful when the type of error is not expected to be resolved by a retry, for example, when the error is caused by an invalid input or when the error is expected to occur again if retried.
+Используйте `inngestgo.NoRetryError`, чтобы предотвратить повторное выполнение функции Inngest. Это полезно, когда ошибка не может быть устранена повторной попыткой — например, если она вызвана некорректными входными данными или ожидается снова при повторе.
 
 ```go
 import (
@@ -199,13 +199,13 @@ inngestgo.CreateFunction(
 
 </LanguageSection>
 
-## Retry after a specific period of time
+## Повтор через определённый период времени
 
 <LanguageSection show="typescript">
 
-Use `RetryAfterError` to control when Inngest should retry the function or step. This is useful when you want to delay the next retry attempt for a specific period of time, for example, to more gracefully handle a race condition or backing off after hitting an API rate limit.
+Используйте `RetryAfterError`, чтобы контролировать, когда Inngest должен повторить выполнение функции или шага. Это полезно, когда нужно отложить следующую попытку на определённое время — например, для более корректной обработки гонки условий или отступа после превышения лимита запросов к API.
 
-If `RetryAfterError` is not used, Inngest will use [the default retry backoff policy](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
+Если `RetryAfterError` не используется, Inngest применяет [политику повторов с экспоненциальной задержкой по умолчанию](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
 
 ```typescript
 inngest.createFunction(
@@ -223,7 +223,7 @@ inngest.createFunction(
 );
 ```
 
-### Parameters
+### Параметры
 
 ```ts
 new RetryAfterError(
@@ -235,19 +235,19 @@ new RetryAfterError(
 
 <Properties>
   <Property name="message" type="string" required>
-    The error message.
+    Сообщение об ошибке.
   </Property>
   <Property name="retryAfter" type="number | string | date" required>
-    The specified time to delay the next retry attempt. The following formats are accepted:
+    Указанное время задержки следующей попытки. Допустимые форматы:
 
-    * `number` - The number of **milliseconds** to delay the next retry attempt.
-    * `string` - A time string, parsed by the [ms](https://npm.im/ms) package, such as `"30m"`, `"3 hours"`, or `"2.5d"`.
-    * `date` - A `Date` object.
+    * `number` — количество **миллисекунд** задержки.
+    * `string` — строка времени, разбираемая пакетом [ms](https://npm.im/ms), например `"30m"`, `"3 hours"` или `"2.5d"`.
+    * `date` — объект `Date`.
   </Property>
   <Property name="options" type="object">
     <Properties nested={true} collapse={true}>
       <Property name="cause" type="Error">
-        The original error that caused the non-retriable error.
+        Исходная ошибка, вызвавшая невоспроизводимую ошибку.
       </Property>
     </Properties>
   </Property>
@@ -257,9 +257,9 @@ new RetryAfterError(
 
 <LanguageSection show="python">
 
-Use `RetryAfterError` to control when Inngest should retry the function or step. This is useful when you want to delay the next retry attempt for a specific period of time, for example, to more gracefully handle a race condition or backing off after hitting an API rate limit.
+Используйте `RetryAfterError`, чтобы контролировать, когда Inngest должен повторить выполнение функции или шага. Это полезно, когда нужно отложить следующую попытку на определённое время — например, для более корректной обработки гонки условий или отступа после превышения лимита запросов к API.
 
-If `RetryAfterError` is not used, Inngest will use [the default retry backoff policy](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
+Если `RetryAfterError` не используется, Inngest применяет [политику повторов с экспоненциальной задержкой по умолчанию](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
 
 ```python
 @client.create_function(
@@ -272,9 +272,9 @@ async def fn_async(ctx: inngest.Context) -> None:
       raise inngest.RetryAfterError("rate-limit-hit", 1000) # delay in milliseconds
 
   ctx.step.run("step_1", step_1)
-``` 
+```
 
-### Parameters
+### Параметры
 
 ```python
 RetryAfterError(
@@ -285,14 +285,14 @@ RetryAfterError(
 
 <Properties>
   <Property name="message" type="string" required>
-    The error message.
+    Сообщение об ошибке.
   </Property>
   <Property name="retry_after" type="int | datetime.timedelta | datetime.datetime" required>
-    The specified time to delay the next retry attempt. The following formats are accepted:
+    Указанное время задержки следующей попытки. Допустимые форматы:
 
-    * `int` - The number of **milliseconds** to delay the next retry attempt.
-    * `datetime.timedelta` - A time delta object, such as `datetime.timedelta(seconds=30)`.
-    * `datetime.datetime` - A `datetime` object.
+    * `int` — количество **миллисекунд** задержки.
+    * `datetime.timedelta` — объект timedelta, например `datetime.timedelta(seconds=30)`.
+    * `datetime.datetime` — объект datetime.
   </Property>
 </Properties>
 
@@ -300,9 +300,9 @@ RetryAfterError(
 
 <LanguageSection show="go">
 
-Use `RetryAtError` to control when Inngest should retry the function or step. This is useful when you want to delay the next retry attempt for a specific period of time, for example, to more gracefully handle a race condition or backing off after hitting an API rate limit.
+Используйте `RetryAtError`, чтобы контролировать, когда Inngest должен повторить выполнение функции или шага. Это полезно, когда нужно отложить следующую попытку на определённое время — например, для более корректной обработки гонки условий или отступа после превышения лимита запросов к API.
 
-If `RetryAtError` is not used, Inngest will use [the default retry backoff policy](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
+Если `RetryAtError` не используется, Inngest применяет [политику повторов с экспоненциальной задержкой по умолчанию](https://github.com/inngest/inngest/blob/main/pkg/backoff/backoff.go#L10-L22).
 
 ```go
 import (
@@ -340,9 +340,9 @@ inngestgo.CreateFunction(
 
 <LanguageSection show="typescript">
 
-## Step errors <VersionBadge version="v3.12.0+" />
+## Ошибки шагов <VersionBadge version="v3.12.0+" />
 
-After a step exhausts all of its retries, it will throw a `StepError` which can be caught and handled in the function handler if desired.
+После того как шаг исчерпал все повторные попытки, он выбрасывает `StepError`, который можно перехватить и обработать в обработчике функции.
 
 <CodeGroup>
 ```ts {{ title: "try/catch" }}
@@ -402,16 +402,16 @@ inngest.createFunction(
 </CodeGroup>
 
 <Callout>
-  Support for handling step errors is available in the Inngest TypeScript SDK starting from version **3.12.0**. Prior to this version, wrapping a step in try/catch will not work correctly.
+  Поддержка обработки ошибок шагов доступна в TypeScript SDK Inngest начиная с версии **3.12.0**. В более ранних версиях оборачивание шага в try/catch не работает корректно.
 </Callout>
 
 </LanguageSection>
 
 <LanguageSection show="python">
 
-## Step errors
+## Ошибки шагов
 
-After a step exhausts all of its retries, it will throw a `StepError` which can be caught and handled in the function handler if desired.
+После того как шаг исчерпал все повторные попытки, он выбрасывает `StepError`, который можно перехватить и обработать в обработчике функции.
 
 ```python
 @client.create_function(
@@ -427,15 +427,15 @@ async def fn_async(ctx: inngest.Context) -> None:
         ctx.step.run("foo", foo)
     except inngest.StepError:
         raise MyError("I am new")
-``` 
+```
 
 </LanguageSection>
 
 <LanguageSection show="typescript">
 
-## Attempt counter
+## Счётчик попыток
 
-The current attempt number is passed in as input to the function handler. `attempt` is a zero-index number that increments for each retry. The first attempt will be `0`, the second `1`, and so on. The number is reset after a successfully executed step.
+Текущий номер попытки передаётся в обработчик функции как входной параметр. `attempt` — это индексируемое с нуля число, которое увеличивается при каждом повторе. Первая попытка будет `0`, вторая `1` и так далее. Счётчик сбрасывается после успешного выполнения шага.
 
 ```ts
 inngest.createFunction(
@@ -455,9 +455,9 @@ inngest.createFunction(
 ```
 
 
-## Stack traces
+## Трассировки стека
 
-When calling functions that return Promises, await the Promise to ensure that the stack trace is preserved. This applies to functions executing in different cycles of the event loop, for example, when calling a database or an external API. This is especially useful when debugging errors in production.
+При вызове функций, возвращающих Promise, используйте `await`, чтобы сохранить трассировку стека. Это применяется к функциям, выполняющимся в разных циклах цикла событий, например при обращении к базе данных или внешнему API. Особенно полезно при отладке ошибок в production.
 
 <CodeGroup>
   ```ts {{ title: "Returning Promise" }}
@@ -485,7 +485,7 @@ When calling functions that return Promises, await the Promise to ensure that th
   ```
 </CodeGroup>
 
-Please note that immediately returning the Promise will not include a pointer to the calling function in the stack trace. Awaiting the Promise will ensure that the stack trace includes the calling function.
+Обратите внимание: при немедленном возврате Promise трассировка стека не будет включать указатель на вызывающую функцию. Использование `await` гарантирует, что трассировка стека будет содержать вызывающую функцию.
 
 </LanguageSection>
 </LanguageSelector>

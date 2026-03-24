@@ -1,12 +1,12 @@
 import { Properties, Property } from "src/shared/Docs/mdx";
 
-# Encryption middleware
+# Промежуточное ПО шифрования
 
-The encryption middleware provides end-to-end encryption for events, step output, and function output. **Only encrypted data is sent to Inngest servers**: encryption and decryption happen within your infrastructure.
+Промежуточное ПО шифрования обеспечивает сквозное шифрование для событий, вывода шагов и вывода функций. **На серверы Inngest отправляются только зашифрованные данные**: шифрование и расшифровка происходят в вашей инфраструктуре.
 
-## Installation
+## Установка
 
-Install the [`@inngest/middleware-encryption` package](https://www.npmjs.com/package/@inngest/middleware-encryption) ([GitHub](https://github.com/inngest/inngest-js/tree/main/packages/middleware-encryption#readme)) and configure it as follows:
+Установите [пакет `@inngest/middleware-encryption`](https://www.npmjs.com/package/@inngest/middleware-encryption) ([GitHub](https://github.com/inngest/inngest-js/tree/main/packages/middleware-encryption#readme)) и настройте следующим образом:
 
 ```ts
 import { encryptionMiddleware } from "@inngest/middleware-encryption";
@@ -15,50 +15,50 @@ const inngest = new Inngest({
   id: "my-app",
   middleware: [
     encryptionMiddleware({
-      // your encryption key string should not be hard coded
+      // строку ключа шифрования не следует хранить в коде
       key: process.env.MY_ENCRYPTION_KEY,
     }),
   ],
 });
 ```
 
-By default, the following will be encrypted:
-- All step data
-- All function output
-- Event data placed inside `data.encrypted`
+По умолчанию шифруется:
+- Все данные шагов
+- Все выходные данные функций
+- Данные события в поле `data.encrypted`
 
 ## `encryptionMiddleware(options)`
 
-Returns a `Middleware.Class` that can be passed to the `middleware` array on a client or function.
+Возвращает `Middleware.Class`, который можно передать в массив `middleware` клиента или функции.
 
-### Options
+### Параметры
 
 <Properties>
   <Property name="key" type="string" required>
-    The encryption key used to encrypt and decrypt data. This should be a secret value stored in an environment variable.
+    Ключ шифрования для шифрования и расшифровки данных. Должен быть секретным значением, хранящимся в переменной окружения.
   </Property>
   <Property name="decryptOnly" type="boolean">
-    When `true`, disables encryption but continues to decrypt existing data. Useful when migrating away from encryption.
+    Если `true`, отключает шифрование, но продолжает расшифровывать существующие данные. Полезно при переходе от шифрования.
   </Property>
   <Property name="eventEncryptionField" type="string">
-    The field within `event.data` to encrypt. Defaults to `"encrypted"`.
+    Поле в `event.data` для шифрования. По умолчанию `"encrypted"`.
   </Property>
   <Property name="fallbackDecryptionKeys" type="string[]">
-    Additional keys to try when decrypting. Useful during key rotation.
+    Дополнительные ключи для попытки расшифровки. Полезно при ротации ключей.
   </Property>
   <Property name="encryptionService" type="EncryptionService">
-    A custom encryption service instance. If not provided, the default LibSodium-based service is used.
+    Кастомный экземпляр сервиса шифрования. Если не указан, используется сервис на основе LibSodium по умолчанию.
   </Property>
   <Property name="legacyV0Service" type="object">
-    Options for backward compatibility with v0 AES encryption format.
+    Параметры для обратной совместимости с форматом шифрования AES v0.
   </Property>
 </Properties>
 
-## Changing the encrypted `event.data` field
+## Изменение поля `event.data` для шифрования
 
-Only select pieces of event data are encrypted. By default, only the `data.encrypted` field.
+Шифруются только отдельные части данных события. По умолчанию — только поле `data.encrypted`.
 
-This can be customized using the `eventEncryptionField` option:
+Это можно настроить через опцию `eventEncryptionField`:
 
 ```ts
 encryptionMiddleware({
@@ -67,9 +67,9 @@ encryptionMiddleware({
 });
 ```
 
-## Decrypt only mode
+## Режим только расшифровки
 
-To disable encryption but continue decrypting, set `decryptOnly: true`. This is useful when you want to migrate away from encryption but still need to process older events.
+Для отключения шифрования при сохранении расшифровки установите `decryptOnly: true`. Полезно при переходе от шифрования, когда старые события ещё нужно обрабатывать.
 
 ```ts
 encryptionMiddleware({
@@ -78,34 +78,34 @@ encryptionMiddleware({
 });
 ```
 
-## Key rotation
+## Ротация ключей
 
-To attempt decryption with multiple keys, set the `fallbackDecryptionKeys` option. This is useful when rotating keys, since older events may have been encrypted with a different key:
+Для попытки расшифровки с несколькими ключами установите опцию `fallbackDecryptionKeys`. Полезно при ротации ключей, так как старые события могли быть зашифрованы другим ключом:
 
 ```ts
-// 1. Start with the current key
+// 1. Начать с текущим ключом
 encryptionMiddleware({
   key: process.env.MY_ENCRYPTION_KEY,
 });
 
-// 2. Deploy all services with the new key as a decryption fallback
+// 2. Развернуть все сервисы с новым ключом в качестве резервного для расшифровки
 encryptionMiddleware({
   key: process.env.MY_ENCRYPTION_KEY,
   fallbackDecryptionKeys: ["new"],
 });
 
-// 3. Deploy all services using the new key for encryption
+// 3. Развернуть все сервисы с новым ключом для шифрования
 encryptionMiddleware({
   key: process.env.MY_ENCRYPTION_KEY_V2,
   fallbackDecryptionKeys: ["current"],
 });
 
-// 4. Once all data using the old key has passed, phase it out
+// 4. После истечения срока действия всех данных со старым ключом исключить его
 encryptionMiddleware({
   key: process.env.MY_ENCRYPTION_KEY_V2,
 });
 ```
 
-## Cross-language support
+## Поддержка между языками
 
-This middleware is compatible with our encryption middleware in the Python SDK. Encrypted events can be sent from Python and decrypted in TypeScript, and vice versa.
+Это промежуточное ПО совместимо с промежуточным ПО шифрования в Python SDK. Зашифрованные события можно отправлять из Python и расшифровывать в TypeScript, и наоборот.

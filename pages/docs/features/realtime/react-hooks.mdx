@@ -4,15 +4,15 @@ import {
   RiNodejsFill,
 } from "@remixicon/react";
 
-export const description = 'Learn how to use the realtime React hooks to subscribe to channels.'
+export const description = 'Узнайте, как использовать React-хуки реального времени для подписки на каналы.'
 
-# React hooks / Next.js <VersionBadge version="TypeScript SDK v3.32.0+" />
+# React-хуки / Next.js <VersionBadge version="TypeScript SDK v3.32.0+" />
 
-Realtime provides a [`useInngestSubscription()`](#use-inngest-subscription-api-reference) React hook, offering a fully typed experience for subscribing to channels.
+Realtime предоставляет React-хук [`useInngestSubscription()`](#use-inngest-subscription-api-reference), обеспечивающий полностью типизированный опыт подписки на каналы.
 
-`useInngestSubscription()` securely subscribes to channels using a subscription token fetched from the server.
+`useInngestSubscription()` безопасно подписывается на каналы, используя токен подписки, полученный с сервера.
 
-In Next.js, this is implemented as a server action that returns a token, which is then used by the client to subscribe:
+В Next.js это реализуется как серверное действие (server action), возвращающее токен, который затем используется клиентом для подписки:
 
 
 
@@ -58,50 +58,50 @@ export default function Home() {
 }
 ```
 
-## `useInngestSubscription()` API Reference
+## Справочник API `useInngestSubscription()`
 
 
-### Parameters
+### Параметры
 
-- `enabled?: boolean` - Whether or not the hook will subscribe.
-- `bufferInterval?: number` - If set and above `0`, the outputs will only update every `n` milliseconds. This helps with very busy streams that could overwhelm a UI.
-- `token?: Realtime.Subscribe.Token` - The token to be used for subscribing (see [Subscribe from the client](/docs/features/realtime#subscribe-from-the-client)).
-- `refreshToken?: () => Promise<Realtime.Subscribe.Token>` - A function that will be called if no `token` is available, or if the hook has been re-`enabled` and the previous `token` has expired.
+- `enabled?: boolean` — включена ли подписка хука.
+- `bufferInterval?: number` — если установлено значение выше `0`, вывод будет обновляться каждые `n` миллисекунд. Помогает при очень активных потоках, которые могут перегрузить интерфейс.
+- `token?: Realtime.Subscribe.Token` — токен для подписки (смотрите [Подписка с клиента](/docs/features/realtime#subscribe-from-the-client)).
+- `refreshToken?: () => Promise<Realtime.Subscribe.Token>` — функция, вызываемая если токен отсутствует или хук был повторно включён, а предыдущий токен истёк.
 
 <Warning>
-  A `token` or `refreshToken` parameter is required.
+  Требуется параметр `token` или `refreshToken`.
 </Warning>
 
-### Return value
+### Возвращаемые значения
 
-- `data: Array<Realtime.Message>` - All messages received on the subscription in chronological order.
-- `latestData: Realtime.Message` - A shortcut to the last message received on the subscription. Useful for streams where each message is the latest state of an entity.
-- `freshData: Array<Realtime.Message>` - If `bufferInterval` is active, this will be the last batch of messages released from the buffer. If `bufferInterval` is inactive, this is always the latest message.
-- `error: Error | null` - If truthy, this indicates an error with the subscription.
-- `state: InngestSubscriptionState` - The current state of the subscription, one of `"closed"`, `"error"`, `"refresh_token"`, `"connecting"`, `"active"`, or `"closing"`.
-- `clear: () => void` - A function to clear all accumulated message data from the internal state. This includes `data`, `freshData`, and `latestData` arrays. Does not affect the connection or error state.
+- `data: Array<Realtime.Message>` — все сообщения, полученные по подписке в хронологическом порядке.
+- `latestData: Realtime.Message` — ярлык для последнего полученного сообщения. Полезно для потоков, где каждое сообщение является последним состоянием сущности.
+- `freshData: Array<Realtime.Message>` — если активен `bufferInterval`, это будет последний пакет сообщений, освобождённых из буфера. Если `bufferInterval` неактивен, это всегда последнее сообщение.
+- `error: Error | null` — если не равно `null`, указывает на ошибку с подпиской.
+- `state: InngestSubscriptionState` — текущее состояние подписки: `"closed"`, `"error"`, `"refresh_token"`, `"connecting"`, `"active"` или `"closing"`.
+- `clear: () => void` — функция для очистки всех накопленных данных сообщений из внутреннего состояния. Включает массивы `data`, `freshData` и `latestData`. Не влияет на соединение или состояние ошибки.
 
 
-## Examples
+## Примеры
 
 <CardGroup cols={2}>
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/realtime/next-realtime-hooks"
-    title={"useInngestSubscription() Next.js demo"}
+    title={"Демо useInngestSubscription() для Next.js"}
     icon={<RiNextjsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this demo to see an interactive example of the `useInngestSubscription()` hook in action.
+   Клонируйте это демо, чтобы увидеть интерактивный пример хука `useInngestSubscription()` в действии.
   </Card>
 
   <Card
     href="/docs/examples/realtime"
-    title={"Explore patterns and examples"}
+    title={"Изучите паттерны и примеры"}
     icon={<RiNodejsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Use Realtime to stream updates from one or multiple Inngest functions, or to implement a Human-in-the-Loop mechanism.
+   Используйте Realtime для потоковой передачи обновлений из одной или нескольких функций Inngest или для реализации механизма «Человека в цепочке».
   </Card>
 
 </CardGroup>

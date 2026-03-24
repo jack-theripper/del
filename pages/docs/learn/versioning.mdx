@@ -1,47 +1,47 @@
 import { Callout, CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = "Learn how to evolve and version long-running Inngest functions over time with step-based memoization."
+export const description = "Узнайте, как развивать и версионировать длительно работающие функции Inngest с течением времени с помощью мемоизации на основе шагов."
 
-# Versioning and Function Evolution
+# Версионирование и эволюция функций
 
-Long-running functions inevitably change over time. Inngest enables developers to deploy changes to functions without explicit version markers or complex migration logic. This guide explains how Inngest handles versioning and the strategies you can use to evolve functions safely.
+Длительно работающие функции неизбежно меняются со временем. Inngest позволяет разработчикам развертывать изменения в функциях без явных маркеров версий или сложной логики миграции. В этом руководстве объясняется, как Inngest обрабатывает версионирование и какие стратегии можно использовать для безопасного развития функций.
 
-## How Inngest handles versioning
+## Как Inngest обрабатывает версионирование
 
-Inngest uses **step-based memoization** and a graceful deterministic execution model. This is consistent across all language SDKs. Unlike systems that require explicit version annotations in your code, Inngest tracks function state through step identifiers, allowing you to modify functions while they're running.
+Inngest использует **мемоизацию на основе шагов** и модель детерминированного выполнения. Это единообразно для всех SDK. В отличие от систем, требующих явных аннотаций версий в коде, Inngest отслеживает состояние функции через идентификаторы шагов, что позволяет изменять функции прямо во время их выполнения.
 
-### Step-based memoization
+### Мемоизация на основе шагов
 
-Each [step](/docs/learn/inngest-steps) in a function has a unique string identifier. When a function executes, the SDK:
+Каждый [шаг (step)](/docs/learn/inngest-steps) в функции имеет уникальный строковый идентификатор. При выполнении функции SDK:
 
-1. Hashes the step's identifier along with a counter (enabling steps inside loops)
-2. Checks if this hash exists in the function's stored state
-3. If found, returns the memoized result without re-executing
-4. If not found, executes the step and stores the result
+1. Хеширует идентификатор шага вместе со счетчиком (что позволяет использовать шаги внутри циклов).
+2. Проверяет, существует ли этот хеш в сохраненном состоянии функции.
+3. Если найден, возвращает мемоизированный результат без повторного выполнения.
+4. Если не найден, выполняет шаг и сохраняет результат.
 
-This means that completed steps are never re-executed, even across deployments. The SDK determines what to run based on the step identifiers in your code, not version numbers.
+Это означает, что завершенные шаги никогда не выполняются повторно, даже после новых развертываний. SDK определяет, что нужно запустить, на основе идентификаторов шагов в вашем коде, а не номеров версий.
 
-For more details on this execution model, see [How Inngest functions are executed](/docs/learn/how-functions-are-executed).
+Более подробную информацию об этой модели выполнения см. в разделе [Как выполняются функции Inngest](/docs/learn/how-functions-are-executed).
 
-### Graceful determinism by default
+### Детерминизм по умолчанию
 
-The SDK handles changes **gracefully** by default:
+SDK по умолчанию обрабатывает изменения **бесшовно**:
 
-- **New steps are executed when discovered** — If you add a step to a function, in-progress runs will execute it when they encounter it
-- **Warnings, not failures** — If step execution order changes, the SDK logs a warning rather than failing the function
+- **Новые шаги выполняются при обнаружении** — если вы добавите шаг в функцию, выполняющиеся запуски (in-progress runs) выполнят его, когда столкнутся с ним.
+- **Предупреждения вместо сбоев** — если порядок выполнения шагов меняется, SDK записывает предупреждение в лог вместо того, чтобы прервать функцию ошибкой.
 
-This approach lets you extend and improve functions over time without worrying about in-progress runs failing.
+Этот подход позволяет расширять и улучшать функции со временем, не беспокоясь о сбоях уже запущенных процессов.
 
-## Evolving functions over time
+## Развитие функций со временем
 
-There are several strategies for evolving functions, depending on the type of change you're making.
+Существует несколько стратегий развития функций в зависимости от типа вносимых изменений.
 
-### Adding new steps
+### Добавление новых шагов
 
-Adding new steps to a function is generally safe. New steps will execute when discovered by in-progress runs. This is useful for adding logging, analytics, notifications, or other additive functionality.
+Добавление новых шагов в функцию обычно безопасно. Новые шаги будут выполнены, когда выполняющиеся запуски обнаружат их. Это полезно для добавления логирования, аналитики, уведомлений или другой дополнительной функциональности.
 
 <CodeGroup>
-```ts {{ title: "Before" }}
+```ts {{ title: "До" }}
 inngest.createFunction(
   { id: "user-signup", triggers: { event: "user/created" } },
   async ({ event, step }) => {
@@ -62,7 +62,7 @@ inngest.createFunction(
 </CodeGroup>
 
 <CodeGroup>
-```ts {{ title: "After: Added analytics tracking" }}
+```ts {{ title: "После: Добавлена аналитика" }}
 inngest.createFunction(
   { id: "user-signup", triggers: { event: "user/created" } },
   async ({ event, step }) => {
@@ -70,7 +70,7 @@ inngest.createFunction(
       return sendWelcomeEmail(event.data.email);
     });
 
-    // New step - executes when discovered, even if later steps already completed
+    // Новый шаг - выполнится при обнаружении, даже если последующие шаги уже завершены
     await step.run("track-signup-analytics", async () => {
       return analytics.track("user_signup_complete", {
         userId: event.data.userId,
@@ -89,24 +89,24 @@ inngest.createFunction(
 ```
 </CodeGroup>
 
-When you deploy this change, an in-progress run that has already completed `send-welcome-email` and `sync-to-crm` will:
-1. Skip `send-welcome-email` (memoized)
-2. Execute `track-signup-analytics` (new step)
-3. Skip `sync-to-crm` if already completed (memoized)
-4. Execute `schedule-followup` (new step)
+При развертывании этого изменения запущенная функция, которая уже завершила `send-welcome-email` и `sync-to-crm`:
+1. Пропустит `send-welcome-email` (мемоизировано).
+2. Выполнит `track-signup-analytics` (новый шаг).
+3. Пропустит `sync-to-crm`, если он уже был завершен (мемоизировано).
+4. Выполнит `schedule-followup` (новый шаг).
 
 <Callout variant="warning">
-  New steps must not depend on data from steps that haven't executed yet. In the example above, `track-signup-analytics` only uses data from the triggering event, so it's safe to add at any point.
+  Новые шаги не должны зависеть от данных из шагов, которые еще не были выполнены. В примере выше `track-signup-analytics` использует только данные из инициирующего события, поэтому его безопасно добавлять в любой момент.
 </Callout>
 
-### Modifying existing steps
+### Изменение существующих шагов
 
-**Changing step logic with the same ID** is safe. If you modify the code inside a step but keep the same step ID, in-progress runs that have already completed that step will use the memoized result. New runs will execute the updated logic.
+**Изменение логики шага с тем же ID** безопасно. Если вы измените код внутри шага, но сохраните прежний ID, выполняющиеся запуски, которые уже завершили этот шаг, будут использовать мемоизированный результат. Новые запуски выполнят обновленную логику.
 
-**Changing step IDs** forces re-execution. If you need to re-run a step with new logic for in-progress runs, change the step ID:
+**Изменение ID шага** принудительно вызывает повторное выполнение. Если вам нужно перезапустить шаг с новой логикой для уже запущенных процессов, измените ID шага:
 
 <CodeGroup>
-```ts {{ title: "Before" }}
+```ts {{ title: "До" }}
 const score = await step.run("calculate-risk-score", async () => {
   return calculateRiskScore(user.profile);
 });
@@ -114,9 +114,9 @@ const score = await step.run("calculate-risk-score", async () => {
 </CodeGroup>
 
 <CodeGroup>
-```ts {{ title: "After: Changed ID to force re-execution" }}
-// Changed ID means in-progress runs will re-calculate
-// even if they already ran "calculate-risk-score"
+```ts {{ title: "После: Изменен ID для принудительного перезапуска" }}
+// Изменение ID означает, что запущенные функции выполнят расчет заново,
+// даже если они уже запускали "calculate-risk-score"
 const score = await step.run("calculate-risk-score-v2", async () => {
   return calculateRiskScoreWithNewModel(user.profile);
 });
@@ -124,27 +124,27 @@ const score = await step.run("calculate-risk-score-v2", async () => {
 </CodeGroup>
 
 <Callout variant="info">
-  The SDK logs a warning when step execution order changes. This is expected behavior when intentionally forcing re-execution.
+  SDK выводит предупреждение при изменении порядка выполнения шагов. Это ожидаемое поведение при намеренном принудительном перезапуске.
 </Callout>
 
-### Removing steps
+### Удаление шагов
 
-When you remove a step, in-progress runs that have already completed it will continue normally. The memoized data for the removed step remains in state but is simply ignored.
+Когда вы удаляете шаг, запущенные процессы, которые уже завершили его, продолжат работу в обычном режиме. Мемоизированные данные для удаленного шага остаются в состоянии, но просто игнорируются.
 
-### Reordering steps
+### Изменение порядка шагов
 
-Reordering steps triggers a warning because the execution order differs from the stored state. The SDK handles this gracefully—memoized steps return their stored results regardless of their position in code, and new steps execute when encountered.
+Изменение порядка шагов вызывает предупреждение, так как порядок выполнения отличается от сохраненного состояния. SDK обрабатывает это корректно — мемоизированные шаги возвращают свои сохраненные результаты независимо от их позиции в коде, а новые шаги выполняются при их обнаружении.
 
-## Major logic changes
+## Крупные изменения логики
 
-For complete rewrites where the new logic is incompatible with in-progress runs, use the **new function pattern** with timestamp-based routing.
+Для полной переработки, где новая логика несовместима с запущенными процессами, используйте **паттерн новой функции** с маршрутизацией на основе меток времени.
 
-This pattern uses two functions that subscribe to the same event, with [`if` expressions](/docs/reference/functions/create#trigger) to route events based on timestamp:
+Этот паттерн использует две функции, подписанные на одно и то же событие, с выражениями [`if`](/docs/reference/functions/create#trigger) для маршрутизации событий по времени:
 
 <CodeGroup>
-```ts {{ title: "Original function with timestamp filter" }}
-// Handle events BEFORE the cutover timestamp
-const CUTOVER_TS = 1704067200000; // Jan 1, 2024 00:00:00 UTC
+```ts {{ title: "Оригинальная функция с фильтром по времени" }}
+// Обработка событий ДО момента перехода
+const CUTOVER_TS = 1704067200000; // 1 января 2024 00:00:00 UTC
 
 export const processUploadV1 = inngest.createFunction(
   {
@@ -155,7 +155,7 @@ export const processUploadV1 = inngest.createFunction(
     },
   },
   async ({ event, step }) => {
-    // Original logic - continues for in-progress runs
+    // Оригинальная логика - продолжается для запущенных процессов
     await step.run("process-file", async () => {
       return legacyProcessor(event.data.fileId);
     });
@@ -165,8 +165,8 @@ export const processUploadV1 = inngest.createFunction(
 </CodeGroup>
 
 <CodeGroup>
-```ts {{ title: "New function for events after cutover" }}
-// Handle events AFTER the cutover timestamp
+```ts {{ title: "Новая функция для событий после перехода" }}
+// Обработка событий ПОСЛЕ момента перехода
 const CUTOVER_TS = 1704067200000;
 
 export const processUploadV2 = inngest.createFunction(
@@ -178,7 +178,7 @@ export const processUploadV2 = inngest.createFunction(
     },
   },
   async ({ event, step }) => {
-    // Completely rewritten workflow
+    // Полностью переписанный рабочий процесс
     const metadata = await step.run("extract-metadata", async () => {
       return extractMetadata(event.data.fileId);
     });
@@ -195,24 +195,24 @@ export const processUploadV2 = inngest.createFunction(
 ```
 </CodeGroup>
 
-This approach ensures:
-- In-progress runs complete with the original logic
-- New events trigger the updated function
-- No data loss or unexpected failures
+Этот подход гарантирует:
+- Запущенные процессы завершаются по старой логике.
+- Новые события запускают обновленную функцию.
+- Отсутствие потери данных или непредвиденных сбоев.
 
 <Callout variant="info">
-  This creates a new function in your Inngest dashboard. Once all v1 runs complete, you can remove the original function.
+  Это создает новую функцию в вашей панели управления Inngest. Как только все запуски v1 завершатся, вы сможете удалить старую функцию.
 </Callout>
 
-### Using event versions
+### Использование версий событий
 
-You can also use the event's `v` [version field](/docs/features/events-triggers/event-format#event-payload-format) in combination with the `if` pattern above if you choose to control the
+Вы также можете использовать поле версии `v` [формата события](/docs/features/events-triggers/event-format#event-payload-format) в сочетании с паттерном `if` выше:
 
 ```typescript
 await inngest.send({
   name: "file/uploaded",
   data: {/* ... */},
-  v: "2026-03-11" // Use the version to route to the right function
+  v: "2026-03-11" // Используйте версию для маршрутизации к нужной функции
 })
 ```
 
@@ -223,7 +223,7 @@ export const processUploadV1 = inngest.createFunction(
     id: "process-upload",
     triggers: {
       event: "file/uploaded",
-      if: `event.v != "2026-03-11"`, // or you already are using versions, set that explicitly
+      if: `event.v != "2026-03-11"`, // или если вы уже используете версии, укажите это явно
     },
   },
   //...
@@ -241,35 +241,35 @@ export const processUploadV2 = inngest.createFunction(
 });
 ```
 
-## Best practices
+## Лучшие практики
 
-### Step ID naming
+### Именование ID шагов
 
-Choose step IDs that are:
+Выбирайте идентификаторы шагов, которые являются:
 
-- **Descriptive**: `"charge-customer-payment"` not `"step-1"`
-- **Stable**: Avoid IDs that encode values that might change
-- **Unique**: Each step in a function needs a distinct ID
+- **Описательными**: `"charge-customer-payment"`, а не `"step-1"`.
+- **Стабильными**: избегайте ID, которые содержат значения, способные измениться.
+- **Уникальными**: каждый шаг в функции должен иметь свой уникальный ID.
 
 ```ts
-// Good - descriptive and stable
+// Хорошо - описательно и стабильно
 await step.run("send-order-confirmation", async () => { ... });
 
-// Avoid - generic and likely to conflict
+// Плохо - слишком общее, возможны конфликты
 await step.run("send", async () => { ... });
 ```
 
-### Testing version changes locally
+### Тестирование изменений версий локально
 
-Use the [Inngest Dev Server](/docs/local-development) to test how changes affect in-progress runs:
+Используйте [Inngest Dev Server](/docs/local-development) для проверки того, как изменения влияют на запущенные процессы:
 
-1. Start a function with a `step.sleep()` to pause execution
-2. Modify the function code while it's sleeping
-3. Observe how the function handles changes when it resumes
+1. Запустите функцию с `step.sleep()`, чтобы приостановить выполнение.
+2. Измените код функции, пока она "спит".
+3. Наблюдайте, как функция обрабатывает изменения после возобновления.
 
-This helps you understand the impact of changes before deploying to production.
+Это поможет вам понять влияние изменений перед развертыванием в промышленную эксплуатацию.
 
-## Further reading
+## Дополнительное чтение
 
-- [How Inngest functions are executed](/docs/learn/how-functions-are-executed) — Detailed explanation of durable execution
-- [Inngest steps](/docs/learn/inngest-steps) — Step methods and patterns
+- [Как выполняются функции Inngest](/docs/learn/how-functions-are-executed) — подробное объяснение модели надежного выполнения.
+- [Шаги Inngest](/docs/learn/inngest-steps) — методы и паттерны использования шагов.

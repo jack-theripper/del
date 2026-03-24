@@ -5,21 +5,21 @@ import GithubIcon from "shared/Icons/Github"
 # TypeScript SDK v4
 
 <Info>
-  Upgrading from v3? Check out the [migration guide](/docs/reference/typescript/v4/migrations/v3-to-v4).
+  Обновляетесь с v3? Ознакомьтесь с [руководством по миграции](/docs/reference/typescript/v4/migrations/v3-to-v4).
 </Info>
 
-## Introduction
+## Введение
 
-Inngest is an event-driven durable execution platform that lets you write reliable background jobs, scheduled tasks, and multi-step workflows in TypeScript without any additional infrastructure. Simply define functions as code; Inngest handles retries, concurrency, rate limiting, and observability.
+Inngest — это событийно-ориентированная платформа долговечного выполнения, позволяющая писать надёжные фоновые задачи, плановые задания и многошаговые рабочие процессы на TypeScript без дополнительной инфраструктуры. Просто определяйте функции в виде кода; Inngest берёт на себя повторные попытки, параллелизм, ограничение частоты и наблюдаемость.
 
-The TypeScript SDK v4 delivers a major upgrade to speed and developer experience:
-- **Rewritten middleware** — Hooks are more intuitive, less overloaded, and enable new use cases.
-- **Better schemas** — Runtime event data validation with Standard Schema support (not just Zod!).
-- **Faster by default** — Parallel step optimization and checkpointing are both enabled by default, leading to fewer requests and lower latency.
-- **Improved logging** — Structured logging (Pino-style) and cleaner separation of internal vs. app logs.
-- **Cleaner API** — Triggers in the options object, lazy init for edge runtimes, and more compile-time safety
+TypeScript SDK v4 предоставляет значительные улучшения скорости и опыта разработки:
+- **Переработанное промежуточное ПО** — Хуки стали более интуитивными, менее перегруженными и открывают новые сценарии использования.
+- **Улучшенные схемы** — Валидация данных событий во время выполнения с поддержкой Standard Schema (не только Zod!).
+- **Быстрее по умолчанию** — Оптимизация параллельных шагов и чекпоинтинг включены по умолчанию, что приводит к меньшему количеству запросов и меньшей задержке.
+- **Улучшенное логирование** — Структурированное логирование (в стиле Pino) и более чёткое разделение внутренних и пользовательских логов.
+- **Более чистый API** — Триггеры в объекте конфигурации, ленивая инициализация для edge-сред и улучшенная безопасность типов на этапе компиляции.
 
-## Installing
+## Установка
 
 <CodeGroup>
 ```shell {{ title: "npm" }}
@@ -33,19 +33,19 @@ yarn add inngest@beta
 ```
 </CodeGroup>
 
-## Source code
+## Исходный код
 
-Our TypeScript SDK and its related packages are open source and available on Github: [<GithubIcon className="ml-2 inline-flex"/> inngest/inngest-js](https://github.com/inngest/inngest-js).
+Наш TypeScript SDK и связанные пакеты открыты и доступны на Github: [<GithubIcon className="ml-2 inline-flex"/> inngest/inngest-js](https://github.com/inngest/inngest-js).
 
-## Official libraries
+## Официальные библиотеки
 
-- [inngest](https://www.npmjs.com/package/inngest) - the Inngest SDK
-- [@inngest/eslint-plugin](https://www.npmjs.com/package/@inngest/eslint-plugin) - specific ESLint rules for Inngest
-- [@inngest/middleware-encryption](https://www.npmjs.com/package/@inngest/middleware-encryption) - middleware providing E2E encryption
+- [inngest](https://www.npmjs.com/package/inngest) — Inngest SDK
+- [@inngest/eslint-plugin](https://www.npmjs.com/package/@inngest/eslint-plugin) — специфичные правила ESLint для Inngest
+- [@inngest/middleware-encryption](https://www.npmjs.com/package/@inngest/middleware-encryption) — промежуточное ПО для сквозного шифрования
 
-## Examples
+## Примеры
 
-### Frameworks
+### Фреймворки
 
 - [Astro](https://github.com/inngest/inngest-js/tree/main/examples/framework-astro)
 - [Bun.serve()](https://github.com/inngest/inngest-js/tree/main/examples/bun)
@@ -58,15 +58,15 @@ Our TypeScript SDK and its related packages are open source and available on Git
 - [Remix](https://github.com/inngest/inngest-js/tree/main/examples/framework-remix)
 - [SvelteKit](https://github.com/inngest/inngest-js/tree/main/examples/framework-sveltekit)
 
-### Middleware
+### Промежуточное ПО
 
 - [E2E Encryption](https://github.com/inngest/inngest-js/tree/main/examples/middleware-e2e-encryption)
 
-## Community libraries
+## Библиотеки сообщества
 
-Explore our collection of community-created libraries, offering unofficial but valuable extensions and integrations to enhance Inngest's functionality with various frameworks and systems.
+Изучите коллекцию библиотек, созданных сообществом — неофициальных, но ценных расширений и интеграций, расширяющих функциональность Inngest в различных фреймворках и системах.
 
-Want to be added to the list? [Contact us!](https://app.inngest.com/support)
+Хотите попасть в список? [Свяжитесь с нами!](https://app.inngest.com/support)
 
-- [nest-inngest](https://github.com/thawankeane/nest-inngest) - strongly typed Inngest module for NestJS projects
-- [nuxt-inngest](https://www.npmjs.com/package/nuxt-inngest) - Inngest integration for Nuxt
+- [nest-inngest](https://github.com/thawankeane/nest-inngest) — строго типизированный модуль Inngest для проектов NestJS
+- [nuxt-inngest](https://www.npmjs.com/package/nuxt-inngest) — интеграция Inngest для Nuxt

@@ -3,49 +3,49 @@ import { Callout, CodeGroup } from "shared/Docs/mdx";
 
 import { BookOpenIcon, CodeBracketIcon, ComputerDesktopIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
 
-export const description = "Integrate AI development tools with Inngest using Model Context Protocol (MCP). Test functions, monitor execution, and debug workflows with Claude Code, Cursor, and other AI assistants."
+export const description = "Интегрируйте инструменты разработки на базе ИИ с Inngest, используя протокол Model Context Protocol (MCP). Тестируйте функции, мониторьте выполнение и отлаживайте воркфлоу с помощью Claude Code, Cursor и других ИИ-помощников."
 
-# Model Context Protocol (MCP) Integration
+# Интеграция Model Context Protocol (MCP)
 
-The Inngest dev server includes a comprehensive Model Context Protocol (MCP) server that provides AI assistants with direct access to your Inngest functions, events, and documentation. This enables powerful AI-assisted development workflows for testing, debugging, and building Inngest applications.
+Сервер разработки Inngest включает в себя полноценный сервер Model Context Protocol (MCP), который предоставляет ИИ-помощникам прямой доступ к вашим функциям Inngest, событиям и документации. Это открывает мощные возможности для разработки с помощью ИИ: тестирование, отладка и создание приложений Inngest.
 
-## What is MCP?
+## Что такое MCP?
 
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) is a standard for connecting AI assistants to external tools and data sources. The Inngest MCP integration provides AI tools like Claude Code and Cursor with:
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) — это стандарт для подключения ИИ-помощников к внешним инструментам и источникам данных. Интеграция Inngest MCP предоставляет ИИ-инструментам, таким как Claude Code и Cursor:
 
-- **Complete function visibility** - List and inspect all registered functions
-- **Event triggering** - Send events to test functions and workflows
-- **Real-time monitoring** - Track function execution and debug failures
-- **Documentation access** - Search and read Inngest documentation offline
-- **Direct function invocation** - Execute functions synchronously with immediate results
+- **Полную видимость функций** — просмотр списка и анализ всех зарегистрированных функций.
+- **Запуск событий** — отправка событий для тестирования функций и воркфлоу.
+- **Мониторинг в реальном времени** — отслеживание выполнения функций и отладка сбоев.
+- **Доступ к документации** — поиск и чтение документации Inngest в оффлайн-режиме.
+- **Прямой вызов функций** — синхронное выполнение функций с немедленным получением результата.
 
 <Callout>
-The Inngest MCP server runs locally with your dev server and requires no external dependencies, API keys, or internet connection to function.
+Сервер Inngest MCP работает локально вместе с вашим сервером разработки и не требует внешних зависимостей, API-ключей или интернет-соединения.
 </Callout>
 
-## Quick Start
+## Быстрый старт
 
-### 1. Start the Inngest Dev Server
+### 1. Запустите сервер разработки Inngest
 
-The MCP server is automatically available when you start the Inngest dev server:
+MCP-сервер становится доступен автоматически при запуске сервера разработки Inngest:
 
 ```bash
 npx --ignore-scripts=false inngest-cli@latest dev
 ```
 
-The MCP endpoint will be available at `http://127.0.0.1:8288/mcp`
+Эндпоинт MCP будет доступен по адресу `http://127.0.0.1:8288/mcp`
 
-### 2. Connect Your AI Tool
+### 2. Подключите ваш ИИ-инструмент
 
 <CodeGroup>
 
 ```bash {{ title: "Claude Code" }}
-# Add to your MCP configuration
+# Добавьте в вашу конфигурацию MCP
 claude mcp add --transport http inngest-dev http://127.0.0.1:8288/mcp
 ```
 
 ```json {{ title: "Cursor" }}
-// Add to .cursor/mcp.json
+// Добавьте в .cursor/mcp.json
 {
   "mcpServers": {
     "inngest-dev": {
@@ -56,7 +56,7 @@ claude mcp add --transport http inngest-dev http://127.0.0.1:8288/mcp
 ```
 
 ```json {{ title: "Claude Desktop" }}
-// Add to Claude Desktop configuration
+// Добавьте в конфигурацию Claude Desktop
 {
   "mcpServers": {
     "inngest-dev": {
@@ -74,137 +74,137 @@ claude mcp add --transport http inngest-dev http://127.0.0.1:8288/mcp
 
 </CodeGroup>
 
-### 3. Start Building with AI
+### 3. Начните разработку с ИИ
 
-Once connected, you can ask your AI assistant to:
-
-```
-List all my Inngest functions and their triggers
-```
+После подключения вы можете просить вашего ИИ-помощника:
 
 ```
-Send a test event to trigger the user signup workflow
+Выведи список всех моих функций Inngest и их триггеров
 ```
 
 ```
-Monitor the function run and show me any errors
-```
-```
-Search the docs for rate limiting examples
+Отправь тестовое событие для запуска воркфлоу регистрации пользователя
 ```
 
-## Best Practices
+```
+Отслеживай запуск функции и покажи мне ошибки, если они будут
+```
+```
+Найди в документации примеры ограничения частоты запросов (rate limiting)
+```
 
-### Function Testing
-- **Start simple:** Test individual functions before complex workflows
-- **Use descriptive events:** Clear event names help with debugging
-- **Monitor execution:** Always check run status after triggering events
-- **Test error scenarios:** Intentionally trigger failures to test error handling
+## Лучшие практики
 
-### Debugging Workflows
-- **Check step details:** Use `get_run_status` to see step-by-step execution
-- **Review error context:** Error messages include stack traces and context
-- **Verify data flow:** Check inputs and outputs at each step
-- **Use polling for async:** Monitor long-running workflows with `poll_run_status`
+### Тестирование функций
+- **Начинайте с простого:** Тестируйте отдельные функции перед проверкой сложных воркфлоу.
+- **Используйте понятные события:** Четкие названия событий помогают при отладке.
+- **Мониторьте выполнение:** Всегда проверяйте статус запуска после отправки событий.
+- **Тестируйте сценарии с ошибками:** Намеренно вызывайте сбои для проверки обработки ошибок.
 
-### Documentation Usage
-- **Search before building:** Use `grep_docs` to find relevant examples
-- **Reference patterns:** Look for similar use cases in the documentation
-- **Cross-reference APIs:** Use `read_doc` for complete API documentation
+### Отладка воркфлоу
+- **Проверяйте детали шагов:** Используйте `get_run_status`, чтобы увидеть пошаговое выполнение.
+- **Изучайте контекст ошибок:** Сообщения об ошибках включают стек-трейсы и контекст.
+- **Проверяйте поток данных:** Контролируйте входные и выходные данные на каждом шаге.
+- **Используйте опрос (polling) для асинхронности:** Отслеживайте длительные воркфлоу с помощью `poll_run_status`.
 
-## Available MCP Tools
+### Использование документации
+- **Ищите перед созданием:** Используйте `grep_docs`, чтобы найти подходящие примеры.
+- **Обращайтесь к паттернам:** Ищите похожие случаи использования в документации.
+- **Сверяйтесь с API:** Используйте `read_doc` для получения полной документации API.
 
-The Inngest MCP server provides 8 powerful tools organized into three categories:
+## Доступные инструменты MCP
 
-### Event Management Tools
+MCP-сервер Inngest предоставляет 8 мощных инструментов, разделенных на три категории:
+
+### Инструменты управления событиями
 
 #### `send_event`
-Send an event to trigger functions and get immediate feedback on which runs were created.
+Отправляет событие для запуска функций и мгновенно сообщает, какие запуски были созданы.
 
-**Parameters:**
-- `name` (string, required): Event name (e.g., 'app/user.created')
-- `data` (object, optional): Event payload data
-- `user` (object, optional): User context information
-- `eventIdSeed` (string, optional): Seed for deterministic event IDs
+**Параметры:**
+- `name` (string, обязательный): Название события (например, 'app/user.created').
+- `data` (object, необязательный): Данные полезной нагрузки события.
+- `user` (object, необязательный): Информация о контексте пользователя.
+- `eventIdSeed` (string, необязательный): Сид для детерминированных ID событий.
 
-**Example usage:**
+**Пример использования:**
 ```
-Send a test event called 'app/user.signup' with user email 'test@example.com'
+Отправь тестовое событие 'app/user.signup' с email пользователя 'test@example.com'
 ```
 
 #### `list_functions`
-Discover all registered functions with their names, IDs, and trigger information.
+Позволяет обнаружить все зарегистрированные функции с их названиями, ID и информацией о триггерах.
 
-**Returns:** Complete function inventory with trigger details (events, crons, etc.)
+**Возвращает:** Полный инвентарь функций с деталями триггеров (события, cron-задачи и т.д.).
 
 #### `invoke_function`
-Directly execute a function and wait for its complete result - perfect for testing specific functions.
+Напрямую выполняет функцию и ожидает ее полного завершения — идеально подходит для тестирования конкретных функций.
 
-**Parameters:**
-- `functionId` (string, required): Function slug, ID, or name
-- `data` (object, optional): Input data for the function
-- `user` (object, optional): User context
-- `timeout` (int, optional): Wait timeout in seconds (default: 30)
+**Параметры:**
+- `functionId` (string, обязательный): Слаг, ID или название функции.
+- `data` (object, необязательный): Входные данные для функции.
+- `user` (object, необязательный): Контекст пользователя.
+- `timeout` (int, необязательный): Таймаут ожидания в секундах (по умолчанию: 30).
 
-**Example usage:**
+**Пример использования:**
 ```
-> "Invoke the 'process-payment' function with amount 100 and currency USD"
+Вызови функцию 'process-payment' с суммой 100 и валютой USD
 ```
 
-### Execution Monitoring Tools
+### Инструменты мониторинга выполнения
 
 #### `get_run_status`
-Get detailed information about a specific function run, including step-by-step execution details.
+Предоставляет подробную информацию о конкретном запуске функции, включая детали пошагового выполнения.
 
-**Parameters:**
-- `runId` (string, required): The run ID from send_event or logs
+**Параметры:**
+- `runId` (string, обязательный): ID запуска из send_event или логов.
 
-**Returns:** Complete run information including status, steps, outputs, and error details
+**Возвращает:** Полную информацию о запуске, включая статус, шаги, выходные данные и детали ошибок.
 
 #### `poll_run_status`
-Monitor multiple function runs until completion - essential for integration testing workflows.
+Отслеживает несколько запусков функций до их завершения — необходимо для интеграционного тестирования воркфлоу.
 
-**Parameters:**
-- `runIds` (array, required): Array of run IDs to monitor
-- `timeout` (int, optional): Total polling timeout in seconds (default: 30)
-- `pollInterval` (int, optional): Milliseconds between polls (default: 1000)
+**Параметры:**
+- `runIds` (array, обязательный): Массив ID запусков для мониторинга.
+- `timeout` (int, необязательный): Общий таймаут опроса в секундах (по умолчанию: 30).
+- `pollInterval` (int, необязательный): Миллисекунды между опросами (по умолчанию: 1000).
 
-**Example usage:**
+**Пример использования:**
 ```
-Poll these 3 runs until they complete and show me a summary
+Опрашивай эти 3 запуска до их завершения и покажи сводку
 ```
 
-### Documentation Tools
+### Инструменты документации
 
 #### `grep_docs`
-Search through embedded Inngest documentation using pattern matching.
+Ищет по встроенной документации Inngest с использованием сопоставления с образцом.
 
-**Parameters:**
-- `pattern` (string, required): Search pattern (regex supported)
-- `limit` (int, optional): Maximum results (default: 10)
+**Параметры:**
+- `pattern` (string, обязательный): Шаблон поиска (поддерживаются регулярные выражения).
+- `limit` (int, необязательный): Максимальное количество результатов (по умолчанию: 10).
 
-**Example usage:**
+**Пример использования:**
 ```
-Search the docs for 'rate limiting' examples
+Найди в документации примеры 'rate limiting'
 ```
 
 #### `read_doc`
-Read the complete content of a specific documentation file.
+Читает полное содержимое конкретного файла документации.
 
-**Parameters:**
-- `path` (string, required): Document path relative to docs directory
+**Параметры:**
+- `path` (string, обязательный): Путь к документу относительно директории docs.
 
 #### `list_docs`
-Get an overview of all available documentation with category breakdown.
+Предоставляет обзор всей доступной документации с разбивкой по категориям.
 
-**Returns:** Documentation structure with counts by category and SDK
+**Возвращает:** Структуру документации с количеством документов по категориям и SDK.
 
-## Usage Examples
+## Примеры использования
 
-### Testing a User Signup Workflow
+### Тестирование воркфлоу регистрации пользователя
 
 ```typescript
-// Your function
+// Ваша функция
 export const handleSignup = inngest.createFunction(
   { id: "handle-signup", triggers: { event: "app/user.signup" } },
   async ({ event, step }) => {
@@ -221,132 +221,132 @@ export const handleSignup = inngest.createFunction(
 );
 ```
 
-With MCP, you can test this workflow by asking your AI assistant:
+С помощью MCP вы можете протестировать этот воркфлоу, попросив своего ИИ-помощника:
 
 ```
-Send a test signup event with email 'alice@example.com' and monitor the function execution
+Отправь тестовое событие регистрации с email 'alice@example.com' и отслеживай выполнение функции
 ```
 
-The AI will:
-1. Use `send_event` to trigger the function
-2. Use `poll_run_status` to monitor execution
-3. Show you step-by-step progress and final results
-4. Report any errors with detailed context
+ИИ выполнит следующие действия:
+1. Использует `send_event` для запуска функции.
+2. Использует `poll_run_status` для мониторинга выполнения.
+3. Покажет вам пошаговый прогресс и финальные результаты.
+4. Сообщит о любых ошибках с подробным контекстом.
 
-### Debugging Failed Functions
-
-```
-Get the status of run 01J5QH90... and explain what went wrong
-```
-
-The AI will use `get_run_status` to retrieve:
-- Complete execution trace
-- Step-by-step status
-- Error messages and stack traces
-- Function outputs and intermediate results
-
-### Integration Testing
+### Отладка упавших функций
 
 ```
-Send events to trigger the complete order processing workflow and verify all steps complete successfully
+Получи статус запуска 01J5QH90... и объясни, что пошло не так
 ```
 
-The AI can:
-1. Send multiple coordinated events
-2. Monitor all resulting function runs
-3. Verify the entire workflow completes
-4. Report any failures or timeouts
+ИИ использует `get_run_status` для получения:
+- Полного трейса выполнения.
+- Пошагового статуса.
+- Сообщений об ошибках и стек-трейсов.
+- Результатов функции и промежуточных данных.
 
-## Troubleshooting
-
-### Common Issues
-
-**MCP server not found**
-- Ensure the Inngest dev server is running: `npx --ignore-scripts=false inngest-cli@latest dev`
-- Verify the MCP endpoint is accessible: `curl http://127.0.0.1:8288/mcp`
-- Check your MCP client configuration
-
-**Functions not listed**
-- Confirm functions are properly registered with the dev server
-- Check the dev server logs for registration errors
-- Verify your app is correctly synced with the dev server
-
-**Runs not found after sending events**
-- Wait a moment for event processing (500ms delay is built-in)
-- Check if the event name matches your function triggers exactly
-- Verify the function is actually registered and listening
-
-**Polling timeouts**
-- Increase timeout values for long-running functions
-- Check function logs for hanging operations
-- Verify functions are actually completing vs. hanging indefinitely
-
-### Advanced Configuration
-
-**Custom timeouts:**
-The default polling timeout is 30 seconds. For longer-running functions:
+### Интеграционное тестирование
 
 ```
-Poll this run with a 60-second timeout instead of the default
+Отправь события для запуска полного воркфлоу обработки заказа и убедись, что все шаги завершились успешно
 ```
 
-**Event ID seeding:**
-For deterministic testing, you can provide event ID seeds:
+ИИ может:
+1. Отправлять несколько скоординированных событий.
+2. Мониторить все результирующие запуски функций.
+3. Проверять завершение всего воркфлоу.
+4. Сообщать о любых сбоях или таймаутах.
+
+## Устранение неполадок
+
+### Общие проблемы
+
+**MCP-сервер не найден**
+- Убедитесь, что сервер разработки Inngest запущен: `npx --ignore-scripts=false inngest-cli@latest dev`
+- Проверьте доступность эндпоинта MCP: `curl http://127.0.0.1:8288/mcp`
+- Проверьте конфигурацию вашего MCP-клиента.
+
+**Функции не отображаются в списке**
+- Подтвердите, что функции правильно зарегистрированы на сервере разработки.
+- Проверьте логи сервера разработки на наличие ошибок регистрации.
+- Убедитесь, что ваше приложение правильно синхронизировано с сервером разработки.
+
+**Запуски не найдены после отправки событий**
+- Подождите немного, пока событие обработается (встроена задержка 500 мс).
+- Проверьте, совпадает ли название события с триггерами вашей функции.
+- Убедитесь, что функция действительно зарегистрирована и активна.
+
+**Таймауты опроса (polling timeouts)**
+- Увеличьте значения таймаута для длительных функций.
+- Проверьте логи функций на наличие зависших операций.
+- Убедитесь, что функции действительно завершаются, а не висят бесконечно.
+
+### Дополнительная конфигурация
+
+**Пользовательские таймауты:**
+Таймаут опроса по умолчанию составляет 30 секунд. Для более длительных функций:
 
 ```
-Send a test event with seed 'test-123' for reproducible testing
+Опрашивай этот запуск с таймаутом 60 секунд вместо стандартного
 ```
 
-**Documentation search:**
-Use regex patterns for advanced documentation searches:
+**Сидирование ID событий (Event ID seeding):**
+Для детерминированного тестирования вы можете предоставить сиды для ID событий:
 
 ```
-Search docs for 'step\\.run.*retry' to find step retry examples
+Отправь тестовое событие с сидом 'test-123' для воспроизводимого тестирования
 ```
 
-## Resources
+**Поиск по документации:**
+Используйте регулярные выражения для продвинутого поиска по документации:
+
+```
+Ищи в документации 'step\\.run.*retry', чтобы найти примеры повторных попыток для шагов
+```
+
+## Ресурсы
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
 href: "https://modelcontextprotocol.io/introduction",
-name: "Model Context Protocol Specification",
+name: "Спецификация Model Context Protocol",
 icon: BookOpenIcon,
-description: "Learn more about the MCP standard and how it enables AI tool integrations.",
+description: "Узнайте больше о стандарте MCP и о том, как он обеспечивает интеграцию инструментов ИИ.",
 pattern: 1,
 }}/>
 
 <Resource resource={{
 href: "/docs/dev-server",
-name: "Inngest Dev Server Documentation",
+name: "Документация сервера разработки Inngest",
 icon: ComputerDesktopIcon,
-description: "Comprehensive guide to the Inngest dev server and local development.",
+description: "Полное руководство по серверу разработки Inngest и локальной разработке.",
 pattern: 1,
 }}/>
 
 <Resource resource={{
 href: "/docs/examples/ai-agents-and-rag",
-name: "AI Agents and RAG Examples",
+name: "Примеры ИИ-агентов и RAG",
 icon: WrenchScrewdriverIcon,
-description: "Examples of building AI-powered applications with Inngest functions.",
+description: "Примеры создания приложений на базе ИИ с помощью функций Inngest.",
 pattern: 1,
 }}/>
 
 <Resource resource={{
 href: "/blog/context-engineering-is-software-engineering-for-llms",
-name: 'Blog: "Context Engineering is Software Engineering for LLMs"',
+name: 'Блог: "Контекстная инженерия — это программная инженерия для LLM"',
 icon: BookOpenIcon,
-description: "Understanding how tools like MCP enable better AI development workflows.",
+description: "Понимание того, как инструменты вроде MCP улучшают рабочие процессы разработки с ИИ.",
 pattern: 1,
 }}/>
 
 </ResourceGrid>
 
-## Related Concepts
+## Связанные концепции
 
-- [Inngest Functions](/docs/features/inngest-functions): Learn how to create and configure functions
-- [Event Triggers](/docs/features/events-triggers): Understanding event-driven architectures  
-- [Local Development](/docs/local-development): Setting up your development environment
+- [Функции Inngest](/docs/features/inngest-functions): Узнайте, как создавать и настраивать функции.
+- [Триггеры событий](/docs/features/events-triggers): Понимание событийно-ориентированных архитектур.
+- [Локальная разработка](/docs/local-development): Настройка вашей среды разработки.
 - [Testing Functions](/docs/reference/testing): Comprehensive testing strategies
 - [Dev Server](/docs/dev-server): Complete dev server documentation
 - [Error Handling](/docs/guides/error-handling): Debugging and error recovery patterns

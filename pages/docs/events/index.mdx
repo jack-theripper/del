@@ -1,12 +1,12 @@
 import { CodeGroup, Callout, LanguageSelector, LanguageSection, Note } from "src/shared/Docs/mdx";
 
-export const description = 'Learn how to send events with the Inngest SDK, set the Event Key, and send events from other languages via HTTP.';
+export const description = 'Узнайте, как отправлять события с помощью Inngest SDK, настраивать ключ события и отправлять события из других языков через HTTP.';
 
-# Sending events
+# Отправка событий
 
-To start, make sure you have [installed the Inngest SDK](/docs/sdk/overview).
+Для начала убедитесь, что вы [установили Inngest SDK](/docs/sdk/overview).
 
-In order to send events, you'll need to instantiate the `Inngest` client. We recommend doing this in a single file and exporting the client so you can import it anywhere in your app. In production, you'll need an event key, which [we'll cover below](#setting-an-event-key).
+Для отправки событий необходимо создать экземпляр клиента `Inngest`. Рекомендуется сделать это в одном файле и экспортировать клиент, чтобы импортировать его в любом месте приложения. В production-среде вам понадобится ключ события, [который мы рассмотрим ниже](#setting-an-event-key).
 
 <LanguageSelector>
 
@@ -15,19 +15,19 @@ In order to send events, you'll need to instantiate the `Inngest` client. We rec
 ```ts {{ filename: 'inngest/client.ts' }}
 import { Inngest } from "inngest";
 
-export const inngest = new Inngest({ id: "acme-storefront-app" }); // Use your app's ID
+export const inngest = new Inngest({ id: "acme-storefront-app" }); // Используйте ID вашего приложения
 ```
 
-Now with this client, you can send events from anywhere in your app. You can send a single event, or [multiple events at once](#sending-multiple-events-at-once).
+Теперь с этим клиентом вы можете отправлять события из любого места приложения. Вы можете отправить одно событие или [несколько событий одновременно](#sending-multiple-events-at-once).
 
 ```ts {{ filename: 'app/api/checkout/route.ts' }}
 import { inngest } from "../inngest/client";
 
-// This sends an event to Inngest.
+// Отправляет событие в Inngest.
 await inngest.send({
-  // The event name
+  // Название события
   name: "storefront/cart.checkout.completed",
-  // The event's data
+  // Данные события
   data: {
     cartId: "ed12c8bde",
     itemIds: ["9f08sdh84", "sdf098487", "0fnun498n"],
@@ -41,7 +41,7 @@ await inngest.send({
 
 <Callout>
 
-👉 `send()` is an asynchronous method that returns a `Promise`. You should always use `await` or `.then()` to ensure that the method has finished sending the event to Inngest. Serverless functions can shut down very quickly, so skipping `await` may result in events failing to be sent.
+👉 `send()` — это асинхронный метод, возвращающий `Promise`. Всегда используйте `await` или `.then()`, чтобы убедиться, что метод завершил отправку события в Inngest. Бессерверные функции могут завершаться очень быстро, поэтому пропуск `await` может привести к тому, что события не будут отправлены.
 
 </Callout>
 
@@ -55,13 +55,13 @@ import inngest
 inngest_client = inngest.Inngest(app_id="acme-storefront-app")
 ```
 
-Now with this client, you can send events from anywhere in your app. You can send a single event, or [multiple events at once](#sending-multiple-events-at-once).
+Теперь с этим клиентом вы можете отправлять события из любого места приложения. Вы можете отправить одно событие или [несколько событий одновременно](#sending-multiple-events-at-once).
 
 ```python {{ filename: 'src/api/checkout/route.py' }}
 import inngest
 from src.inngest.client import inngest_client
 
-# This sends an event to Inngest.
+# Отправляет событие в Inngest.
 await inngest_client.send(
   inngest.Event(
     name="storefront/cart.checkout.completed",
@@ -79,7 +79,7 @@ await inngest_client.send(
 
 <Callout>
 
-👉 `send()` is meant to be called asynchronously using `await`. For synchronous code, [use the `send_sync()` method instead](/docs/reference/python/client/send).
+👉 `send()` предназначен для асинхронного вызова через `await`. Для синхронного кода [используйте метод `send_sync()` вместо него](/docs/reference/python/client/send).
 
 </Callout>
 
@@ -91,7 +91,7 @@ await inngest_client.send(
 !snippet:path=snippets/go/docs/clients/new_client_acme_storefront_app.go
 ```
 
-Now with this client, you can send events from anywhere in your app. You can send a single event, or [multiple events at once](#sending-multiple-events-at-once).
+Теперь с этим клиентом вы можете отправлять события из любого места приложения. Вы можете отправить одно событие или [несколько событий одновременно](#sending-multiple-events-at-once).
 
 ```go {{ title: "Go" }}
 !snippet:path=snippets/go/docs/events/checkout_completed.go
@@ -100,31 +100,31 @@ Now with this client, you can send events from anywhere in your app. You can sen
 
 </LanguageSection>
 
-Sending this event, named `storefront/cart.checkout.completed`, to Inngest will do two things:
+Отправка этого события с именем `storefront/cart.checkout.completed` в Inngest выполняет два действия:
 
-1. Automatically run any [functions](/docs/functions) that are triggered by this specific event, passing the event payload to the function's arguments.
-2. Store the event payload in Inngest cloud. You can find this in the **Events** tab of the dashboard.
+1. Автоматически запускает все [функции](/docs/functions), триггером которых является это конкретное событие, передавая полезную нагрузку события в аргументы функции.
+2. Сохраняет полезную нагрузку события в Inngest Cloud. Её можно найти на вкладке **Events** в панели управления.
 
 <Callout>
 
-💡 One event can trigger multiple functions, enabling you to consume a single event in multiple ways. This is different than traditional message queues where only one worker can consume a single message. Learn about [the fan-out approach here](/docs/guides/fan-out-jobs).
+💡 Одно событие может запускать несколько функций, что позволяет обрабатывать одно событие несколькими способами. Это отличается от традиционных очередей сообщений, где только один обработчик может потреблять одно сообщение. Узнайте о [подходе fan-out здесь](/docs/guides/fan-out-jobs).
 
 </Callout>
 
-## Setting an Event Key
+## Настройка ключа события
 
-In production, your application will need an "Event Key" to send events to Inngest. This is a secret key that is used to authenticate your application and ensure that only your application can send events to a given [environment](/docs/platform/environments) in your Inngest account.
+В production-среде вашему приложению потребуется «ключ события» для отправки событий в Inngest. Это секретный ключ, используемый для аутентификации вашего приложения и гарантирующий, что только ваше приложение может отправлять события в конкретную [среду](/docs/platform/environments) вашей учётной записи Inngest.
 
-You can learn [how to create an Event Key here](/docs/events/creating-an-event-key). Once you have a key, you can set it in one of two ways:
+Вы можете узнать [как создать ключ события здесь](/docs/events/creating-an-event-key). Получив ключ, вы можете установить его одним из двух способов:
 
-1. Set an `INNGEST_EVENT_KEY` environment variable with your Event Key. **This is the recommended approach.**
-2. Pass the Event Key to the `Inngest` constructor as the `eventKey` option:
+1. Установите переменную окружения `INNGEST_EVENT_KEY` со значением вашего ключа события. **Это рекомендуемый подход.**
+2. Передайте ключ события в конструктор `Inngest` в качестве опции `eventKey`:
 
 <LanguageSection show="typescript">
 ```ts {{ filename: 'inngest/client.ts' }}
 import { Inngest } from "inngest";
 
-// NOTE - It is not recommended to hard-code your Event Key in your code.
+// ПРИМЕЧАНИЕ — Не рекомендуется жёстко задавать ключ события в коде.
 const inngest = new Inngest({ id: "your-app-id", eventKey: "xyz..." });
 ```
 </LanguageSection>
@@ -133,27 +133,27 @@ const inngest = new Inngest({ id: "your-app-id", eventKey: "xyz..." });
 ```python {{ filename: 'src/inngest/client.py' }}
 import inngest
 
-# It is not recommended to hard-code your Event Key in your code.
+# Не рекомендуется жёстко задавать ключ события в коде.
 inngest_client = inngest.Inngest(app_id="your-app-id", event_key="xyz...")
 ```
 </LanguageSection>
 
 <Callout>
 
-Event keys are _not_ required in local development with the [Inngest Dev Server](/docs/local-development). You can omit them in development and your events will still be sent to the Dev Server.
+Ключи событий _не требуются_ при локальной разработке с [Inngest Dev Server](/docs/local-development). Вы можете опустить их в разработке, и события всё равно будут отправлены на Dev Server.
 
 </Callout>
 
-## Event payload format
+## Формат полезной нагрузки события
 
-The event payload is a JSON object that must contain a `name` and `data` property.
+Полезная нагрузка события — это JSON-объект, который должен содержать свойства `name` и `data`.
 
-Explore all events properties in the [Event payload format guide](/docs/features/events-triggers/event-format).
+Ознакомьтесь со всеми свойствами событий в [руководстве по формату полезной нагрузки событий](/docs/features/events-triggers/event-format).
 
 
-## Sending multiple events at once
+## Отправка нескольких событий одновременно
 
-You can also send multiple events in a single `send()` call. This enables you to send a batch of events very easily. You can send up to `512kb` in a single request which means you can send anywhere between 10 and 1000 typically sized payloads at once. This is the default and can be increased for your account.
+Вы также можете отправить несколько событий в одном вызове `send()`. Это позволяет легко отправлять пакеты событий. Один запрос может содержать до `512 КБ` данных, что обычно позволяет отправить от 10 до 1000 стандартных полезных нагрузок. Это значение по умолчанию и может быть увеличено для вашей учётной записи.
 
 <LanguageSection show="typescript">
 
@@ -165,11 +165,12 @@ await inngest.send([
 ])
 ```
 
-This is especially useful if you have an array of data in your app and you want to send an event for each item in the array:
+Это особенно удобно, если у вас есть массив данных и нужно отправить событие для каждого элемента:
 
 ```ts
-// This function call might return 10s or 100s of items, so we can use map
-// to transform the items into event payloads then pass that array to send:
+// Этот вызов функции может вернуть десятки или сотни элементов,
+// поэтому используем map для преобразования элементов в полезные нагрузки событий
+// и передаём полученный массив в send:
 const importedItems = await api.fetchAllItems();
 const events = importedItems.map((item) => ({
   name: "storefront/item.imported",
@@ -180,27 +181,27 @@ const events = importedItems.map((item) => ({
 await inngest.send(events);
 ```
 
-## Sending events from within functions
+## Отправка событий из функций
 
-You can also send events from within your functions using `step.sendEvent()` to, for example, trigger other functions. Learn more about [sending events from within functions](/docs/guides/sending-events-from-functions). Within functions, `step.sendEvent()` wraps the event sending request within a `step` to ensure reliable event delivery and prevent duplicate events from being sent. We recommend using `step.sendEvent()` instead of `inngest.send()` within functions.
+Вы также можете отправлять события из своих функций с помощью `step.sendEvent()`, чтобы, например, запускать другие функции. Подробнее об [отправке событий из функций](/docs/guides/sending-events-from-functions). Внутри функций `step.sendEvent()` оборачивает запрос отправки события в `step`, обеспечивая надёжную доставку и предотвращая отправку дублирующихся событий. Рекомендуется использовать `step.sendEvent()` вместо `inngest.send()` внутри функций.
 
 ```ts
 export default inngest.createFunction(
   { id: "user-onboarding", triggers: { event: "app/user.signup" } },
   async ({ event, step }) => {
-    // Do something
+    // Выполните какое-либо действие
     await step.sendEvent("send-activation-event", {
       name: "app/user.activated",
       data: { userId: event.data.userId },
     });
-    // Do something else
+    // Выполните другое действие
   }
 );
 ```
 
-## Using Event IDs
+## Использование ID событий
 
-Each event sent to Inngest is assigned a unique Event ID. These `ids` are returned from `inngest.send()` or `step.sendEvent()`. Event IDs can be used to look up the event in the Inngest dashboard or via [the REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). You can choose to log or save these Event IDs if you want to look them up later.
+Каждому событию, отправленному в Inngest, присваивается уникальный ID. Эти `ids` возвращаются из `inngest.send()` или `step.sendEvent()`. ID событий можно использовать для поиска события в панели управления Inngest или через [REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). Вы можете записывать или сохранять эти ID, если захотите найти их позже.
 
 ```ts
 const { ids } = await inngest.send([
@@ -233,11 +234,11 @@ await inngest_client.send([
 ])
 ```
 
-This is especially useful if you have an array of data in your app and you want to send an event for each item in the array:
+Это особенно удобно, если у вас есть массив данных и нужно отправить событие для каждого элемента:
 
 ```python
-# This function call might return 10s or 100s of items, so we can use map
-# to transform the items into event payloads then pass that array to send:
+# Этот вызов функции может вернуть десятки или сотни элементов,
+# поэтому используем map для преобразования элементов в полезные нагрузки событий:
 importedItems = await api.fetchAllItems();
 events = [
   inngest.Event(name="storefront/item.imported", data=item)
@@ -246,9 +247,9 @@ events = [
 await inngest_client.send(events);
 ```
 
-## Sending events from within functions
+## Отправка событий из функций
 
-You can also send events from within your functions using `step.send_event()` to, for example, trigger other functions. Learn more about [sending events from within functions](/docs/guides/sending-events-from-functions). Within functions, `step.send_event()` wraps the event sending request within a `step` to ensure reliable event delivery and prevent duplicate events from being sent. We recommend using `step.send_event()` instead of `inngest.send()` within functions.
+Вы также можете отправлять события из своих функций с помощью `step.send_event()`, чтобы, например, запускать другие функции. Подробнее об [отправке событий из функций](/docs/guides/sending-events-from-functions). Внутри функций `step.send_event()` оборачивает запрос отправки события в `step`, обеспечивая надёжную доставку и предотвращая отправку дублирующихся событий. Рекомендуется использовать `step.send_event()` вместо `inngest.send()` внутри функций.
 
 ```python
 import inngest
@@ -262,9 +263,9 @@ async def fn(ctx: inngest.Context) -> list[str]:
     return await ctx.step.send_event("send", inngest.Event(name="foo"))
 ```
 
-## Using Event IDs
+## Использование ID событий
 
-Each event sent to Inngest is assigned a unique Event ID. These `ids` are returned from `inngest.send()` or `step.sendEvent()`. Event IDs can be used to look up the event in the Inngest dashboard or via [the REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). You can choose to log or save these Event IDs if you want to look them up later.
+Каждому событию, отправленному в Inngest, присваивается уникальный ID. Эти `ids` возвращаются из `inngest.send()` или `step.sendEvent()`. ID событий можно использовать для поиска события в панели управления Inngest или через [REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). Вы можете записывать или сохранять эти ID, если захотите найти их позже.
 
 ```python
 ids = await inngest_client.send(
@@ -278,7 +279,7 @@ ids = await inngest_client.send(
 #    "01HQ8PTAESBZPBDS8JTRZZYY3S",
 #    "01HQ8PTFYYKDH1CP3C6PSTBZN5"
 #  ]
-# 
+#
 ```
 
 </LanguageSection>
@@ -289,9 +290,9 @@ ids = await inngest_client.send(
 !snippet:path=snippets/go/docs/events/send_many_events.go
 ```
 
-## Using Event IDs
+## Использование ID событий
 
-Each event sent to Inngest is assigned a unique Event ID. These `ids` are returned from `client.SendMany()` . Event IDs can be used to look up the event in the Inngest dashboard or via [the REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). You can choose to log or save these Event IDs if you want to look them up later.
+Каждому событию, отправленному в Inngest, присваивается уникальный ID. Эти `ids` возвращаются из `client.SendMany()`. ID событий можно использовать для поиска события в панели управления Inngest или через [REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event). Вы можете записывать или сохранять эти ID, если захотите найти их позже.
 
 ```go
 !snippet:path=snippets/go/docs/events/send_many_events_return_ids.go
@@ -299,13 +300,13 @@ Each event sent to Inngest is assigned a unique Event ID. These `ids` are return
 
 </LanguageSection>
 
-## Send events via HTTP (Event API)
+## Отправка событий через HTTP (Event API)
 
-You can send events from any system or programming language with our API and an Inngest Event Key. The API accepts a single event payload or an array of event payloads.
+Вы можете отправлять события из любой системы или языка программирования с помощью нашего API и ключа события Inngest. API принимает как одну полезную нагрузку события, так и массив полезных нагрузок.
 
-{/* NOTE - We'll leave other SDKs here for now, but in time, instead we'll make this entire guide have Python and Go examples for each section above */}
+{/* ПРИМЕЧАНИЕ — Оставим другие SDK здесь пока, но со временем вместо этого сделаем всё руководство с примерами для Python и Go в каждом разделе выше */}
 
-To send an event to a specific [branch environment](/docs/platform/environments#branch-environments), set the `x-inngest-env` header to the name of your branch environment, for example: `x-inngest-env: feature/my-branch`.
+Чтобы отправить событие в конкретную [среду ветки](/docs/platform/environments#branch-environments), установите заголовок `x-inngest-env` равным имени вашей среды, например: `x-inngest-env: feature/my-branch`.
 
 <CodeGroup tag="POST" label="inn.gs/e/:eventKey">
 
@@ -353,10 +354,10 @@ $response = json_decode($json_response, true);
 
 
 <Note>
-  When using the [dev server](/docs/dev-server), use `http://localhost:8288/e/<fake-key>` as the endpoint. If [self-hosting](/docs/self-hosting), replace with the url for your self-hosted instance.
+  При использовании [dev server](/docs/dev-server) используйте `http://localhost:8288/e/<fake-key>` в качестве конечной точки. При [самостоятельном размещении](/docs/self-hosting) замените на URL вашего экземпляра.
 </Note>
 
-The response will contain the `ids` of the events that were sent:
+Ответ будет содержать `ids` отправленных событий:
 
 ```json {{ title: 'Response' }}
 {
@@ -365,23 +366,23 @@ The response will contain the `ids` of the events that were sent:
 }
 ```
 
-## Deduplication
+## Дедупликация
 
-Often, you may need to prevent duplicate events from being processed by Inngest. If your system could possibly send the same event more than once, you will want to ensure that it does not run functions more than once.
+Нередко возникает необходимость предотвратить обработку дублирующихся событий в Inngest. Если ваша система может отправить одно и то же событие более одного раза, следует убедиться, что функции не запускаются повторно.
 
-To prevent duplicate function runs from events, you can add an `id` parameter to the event payload. Once Inngest receives an event with an `id`, any events sent with the same `id` will be ignored, regardless of the event's payload.
+Чтобы предотвратить дублирующиеся запуски функций, добавьте параметр `id` в полезную нагрузку события. После получения события с `id` все события с тем же `id` будут проигнорированы независимо от их полезной нагрузки.
 
 <LanguageSection show="typescript">
 
 ```ts
 await inngest.send({
-  // Your deduplication id must be specific to this event payload.
-  // Use something that will not be used across event types, not a generic value like cartId
+  // Ваш ID дедупликации должен быть специфичен для данной полезной нагрузки события.
+  // Используйте что-то, что не будет повторяться в разных типах событий, а не универсальное значение вроде cartId
   id: "cart-checkout-completed-ed12c8bde",
   name: "storefront/cart.checkout.completed",
   data: {
     cartId: "ed12c8bde",
-    // ...the rest of the payload's data...
+    // ...остальные данные полезной нагрузки...
   }
 });
 ```
@@ -399,35 +400,35 @@ await inngest_client.send(
   )
 )
 ```
-</LanguageSection> 
+</LanguageSection>
 
 <LanguageSection show="go">
 
 ```go {{ title: "Go" }}
 !snippet:path=snippets/go/docs/events/event_idempotency.go
 ```
-</LanguageSection> 
+</LanguageSection>
 
-Learn more about this in the [handling idempotency guide](/docs/guides/handling-idempotency).
+Подробнее об этом в [руководстве по обработке идемпотентности](/docs/guides/handling-idempotency).
 
 <Callout variant="warning">
-💡 Deduplication prevents duplicate function runs for 24 hours from the first event.
+💡 Дедупликация предотвращает повторные запуски функций в течение 24 часов с момента получения первого события.
 </Callout>
 
 <Callout>
 
-The `id` is global across all event types, so make sure your `id` isn't a value that will be shared across different event types.
+`id` является глобальным для всех типов событий, поэтому убедитесь, что ваш `id` не будет совпадать с ID других типов событий.
 
-For example, for two events like `storefront/item.imported` and `storefront/item.deleted`, do not use the `item`'s `id` (`9f08sdh84`) as the event deduplication `id`. Instead, combine the item's `id` with the event type to ensure it's specific to that event (e.g. `item-imported-9f08sdh84`).
+Например, для двух событий `storefront/item.imported` и `storefront/item.deleted` не используйте `id` самого `item` (`9f08sdh84`) в качестве ID дедупликации события. Вместо этого объедините ID элемента с типом события, чтобы он был уникален для данного события (например, `item-imported-9f08sdh84`).
 
 </Callout>
 
 </LanguageSelector>
 
-## Further reading
+## Дополнительные материалы
 
-* [Creating an Event Key](/docs/events/creating-an-event-key)
-* [TypeScript SDK Reference: Send events](/docs/reference/events/send)
-* [Python SDK Reference: Send events](/docs/reference/python/client/send)
-* [Go SDK Reference: Send events](https://pkg.go.dev/github.com/inngest/inngestgo#Client)
+* [Создание ключа события](/docs/events/creating-an-event-key)
+* [Справочник TypeScript SDK: Отправка событий](/docs/reference/events/send)
+* [Справочник Python SDK: Отправка событий](/docs/reference/python/client/send)
+* [Справочник Go SDK: Отправка событий](https://pkg.go.dev/github.com/inngest/inngestgo#Client)
 

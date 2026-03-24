@@ -1,40 +1,40 @@
 import { Info, CodeGroup, LanguageSelector, LanguageSection } from "shared/Docs/mdx";
 
-export const description = "Solutions to reduce latency"
+export const description = "Решения для снижения задержки"
 
-# Improve Performance
+# Повышение производительности
 
-Inngest offers two complementary approaches to reduce latency in your functions: **Checkpointing** for faster step execution, and **Connect** for persistent, low-latency connections between your app and Inngest.
+Inngest предлагает два взаимодополняющих подхода для снижения задержки в ваших функциях: **Checkpointing** для ускорения выполнения шагов и **Connect** для постоянных соединений с низкой задержкой между вашим приложением и Inngest.
 
 ---
 
-## Checkpointing
+## Checkpointing (Контрольные точки)
 
-Checkpointing is a performance optimization for Inngest functions that executes steps eagerly rather than waiting on internal orchestration.
+Checkpointing — это оптимизация производительности функций Inngest, которая выполняет шаги немедленно, не дожидаясь внутренней оркестрации.
 
-### Differences in Execution Models
+### Различия в моделях выполнения
 
-The [Inngest default execution model](/docs/learn/how-functions-are-executed) is a complete handoff to the Inngest Platform, where an HTTP request is performed to store the execution state upon each step completion, leading to inter-step latency.
+[Стандартная модель выполнения Inngest](/docs/learn/how-functions-are-executed) подразумевает полную передачу управления платформе Inngest, где после завершения каждого шага выполняется HTTP-запрос для сохранения состояния выполнения, что приводит к задержкам между шагами.
 
-Checkpointing uses the SDK to orchestrate steps and run them on the client side, resulting in the immediate execution of subsequent synchronous steps (ex, `step.run()`) in a function. As steps execute, checkpointing requests are sent to Inngest to keep track of progress when an async step is met (ex, `step.sleep()`).
+Checkpointing использует SDK для оркестрации шагов и запускает их на стороне клиента, что приводит к немедленному выполнению последующих синхронных шагов (например, `step.run()`) в функции. По мере выполнения шагов запросы на создание контрольных точек отправляются в Inngest для отслеживания прогресса при встрече с асинхронным шагом (например, `step.sleep()`).
 
-With the standard execution model, Inngest orchestrates your function by making network round-trips between each step. This is reliable, but adds latency.
+При стандартной модели выполнения Inngest оркеструет вашу функцию, совершая сетевые обмены между каждым шагом. Это надежно, но добавляет задержку.
 
-Checkpointing flips this: the SDK orchestrates steps on the client-side (_on your server_) and executes them immediately. As steps completed, checkpoint messages are sent to Inngest to track progress. The result is dramatically lower latency — ideal for real-time AI workflows.
+Checkpointing меняет это: SDK оркеструет шаги на стороне клиента (_на вашем сервере_) и выполняет их немедленно. По мере завершения шагов в Inngest отправляются сообщения контрольных точек для отслеживания прогресса. Результатом является значительно меньшая задержка — идеально для AI-воркфлоу в реальном времени.
 
-### Failures and Retries
+### Сбои и повторные попытки
 
-What happens when something goes wrong? If a step fails and needs to retry, the execution engine falls back to standard orchestration to handle it properly. You get speed when things work, and safety when they don't.
+Что происходит, если что-то идет не так? Если шаг завершается сбоем и требует повторной попытки, движок выполнения возвращается к стандартной оркестрации для корректной обработки. Вы получаете скорость, когда все работает, и безопасность, когда возникают проблемы.
 
-### Checkpointing Setup
+### Настройка Checkpointing
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-Checkpointing is enabled by default. No additional configuration is required for long-running or always-on servers.
+Checkpointing включен по умолчанию. Дополнительная конфигурация для долгоживущих или всегда включенных серверов не требуется.
 
-For serverless platforms, configure `maxRuntime` to slightly below your function's maximum duration:
+Для серверлесс-платформ настройте `maxRuntime` немного меньше максимальной длительности вашей функции:
 
 ```ts
 import { Inngest } from "inngest";
@@ -47,21 +47,21 @@ export const inngest = new Inngest({
 });
 ```
 
-To disable checkpointing, set `checkpointing: false` on the client or per-function.
+Чтобы отключить checkpointing, установите `checkpointing: false` на клиенте или для конкретной функции.
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-To enable checkpointing:
+Чтобы включить checkpointing:
 
-1. Install the checkpoint package:
+1. Установите пакет checkpoint:
 
 ```shell
 go get github.com/inngest/inngestgo/pkg/checkpoint
 ```
 
-2. Set `Checkpoint` on your function options:
+2. Установите `Checkpoint` в опциях вашей функции:
 
 ```go
 import (
@@ -76,7 +76,7 @@ _, err := inngestgo.CreateFunction(
     Name:       "My Function",
     Checkpoint: checkpoint.ConfigSafe,
   },
-  // ... triggers and handler
+  // ... триггеры и обработчик
 )
 ```
 
@@ -84,37 +84,37 @@ _, err := inngestgo.CreateFunction(
 
 </LanguageSelector>
 
-Read [the detailed checkpointing guide](/docs/setup/checkpointing) for more information.
+Для получения дополнительной информации прочитайте [подробное руководство по контрольным точкам (checkpointing)](/docs/setup/checkpointing).
 
 ---
 
 ## Connect
 
-The `connect` API allows your app to create an outbound persistent connection to Inngest (_workers-style approach_). This is another way to reduce latency — by keeping a WebSocket connection open rather than making HTTP requests for each step.
+API `connect` позволяет вашему приложению создавать исходящее постоянное соединение с Inngest (_подход в стиле воркеров_). Это еще один способ снизить задержку за счет поддержания открытого WebSocket-соединения вместо выполнения HTTP-запросов для каждого шага.
 
-### Performance Benefits
+### Преимущества производительности
 
-Compared to the standard [`serve`](/docs/learn/serving-inngest-functions) approach, `connect` offers:
+По сравнению со стандартным подходом [`serve`](/docs/learn/serving-inngest-functions), `connect` предлагает:
 
-- **Lowest latency** — Persistent connections eliminate the overhead of establishing new HTTP connections for each step.
-- **Simpler long running steps** — Step execution is not bound by platform HTTP timeouts.
-- **Elastic horizontal scaling** — Easily add more capacity by running additional workers.
-- **Ideal for container runtimes** — Deploy on Kubernetes or ECS without the need of a load balancer for inbound traffic.
+- **Минимальная задержка** — Постоянные соединения устраняют накладные расходы на установку новых HTTP-соединений для каждого шага.
+- **Упрощение длительных шагов** — Выполнение шагов не ограничено таймаутами HTTP платформы.
+- **Эластичное горизонтальное масштабирование** — Легко добавляйте мощности, запуская дополнительные воркеры.
+- **Идеально для контейнерных сред** — Развертывание в Kubernetes или ECS без необходимости использования балансировщика нагрузки для входящего трафика.
 
-### How It Works
+### Как это работает
 
-The `connect` API establishes a persistent WebSocket connection to Inngest. Each connection can handle executing multiple functions and steps concurrently. Each app can create multiple connections to Inngest enabling horizontal scaling.
+API `connect` устанавливает постоянное WebSocket-соединение с Inngest. Каждое соединение может обрабатывать выполнение нескольких функций и шагов одновременно. Каждое приложение может создавать несколько соединений с Inngest, что обеспечивает горизонтальное масштабирование.
 
-Key features include:
+Ключевые особенности включают:
 
-- **Automatic re-connections** — The connection will automatically reconnect if it is closed.
-- **Graceful shutdown** — The connection gracefully shuts down when the app receives a termination signal (`SIGTERM`). New steps won't be accepted, but existing steps are allowed to complete.
-- **Worker-level maximum concurrency (Coming soon)** — Each worker can configure the maximum number of concurrent steps it can handle, allowing Inngest to distribute load across multiple workers.
+- **Автоматическое переподключение** — Соединение автоматически восстановится, если оно будет закрыто.
+- **Плавное завершение работы** — Соединение плавно закрывается, когда приложение получает сигнал завершения (`SIGTERM`). Новые шаги не будут приниматься, но существующим шагам будет позволено завершиться.
+- **Максимальная конкурентность на уровне воркера (Скоро)** — Каждый воркер может настроить максимальное количество одновременных шагов, которые он может обрабатывать, что позволяет Inngest распределять нагрузку между несколькими воркерами.
 
 <Info>
-  **WebSocket connection and HTTP fallback** — While a WebSocket connection is open, the worker sends and receives all step results via WebSocket. When the connection closes, the worker falls back to the HTTP API to send any remaining step results.
+  **WebSocket-соединение и откат к HTTP** — Пока WebSocket-соединение открыто, воркер отправляет и получает все результаты шагов через WebSocket. Когда соединение закрывается, воркер возвращается к использованию HTTP API для отправки оставшихся результатов шагов.
 </Info>
 
-### Getting Started with Connect
+### Начало работы с Connect
 
-For full setup instructions, requirements, deployment guides, and lifecycle management, see the [Connect documentation](/docs/setup/connect).
+Полные инструкции по настройке, требования, руководства по развертыванию и управление жизненным циклом см. в [документации Connect](/docs/setup/connect).

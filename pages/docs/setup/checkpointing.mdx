@@ -1,46 +1,46 @@
 import { Info, Tip, Warning, CodeGroup, LanguageSelector, LanguageSection } from "shared/Docs/mdx";
 
-# Checkpointing
+# Чекпоинтинг
 
-Checkpointing is a performance optimization for Inngest functions that executes steps eagerly rather than waiting on internal orchestration. The result is dramatically lower latency — ideal for real-time AI workflows.
+Чекпоинтинг — это оптимизация производительности для функций Inngest, которая выполняет шаги сразу (eager execution) вместо ожидания внутренней оркестрации. Результат — значительно меньшая задержка, что идеально подходит для AI-рабочих процессов реального времени.
 
-In v4 of the TypeScript SDK, checkpointing is **enabled by default**. You only need to configure it if you want to customize options like `maxRuntime` or disable it.
+В v4 TypeScript SDK чекпоинтинг **включён по умолчанию**. Настройка нужна только если вы хотите изменить параметры, например `maxRuntime`, или отключить его.
 
-## Minimum Requirements
+## Минимальные требования
 
-### Language
+### Язык
 
-- **TypeScript**: SDK `3.51.0` or higher (enabled by default in v4).
-- **Go**: SDK version `v0.15.0`.
+- **TypeScript**: SDK `3.51.0` или выше (включён по умолчанию в v4).
+- **Go**: SDK версии `v0.15.0`.
 
-## Getting Started
+## Начало работы
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-In v4, checkpointing is enabled by default. No configuration is required for long-running or always-on servers.
+В v4 чекпоинтинг включён по умолчанию. Для долгоработающих или постоянно активных серверов никакой дополнительной настройки не требуется.
 
-### Max runtime for serverless environments
+### Максимальное время выполнения для бессерверных сред
 
-If your app is deployed to serverless platforms like [Vercel](/docs/deploy/vercel), you should configure the `maxRuntime` option to slightly below your function's maximum duration. See [configuration](#configuration) for more information.
+Если ваше приложение развёрнуто на бессерверных платформах, таких как [Vercel](/docs/deploy/vercel), следует настроить параметр `maxRuntime` чуть ниже максимальной длительности вашей функции. Подробнее в разделе [конфигурация](#configuration).
 
 ```ts
 const inngest = new Inngest({
   id: 'my-app',
   checkpointing: {
-    maxRuntime: '50s', // 50s might be a good option if your max duration is 60s
+    maxRuntime: '50s', // 50с — хороший вариант, если максимальная длительность 60с
   }
 })
 ```
 
 <Tip>
-  Tip: Many platforms, like Vercel, allow you to configure the maximum duration per function, e.g. on your `/api/inngest` endpoint. Learn more about configuring on Vercel [here](https://vercel.com/docs/functions/configuring-functions/duration).
+  Совет: Многие платформы, например Vercel, позволяют настраивать максимальную длительность для каждой функции отдельно, например для эндпоинта `/api/inngest`. Подробнее о настройке на Vercel [здесь](https://vercel.com/docs/functions/configuring-functions/duration).
 </Tip>
 
-### Disabling checkpointing
+### Отключение чекпоинтинга
 
-To disable checkpointing for all functions, set `checkpointing: false` on the client:
+Чтобы отключить чекпоинтинг для всех функций, установите `checkpointing: false` на клиенте:
 
 ```ts
 import { Inngest } from "inngest";
@@ -51,7 +51,7 @@ export const inngest = new Inngest({
 });
 ```
 
-You can also disable it per-function:
+Также можно отключить его для конкретной функции:
 
 ```ts
 export const myFunction = inngest.createFunction(
@@ -60,20 +60,20 @@ export const myFunction = inngest.createFunction(
     checkpointing: false,
   },
   async ({ step }) => {
-    // steps here will use standard orchestration
+    // шаги здесь будут использовать стандартную оркестрацию
   }
 );
 ```
 
-### Configuration
+### Конфигурация
 
-Configure how checkpointing behaves with these options:
+Настройте поведение чекпоинтинга с помощью следующих параметров:
 
-* `maxRuntime` - default: `0` (unlimited): The maximum amount of time the function should continuously execute and checkpoint steps before returning the request response. Configure this to be slightly less than the maximum allowed request timeout for your platform or server. For example, if your platform allows `900s`, you might set `maxRuntime` to `800s`.
-* `bufferedSteps` - default: `1` (no buffering): The number of steps to buffer together before checkpointing. This can help reduce the number of requests made to Inngest when running many steps in sequence. Consider that buffered steps that are not checkpointed may be lost if your server is not gracefully terminated.
-* `maxInterval`: The maximum interval to wait before checkpointing, even if the `bufferedSteps` count has not been reached.
+* `maxRuntime` — по умолчанию: `0` (без ограничений): Максимальное время непрерывного выполнения функции и записи чекпоинтов шагов перед возвратом ответа на запрос. Установите значение чуть меньше максимально допустимого тайм-аута запроса для вашей платформы или сервера. Например, если платформа допускает `900с`, можно задать `maxRuntime` равным `800s`.
+* `bufferedSteps` — по умолчанию: `1` (без буферизации): Количество шагов, накапливаемых перед записью чекпоинта. Позволяет сократить количество запросов к Inngest при выполнении множества шагов подряд. Учтите, что буферизованные шаги, для которых не был записан чекпоинт, могут быть потеряны при некорректном завершении сервера.
+* `maxInterval`: Максимальный интервал ожидания перед записью чекпоинта, даже если количество `bufferedSteps` не достигнуто.
 
-```ts {{ title: "Example configuration" }}
+```ts {{ title: "Пример конфигурации" }}
 checkpointing: {
   maxRuntime: '300s',
   bufferedSteps: 2,
@@ -85,15 +85,15 @@ checkpointing: {
 
 <LanguageSection show="go">
 
-To enable checkpointing:
+Для включения чекпоинтинга:
 
-1. Install the checkpoint package:
+1. Установите пакет checkpoint:
 
 ```shell
 go get github.com/inngest/inngestgo/pkg/checkpoint
 ```
 
-2. Set `Checkpoint` on your function options:
+2. Задайте `Checkpoint` в параметрах функции:
 
 ```go
 import (
@@ -108,7 +108,7 @@ _, err := inngestgo.CreateFunction(
     Name:       "My Function",
     Checkpoint: checkpoint.ConfigSafe,
   },
-  // ... triggers and handler
+  // ... триггеры и обработчик
 )
 ```
 
@@ -116,26 +116,26 @@ _, err := inngestgo.CreateFunction(
 
 </LanguageSelector>
 
-## How Does It Work?
+## Как это работает?
 
-The [Inngest default execution model](/docs/learn/how-functions-are-executed) is a complete handoff to the Inngest Platform, where an HTTP request is performed to store the execution state upon each step completion, leading to inter-step latency.
+[Стандартная модель выполнения Inngest](/docs/learn/how-functions-are-executed) предполагает полную передачу управления платформе Inngest: при завершении каждого шага выполняется HTTP-запрос для сохранения состояния выполнения, что создаёт задержку между шагами.
 
-![With and Without Checkpointing](/assets/docs/checkpointing/checkpointing_with_without.png)
+![С чекпоинтингом и без него](/assets/docs/checkpointing/checkpointing_with_without.png)
 
-Checkpointing uses the SDK orchestrates steps on the client-side (_on your server_) and executes them immediately. As steps complete, checkpoint messages are sent to Inngest to track progress. The result is dramatically lower latency — ideal for real-time AI workflows.
+При чекпоинтинге SDK оркестрирует шаги на стороне клиента (_на вашем сервере_) и выполняет их немедленно. По мере завершения шагов в Inngest отправляются сообщения-чекпоинты для отслеживания прогресса. Результат — значительно меньшая задержка, что идеально подходит для AI-рабочих процессов реального времени.
 
-![Inngest Workflow Execution](/assets/docs/checkpointing/checkpointing_inngest_workflow.jpg)
+![Выполнение рабочего процесса Inngest](/assets/docs/checkpointing/checkpointing_inngest_workflow.jpg)
 
-### Failures and Retries
+### Сбои и повторные попытки
 
-What happens when something goes wrong? If a step fails and needs to retry, the execution engine falls back to standard orchestration to handle it properly. You get speed when things work, and safety when they don't.
+Что происходит при ошибке? Если шаг завершается сбоем и требует повторной попытки, движок выполнения переключается на стандартную оркестрацию для корректной обработки. Вы получаете скорость при успешной работе и надёжность при сбоях.
 
-## Notes and limitations
+## Примечания и ограничения
 
-- **Parallel step execution** — When a function branches into parallel steps, execution switches to standard orchestration for the remainder of the run. Checkpointing does not resume after parallel execution.
+- **Параллельное выполнение шагов** — Когда функция разветвляется на параллельные шаги, выполнение переключается на стандартную оркестрацию до конца запуска. Чекпоинтинг не возобновляется после параллельного выполнения.
 
-| Feature | Supported |
-|---------|-----------|
-| Local development | ✅ |
+| Функция | Поддерживается |
+|---------|----------------|
+| Локальная разработка | ✅ |
 | Self-hosted Inngest | ✅ |
 | Inngest Cloud | ✅ |

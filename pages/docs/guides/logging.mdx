@@ -1,42 +1,42 @@
 import { CodeGroup, VersionBadge, Tip } from "src/shared/Docs/mdx";
 import { Tag } from "src/shared/Docs/Tag";
 
-# Logging in Inngest
+# Логирование в Inngest
 
-Log handling can have some caveats when working with serverless runtimes.
+При работе с серверлесс-средами (serverless runtimes) обработка логов может иметь некоторые нюансы.
 
-One of the main problems is due to how serverless providers terminate after a function exits.
-There might not be enough time for a logger to finish flushing, which results in logs being lost.
+Одна из основных проблем связана с тем, как серверлесс-провайдеры завершают работу после выхода из функции.
+Логгеру может не хватить времени на завершение сброса буферов (flushing), что приводит к потере логов.
 
-Another (opposite) problem is due to how Inngest handles memoization and code execution via HTTP calls to the SDK.
-A log statement outside of `step` function could end up running multiple times, resulting in duplicated deliveries.
+Другая (противоположная) проблема связана с тем, как Inngest обрабатывает мемоизацию и выполнение кода через HTTP-вызовы к SDK.
+Инструкция логирования вне функции `step` может быть выполнена несколько раз, что приведет к дублированию записей.
 
 ```ts {{ title: "example-fn.ts" }}
 async ({ event, step }) => {
-  console.log("something") // this can be run three times
+  console.log("что-то") // это может быть выполнено трижды
 
   await step.run("fn", () => {
-    console.log("something else") // this will always be run once
+    console.log("что-то другое") // это всегда будет выполнено один раз
   })
 
   await step.run(...)
 }
 ```
 
-We provide a thin wrapper over existing logging tools, and export it to Inngest functions in order to mitigate these problems, so you, as the user, don't need to deal with them and things should work as you expect.
+Мы предоставляем легкую обертку над существующими инструментами логирования и экспортируем её в функции Inngest, чтобы смягчить эти проблемы. Таким образом, вам как пользователю не нужно беспокоиться о них, и всё должно работать так, как вы ожидаете.
 
-## Usage
+## Использование
 
-A `logger` object is available within all Inngest functions as a handler argument. You can use it with the logger of your choice, or if absent, `logger` will default to use `console`.
+Объект `logger` доступен во всех функциях Inngest в качестве аргумента обработчика. Вы можете использовать его с любым логгером по вашему выбору. Если логгер не указан, `logger` по умолчанию будет использовать `console`.
 
 ```ts
 inngest.createFunction(
   { id: "my-awesome-function", triggers: { event: "func/awesome" } },
-  async ({ event, step, logger }) => { // <== logger is available as an argument
-    logger.info("starting function", { metadataKey: "metadataValue" });
+  async ({ event, step, logger }) => { // <== logger доступен как аргумент
+    logger.info("запуск функции", { metadataKey: "metadataValue" });
 
     const val = await step.run("do-something", () => {
-      if (somethingBadHappens) logger.warn("something bad happened");
+      if (somethingBadHappens) logger.warn("произошло что-то плохое");
     });
 
     return { success: true, event };
@@ -45,10 +45,10 @@ inngest.createFunction(
 ```
 
 <Tip>
-We recommend using a logger library that supports a child logger `.child()` implementation which automatically adds function runtime metadata to your logs. Read more about [enriched logs with function metadata](#enriched-logs-with-function-metadata) for more details.
+Мы рекомендуем использовать библиотеки логирования, поддерживающие реализацию дочерних логгеров `.child()`, которая автоматически добавляет метаданные рантайма функции в ваши логи. Подробнее об этом читайте в разделе [«Обогащенные логи с метаданными функции»](#enriched-logs-with-function-metadata).
 </Tip>
 
-The exported logger provides the following interface methods:
+Экспортируемый логгер предоставляет следующие методы интерфейса:
 
 ```ts
 export interface Logger {
@@ -59,17 +59,17 @@ export interface Logger {
 }
 ```
 
-These are very typical interfaces and are also on the [RFC5424 guidelines](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1), so most loggers you choose should work without issues.
+Это стандартные интерфейсы, соответствующие [рекомендациям RFC5424](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1), поэтому большинство выбранных вами логгеров должны работать без проблем.
 
 
-## Using your preferred logger
+## Использование предпочитаемого логгера
 
-While `console.log` may be good enough for local development, other logging libraries provide more features that are suitable for production use.
+Хотя `console.log` может быть достаточно для локальной разработки, другие библиотеки логирования предоставляют больше возможностей, подходящих для использования в продакшене.
 
-The following examples use [winston][winston] for the logging library, including a basic example and an example with a Datadog transport.
+В следующих примерах в качестве библиотеки логирования используется [winston][winston], включая базовый пример и пример с транспортом Datadog.
 
 <CodeGroup>
-```ts {{ title: "Winston basic example" }}
+```ts {{ title: "Базовый пример Winston" }}
 import { Inngest } from "inngest";
 import winston from "winston";
 
@@ -80,19 +80,19 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-// Pass `logger` to the Inngest client, and this winston logger will be accessible within functions
+// Передайте `logger` в клиент Inngest, и этот логгер winston будет доступен внутри функций
 export const inngest = new Inngest({
   id: "my-awesome-app",
   logger: logger,
   // ...
 });
 ```
-```ts {{ title: "Winston with Datadog transport" }}
+```ts {{ title: "Winston с транспортом Datadog" }}
 import { Inngest } from "inngest";
 import winston from "winston";
 
-/// Assuming we're deploying to Vercel.
-/// Other providers likely have their own pre-defined environment variables you can use.
+/// Предполагаем, что деплой идет на Vercel.
+/// У других провайдеров, скорее всего, есть свои предопределенные переменные окружения.
 const env = process.env.VERCEL_ENV || "development";
 const ddTransportOps = {
   host: "http-intake.logs.datadoghq.com",
@@ -110,7 +110,7 @@ const logger = winston.createLogger({
   ],
 });
 
-// Pass `logger` to the Inngest client, and this winston logger will be accessible within functions
+// Передайте `logger` в клиент Inngest, и этот логгер winston будет доступен внутри функций
 export const inngest = new Inngest({
   id: "my-awesome-app",
   logger: logger,
@@ -119,41 +119,41 @@ export const inngest = new Inngest({
 ```
 </CodeGroup>
 
-## Enriched logs with function metadata
+## Обогащенные логи с метаданными функции
 
-If the logger library supports a child logger `.child()` implementation, the built-in middleware will utilize it to add function runtime metadata to your logs automatically:
+Если библиотека логирования поддерживает дочерние логгеры через `.child()`, встроенное промежуточное ПО (middleware) будет использовать это для автоматического добавления метаданных рантайма функции в ваши логи:
 
-- Function name
-- Event name
-- Run ID
+- Имя функции
+- Имя события
+- ID запуска (Run ID)
 
-```ts {{ title: "Example usage with Winston logger" }}
+```ts {{ title: "Пример использования с логгером Winston" }}
 await step.run("summarize-content", async ({ step, logger }) => {
-  logger.info("calling Claude", { max_tokens: 1000 });
+  logger.info("вызов Claude", { max_tokens: 1000 });
 });
 ```
-```json {{ title: "Example log output" }}
+```json {{ title: "Пример вывода лога" }}
 {"eventName":"inngest/function.invoked","functionName":"Summarize content via GPT-4",
 "level":"info","max_tokens":1000,"message":"Querying vector database",
 "runID":"01KB7YQXYNPEX3XB257A3RQDRX"}
 ```
 
-## Loggers supported
+## Поддерживаемые логгеры
 
-The following is a list of loggers we're aware of that work, but is not an exhaustive list:
+Ниже приведен список известных нам логгеров, которые работают, но он не является исчерпывающим:
 
-- [Winston][winston] <Tag>child logger support</Tag>
-- [Pino](https://github.com/pinojs/pino) <Tag>child logger support</Tag>
-- [Bunyan](https://github.com/trentm/node-bunyan) <Tag>child logger support</Tag>
-- [Roarr](https://github.com/gajus/roarr) <Tag>child logger support</Tag>
+- [Winston][winston] <Tag>поддержка дочерних логгеров</Tag>
+- [Pino](https://github.com/pinojs/pino) <Tag>поддержка дочерних логгеров</Tag>
+- [Bunyan](https://github.com/trentm/node-bunyan) <Tag>поддержка дочерних логгеров</Tag>
+- [Roarr](https://github.com/gajus/roarr) <Tag>поддержка дочерних логгеров</Tag>
 - [LogLevel](https://github.com/pimterry/loglevel)
 - [Log4js](https://github.com/log4js-node/log4js-node)
-- [npmlog](https://github.com/npm/npmlog) (doesn't have `.debug()` but has a way to add custom levels)
+- [npmlog](https://github.com/npm/npmlog) (нет `.debug()`, но есть возможность добавить кастомные уровни)
 - [Tracer](https://github.com/baryon/tracer)
 - [Signale](https://github.com/klaudiosinani/signale)
 
-## Customizing the logger
+## Кастомизация логгера
 
-The built-in logger is implemented using [middleware](/docs/features/middleware). You can create your own middleware to customize the logger to your needs. See the [logging middleware example](/docs/reference/middleware/examples#logging) for more details.
+Встроенный логгер реализован с использованием [промежуточного ПО (middleware)](/docs/features/middleware). Вы можете создать собственное промежуточное ПО для настройки логгера под свои нужды. См. [пример middleware для логирования](/docs/reference/middleware/examples#logging) для более подробной информации.
 
 [winston]: https://github.com/winstonjs/winston

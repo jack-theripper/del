@@ -1,22 +1,22 @@
 import { CodeGroup, Callout, Info } from "src/shared/Docs/mdx";
 
-## Event payload format
+## Формат полезной нагрузки события
 
-The event payload is a JSON object that must contain a `name` and `data` property.
+Полезная нагрузка события — это JSON-объект, который должен содержать свойства `name` и `data`.
 
-### Required properties
+### Обязательные свойства
 
-* The `name` is the type or category of event. Event `name`s are used to [trigger functions](/docs/functions). For example, `app/user.created` or `billing/invoice.paid`. See [tips for event naming](#tips-for-event-naming) below.
-* `data` contains any data you want to associate with the event. This data will be serialized to JSON. For example, if you're sending an event for a paid invoice, you might include the invoice's `id`, the `amount`, and the `customerId` in the `data` property. The `data` property can contain any nested JSON object, including objects and arrays.
+* `name` — тип или категория события. Поле `name` используется для [запуска функций](/docs/functions). Например: `app/user.created` или `billing/invoice.paid`. Смотрите [советы по именованию событий](#tips-for-event-naming) ниже.
+* `data` — любые данные, которые вы хотите связать с событием. Данные будут сериализованы в JSON. Например, при отправке события об оплаченном счёте можно включить `id` счёта, `amount` и `customerId` в свойство `data`. Свойство `data` может содержать любой вложенный JSON-объект, включая объекты и массивы.
 
-### Optional properties
+### Необязательные свойства
 
-* `id` is a unique identifier for the event used to prevent duplicate events. Learn more about [deduplication](/docs/events#deduplication).
-* `ts` is the timestamp of the event in milliseconds since the Unix epoch. If not provided, the timestamp will be set to the time the event was received by Inngest.
-* `v` is the event payload version. This is useful to track changes in the event payload shape over time. For example, `"2024-01-14.1"`
+* `id` — уникальный идентификатор события для предотвращения дублирующихся событий. Подробнее о [дедупликации](/docs/events#deduplication).
+* `ts` — временная метка события в миллисекундах с начала эпохи Unix. Если не указана, будет установлена равной времени получения события Inngest.
+* `v` — версия полезной нагрузки события. Полезна для отслеживания изменений структуры полезной нагрузки со временем. Например: `"2024-01-14.1"`.
 
 <CodeGroup>
-```json {{ title: "Basic JSON event example" }}
+```json {{ title: "Базовый пример JSON-события" }}
 {
   "name": "billing/invoice.paid",
   "data": {
@@ -30,8 +30,8 @@ The event payload is a JSON object that must contain a `name` and `data` propert
   }
 }
 ```
-```ts {{ title: "TypeScript Type representation" }}
-// If you prefer to think in TypeScript types, here's the type representation of the event payload:
+```ts {{ title: "TypeScript: представление типов" }}
+// Если вы предпочитаете думать в терминах TypeScript-типов, вот представление типа полезной нагрузки события:
 type EventPayload = {
   name: string;
   data: Record<string, any>;
@@ -41,7 +41,7 @@ type EventPayload = {
 }
 ```
 
-```py {{ title: "Pydantic Type representation" }}
+```py {{ title: "Pydantic: представление типов" }}
 import inngest
 import pydantic
 import typing
@@ -79,16 +79,16 @@ class InvoicePaidEvent(BaseEvent):
 </CodeGroup>
 
 <Info>
-  While the `user` property is still supported for including user-specific context with the event, it's recommended to instead use the `data` field with [encryption middleware](/docs/features/middleware/encryption-middleware) if you have the need to pass personally identifiable information (PII). Encryption middleware also has added benefits as it supports full or partial encryption of data returned from steps as well as complete control over the encryption key.
+  Хотя свойство `user` по-прежнему поддерживается для передачи пользовательского контекста вместе с событием, рекомендуется вместо него использовать поле `data` с [промежуточным ПО для шифрования](/docs/features/middleware/encryption-middleware), если необходимо передавать персональные данные (PII). Промежуточное ПО для шифрования также предоставляет дополнительные преимущества: поддержку полного или частичного шифрования данных, возвращаемых из шагов, и полный контроль над ключом шифрования.
 </Info>
 
-### Tips for event naming
+### Советы по именованию событий
 
-Event names are used to trigger functions. We recommend using a consistent naming convention for your events. This will make it easier to find and trigger functions in the future. Here are some tips for naming events:
+Имена событий используются для запуска функций. Рекомендуем использовать единое соглашение об именовании для всех событий — это упростит поиск и запуск функций в будущем. Несколько советов:
 
-* **Object-Action**: Use an Object-Action pattern as represented by noun and a verb. This is great for grouping related events on a given object, `account.created`, `account.updated`, `account.deleted`.
-* **Past-tense**: Use a past-tense verb for the action. For example, `uploaded`, `paid`, `completed`, `sent`.
-* **Separators**: Use dot-notation and/or underscores to separate words. For example, `user.created` or `blog_post.published`.
-* **Prefixes**: Use prefixes to group related events. For example, `api/user.created`, `billing/invoice.paid`, `stripe/customer.created`. This is especially useful if you have multiple applications that send events to Inngest.
+* **Объект-Действие**: Используйте паттерн «Объект-Действие» — существительное и глагол. Это удобно для группировки связанных событий: `account.created`, `account.updated`, `account.deleted`.
+* **Прошедшее время**: Используйте глагол в прошедшем времени для действия: `uploaded`, `paid`, `completed`, `sent`.
+* **Разделители**: Используйте точечную нотацию и/или подчёркивания для разделения слов: `user.created` или `blog_post.published`.
+* **Префиксы**: Используйте префиксы для группировки связанных событий: `api/user.created`, `billing/invoice.paid`, `stripe/customer.created`. Особенно удобно при наличии нескольких приложений, отправляющих события в Inngest.
 
-There is no right or wrong way to name events. The most important thing is to be consistent and use a naming convention that makes sense for your application.
+Не существует единственно правильного способа именовать события. Главное — придерживаться одного подхода и использовать соглашение, которое логично для вашего приложения.

@@ -1,9 +1,9 @@
 import { Callout, CodeGroup, Card, CardGroup, Properties, Property } from "src/shared/Docs/mdx";
 
 
-# Using the workflow engine
+# Использование движка рабочих процессов
 
-The workflow `Engine` is used to run a given [workflow instance](/docs/reference/workflow-kit/workflow-instance) within an Inngest Function:
+Движок рабочих процессов `Engine` используется для запуска заданного [экземпляра рабочего процесса](/docs/reference/workflow-kit/workflow-instance) внутри функции Inngest:
 
 ```tsx {{ title: "src/inngest/workflow.ts" }}
 import { Engine, type Workflow } from "@inngest/workflow-kit";
@@ -22,25 +22,25 @@ const workflowEngine = new Engine({
 export default inngest.createFunction(
   { id: "blog-post-workflow", triggers: { event: "blog-post.updated" } },
   async ({ event, step }) => {
-    // When `run` is called,
-    //  the loader function is called with access to the event
+    // При вызове `run`,
+    // вызывается функция loader с доступом к событию
     await workflowEngine.run({ event, step });
   }
 );
 
 ```
 
-## Configure
+## Настройка
 
 
 <Properties>
   <Property name="actions" type="EngineAction[]">
-    See [the `EngineAction[]` reference](/docs/reference/workflow-kit/actions#passing-actions-to-the-workflow-engine-engine-action).
+    См. [справочник по `EngineAction[]`](/docs/reference/workflow-kit/actions#passing-actions-to-the-workflow-engine-engine-action).
   </Property>
   <Property name="loader" type="function">
-    An async function receiving the [`event`](/docs/reference/functions/create#event) as unique argument and returning a valid [`Workflow` instance](/docs/reference/workflow-kit/workflow-instance) object.
+    Асинхронная функция, получающая [`event`](/docs/reference/functions/create#event) в качестве единственного аргумента и возвращающая валидный объект [экземпляра `Workflow`](/docs/reference/workflow-kit/workflow-instance).
   </Property>
   <Property name="disableBuiltinActions" type="boolean">
-    For selectively adding built-in actions, set this to true and expose the actions you want via the [`<Provider>`](/docs/reference/workflow-kit/components-api) `availableActions` prop.
+    Для выборочного добавления встроенных действий установите это значение в `true` и предоставьте нужные действия через проп `availableActions` компонента [`<Provider>`](/docs/reference/workflow-kit/components-api).
   </Property>
 </Properties>

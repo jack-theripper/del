@@ -1,30 +1,30 @@
 import { Callout } from "shared/Docs/mdx";
 import IconConcurrency from 'src/shared/Icons/FlowControl/Concurrency';
 
-export const description = 'Learn about Inngest steps and their methods.';
+export const description = 'Узнайте о шагах (steps) Inngest и их методах.';
 import { LanguageSelector, LanguageSection } from "shared/Docs/mdx";
 
-# Inngest Steps
+# Шаги Inngest (Inngest Steps)
 
-Steps are fundamental building blocks in Inngest functions. Each step represents an individual task (or other unit of work) within a function that can be executed independently.
+Шаги — это фундаментальные строительные блоки в функциях Inngest. Каждый шаг представляет собой отдельную задачу (или другую единицу работы) внутри функции, которая может быть выполнена независимо.
 
-Steps are crucial because they allow functions to run specific tasks in a controlled and sequential (or parallel) manner. You can build complex workflows by chaining together simple, discrete operations.
+Шаги имеют решающее значение, поскольку они позволяют функциям выполнять определенные задачи контролируемым и последовательным (или параллельным) образом. Вы можете создавать сложные рабочие процессы, объединяя простые дискретные операции.
 
-On this page, you will learn about the benefits of using steps, and get an overview of the available step methods.
+На этой странице вы узнаете о преимуществах использования шагов и получите обзор доступных методов шагов.
 
-## Benefits of Using Steps
+## Преимущества использования шагов
 
-- **Improved reliability**: structured steps enable precise control and handling of each task within a function.
-- **Error handling**: capturing and managing errors at the step level means better error recovery.
-- **Retry mechanism**: failing steps can be retried and recovered independently, without re-executing other successful steps.
-- **Independent testing**: each step can be tested and debugged independently from others.
-- **Improved code readability**: modular approach makes code easier to navigate and refactor.
+- **Повышенная надежность**: структурированные шаги обеспечивают точный контроль и обработку каждой задачи внутри функции.
+- **Обработка ошибок**: захват и управление ошибками на уровне шага означает лучшее восстановление после сбоев.
+- **Механизм повторов**: неудачные шаги могут быть перезапущены и восстановлены независимо, без повторного выполнения других успешных шагов.
+- **Независимое тестирование**: каждый шаг можно тестировать и отлаживать независимо от других.
+- **Улучшенная читаемость кода**: модульный подход облегчает навигацию по коду и рефакторинг.
 
-If you'd like to learn more about how Inngest steps are executed, check the ["How Inngest functions are executed"](/docs/learn/how-functions-are-executed) page.
+Если вы хотите узнать больше о том, как выполняются шаги Inngest, посетите страницу ["Как выполняются функции Inngest"](/docs/learn/how-functions-are-executed).
 
-## Anatomy of an Inngest Step
+## Анатомия шага Inngest
 
-The first argument of every Inngest step method is an `id`. Each step is treated as a discrete task which can be individually retried, debugged, or recovered. Inngest uses the ID to memoize step state across function versions.
+Первым аргументом каждого метода шага Inngest является `id`. Каждый шаг рассматривается как дискретная задача, которую можно индивидуально перезапускать, отлаживать или восстанавливать. Inngest использует ID для мемоизации состояния шага между версиями функций.
 
 <LanguageSelector>
 
@@ -35,9 +35,9 @@ export default inngest.createFunction(
   { id: "import-product-images", triggers: { event: "shop/product.imported" } },
   async ({ event, step }) => {
     const uploadedImageURLs = await step.run(
-      // step ID
+      // ID шага
       "copy-images-to-s3",
-      // other arguments, in this case: a handler
+      // другие аргументы, в данном случае: обработчик
       async () => {
         return copyAllImagesToS3(event.data.imageURLs);
     });
@@ -57,16 +57,16 @@ import (
 
 inngestgo.CreateFunction(
 	client,
-	// config
+	// конфиг
 	inngestgo.FunctionOpts{
 		ID: "import-product-images",
 	},
-	// trigger (event or cron)
+	// триггер (событие или cron)
 	inngestgo.EventTrigger("shop/product.imported", nil),
-	// handler function
+	// функция обработчик
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// Here goes the business logic
-		// By wrapping code in steps, it will be retried automatically on failure
+		// Здесь находится бизнес-логика
+		// Оборачивая код в шаги, он будет автоматически перезапущен при сбое
 		s3Urls, err := step.Run("copy-images-to-s3", func() ([]string, error) {
 			return copyAllImagesToS3(input.Event.Data["imageURLs"].([]string))
 		})
@@ -93,9 +93,9 @@ from src.inngest.client import inngest_client
 )
 async def import_product_images(ctx: inngest.Context):
     uploaded_image_urls = await ctx.step.run(
-        # step ID
+        # ID шага
         "copy-images-to-s3",
-        # other arguments, in this case: a handler
+        # другие аргументы, в данном случае: обработчик
         lambda: copy_all_images_to_s3(ctx.event.data["image_urls"])
     )
 ```
@@ -104,23 +104,23 @@ async def import_product_images(ctx: inngest.Context):
 
 </LanguageSelector>
 
-The ID is also used to identify the function in the Inngest system.
+ID также используется для идентификации функции в системе Inngest.
 
-Inngest's SDK also records a counter for each unique step ID. The counter increases every time the same step is called. This allows you to run the same step in a loop, without changing the ID.
+SDK Inngest также записывает счетчик для каждого уникального ID шага. Счетчик увеличивается каждый раз, когда вызывается один и тот же шаг. Это позволяет запускать один и тот же шаг в цикле без изменения ID.
 
 <Callout>
-Please note that each step is executed as **a separate HTTP request**. To ensure efficient and correct execution, place any non-deterministic logic (such as DB calls or API calls) within a `step.run()` call.
+Обратите внимание, что каждый шаг выполняется как **отдельный HTTP-запрос**. Чтобы обеспечить эффективное и правильное выполнение, помещайте любую недетерминированную логику (например, вызовы БД или API) внутри вызова `step.run()`.
 </Callout>
 
-## Available Step Methods
+## Доступные методы шагов
 
 <LanguageSelector>
 
 ### step.run()
 
-This method executes a defined piece of code. Code within `step.run()` is automatically retried if it throws an error. When `step.run()` finishes successfully, the response is saved in the function run state and the step will not re-run.
+Этот метод выполняет определенный фрагмент кода. Код внутри `step.run()` автоматически перезапускается, если он выдает ошибку. Когда `step.run()` успешно завершается, ответ сохраняется в состоянии запуска функции, и шаг не будет запускаться повторно.
 
-Use it to run synchronous or asynchronous code as a retriable step in your function.
+Используйте его для запуска синхронного или асинхронного кода как перезапускаемого шага в вашей функции.
 
 <LanguageSection show="typescript">
 
@@ -128,8 +128,8 @@ Use it to run synchronous or asynchronous code as a retriable step in your funct
 export default inngest.createFunction(
   { id: "import-product-images", triggers: { event: "shop/product.imported" } },
   async ({ event, step }) => {
-    // Here goes the business logic
-    // By wrapping code in steps, it will be retried automatically on failure
+    // Здесь находится бизнес-логика
+    // Оборачивая код в шаги, он будет автоматически перезапущен при сбое
     const uploadedImageURLs = await step.run("copy-images-to-s3", async () => {
       return copyAllImagesToS3(event.data.imageURLs);
     });
@@ -154,8 +154,8 @@ inngestgo.CreateFunction(
 	},
 	inngestgo.EventTrigger("shop/product.imported", nil),
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// Here goes the business logic
-		// By wrapping code in steps, it will be retried automatically on failure
+		// Здесь находится бизнес-логика
+		// Оборачивая код в шаги, он будет автоматически перезапущен при сбое
 		s3Urls, err := step.Run("copy-images-to-s3", func() ([]string, error) {
 			return copyAllImagesToS3(input.Event.Data["imageURLs"].([]string))
 		})
@@ -181,12 +181,12 @@ from src.inngest.client import inngest_client
     event="shop/product.imported"
 )
 async def import_product_images(ctx: inngest.Context):
-    # Here goes the business logic
-    # By wrapping code in steps, it will be retried automatically on failure
+    # Здесь находится бизнес-логика
+    # Оборачивая код в шаги, он будет автоматически перезапущен при сбое
     uploaded_image_urls = await ctx.step.run(
-        # step ID
+        # ID шага
         "copy-images-to-s3",
-        # other arguments, in this case: a handler
+        # другие аргументы, в данном случае: обработчик
         lambda: copy_all_images_to_s3(ctx.event.data["image_urls"])
     )
 ```
@@ -194,12 +194,12 @@ async def import_product_images(ctx: inngest.Context):
 </LanguageSection>
 
 <Callout>
-`step.run()` acts as a code-level transaction. The entire step must succeed to complete.
+`step.run()` действует как транзакция на уровне кода. Весь шаг должен завершиться успешно, чтобы считаться выполненным.
 </Callout>
 
 ### step.sleep()
 
-This method pauses execution for a specified duration. Even though it seems like a `setInterval`, your function does not run for that time (you don't use any compute). Inngest handles the scheduling for you. Use it to add delays or to wait for a specific amount of time before proceeding. At maximum, functions can sleep for a year (seven days for the [free tier plans](/pricing)).
+Этот метод приостанавливает выполнение на указанный срок. Несмотря на то, что это похоже на `setInterval`, ваша функция не работает в это время (вы не используете вычислительные ресурсы). Inngest берет на себя планирование за вас. Используйте его для добавления задержек или ожидания в течение определенного времени перед продолжением. Максимально функции могут "спать" до одного года (семь дней для [бесплатных тарифных планов](/pricing)).
 
 <LanguageSection show="typescript">
 
@@ -208,7 +208,7 @@ export default inngest.createFunction(
   { id: "send-delayed-email", triggers: { event: "app/user.signup" } },
   async ({ event, step }) => {
     await step.sleep("wait-a-couple-of-days", "2d");
-    // Do something else
+    // Сделать что-то еще
   }
 );
 ```
@@ -229,7 +229,7 @@ inngestgo.CreateFunction(
 		ID: "send-delayed-email",
 	},
 	inngestgo.EventTrigger("app/user.signup", nil),
-	// handler function
+	// функция обработчик
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
 		step.Sleep("wait-a-couple-of-days", 2*time.Day)
 		return nil, nil
@@ -251,14 +251,14 @@ from src.inngest.client import inngest_client
 )
 async def send_delayed_email(ctx: inngest.Context):
     await ctx.step.sleep("wait-a-couple-of-days", datetime.timedelta(days=2))
-    # Do something else
+    # Сделать что-то еще
 ```
 
 </LanguageSection>
 
 ### step.sleepUntil() / step.sleep_until()
 
-This method pauses execution until a specific date time. Any date time string in the format accepted by the Date object, for example `YYYY-MM-DD` or `YYYY-MM-DDHH:mm:ss`. At maximum, functions can sleep for a year (seven days for the [free tier plans](/pricing)).
+Этот метод приостанавливает выполнение до определенной даты и времени. Любая строка даты и времени в формате, принимаемом объектом Date, например `YYYY-MM-DD` или `YYYY-MM-DDHH:mm:ss`. Максимально функции могут "спать" до одного года (семь дней для [бесплатных тарифных планов](/pricing)).
 
 <LanguageSection show="typescript">
 
@@ -268,7 +268,7 @@ export default inngest.createFunction(
   async ({ event, step }) => {
     const date = new Date(event.data.remind_at);
     await step.sleepUntil("wait-for-the-date", date);
-    // Do something else
+    // Сделать что-то еще
   }
 );
 ```
@@ -277,7 +277,7 @@ export default inngest.createFunction(
 
 <LanguageSection show="go">
 
-Go SDK does not have a `sleepUntil` method. Use `step.Sleep()` with a calculated duration instead.
+Go SDK не имеет метода `sleepUntil`. Используйте `step.Sleep()` с рассчитанной продолжительностью.
 
 </LanguageSection>
 
@@ -295,14 +295,14 @@ from datetime import datetime
 async def send_scheduled_reminder(ctx: inngest.Context):
     date = datetime.fromisoformat(ctx.event.data["remind_at"])
     await ctx.step.sleep_until("wait-for-the-date", date)
-    # Do something else
+    # Сделать что-то еще
 ```
 
 </LanguageSection>
 
 ### step.waitForEvent() / step.wait_for_event()
 
-This method pauses a run's execution until a specific event is received.
+Этот метод приостанавливает выполнение запуска до тех пор, пока не будет получено определенное событие.
 
 <LanguageSection show="typescript">
 
@@ -314,7 +314,7 @@ export default inngest.createFunction(
       "wait-for-onboarding-completion",
       { event: "app/onboarding.completed", timeout: "3d", if: "event.data.userId == async.data.userId" }
     );
-    // Do something else
+    // Сделать что-то еще
   }
 );
 ```
@@ -336,24 +336,24 @@ inngestgo.CreateFunction(
 		ID: "send-delayed-email",
 	},
 	inngestgo.EventTrigger("app/user.signup", nil),
-	// handler function
+	// функция обработчик
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// Sample from the event stream for new events.  The function will stop
-		// running and automatically resume when a matching event is found, or if
-		// the timeout is reached.
+		// Опрос потока событий для новых событий. Функция остановится
+		// и автоматически возобновится при обнаружении подходящего события
+		// или при достижении тайм-аута.
 		fn, err := step.WaitForEvent[FunctionCreatedEvent](
 			ctx,
 			"wait-for-activity",
 			step.WaitForEventOpts{
-				Name:    "Wait for a function to be created",
+				Name:    "Ожидание создания функции",
 				Event:   "api/function.created",
 				Timeout: time.Hour * 72,
-				// Match events where the user_id is the same in the async sampled event.
+				// Сопоставление событий, где user_id совпадает в асинхронном событии.
 				If: inngestgo.StrPtr("event.data.user_id == async.data.user_id"),
 			},
 		)
 		if err == step.ErrEventNotReceived {
-			// A function wasn't created within 3 days.  Send a follow-up email.
+			// Функция не была создана в течение 3 дней. Отправить последующее письмо.
 			_, _ = step.Run(ctx, "follow-up-email", func(ctx context.Context) (any, error) {
 				// ...
 				return true, nil
@@ -384,15 +384,14 @@ async def send_onboarding_nudge_email(ctx: inngest.Context):
       if_exp="event.data.user_id == async.data.user_id",
       timeout=datetime.timedelta(days=1),
     );
-    # Do something else
+    # Сделать что-то еще
 ```
 
 </LanguageSection>
 
 ### step.waitForSignal() / step.wait_for_signal()
 
-This method pauses a run's execution until a specific signal is received via our SDK or API.  Signals must
-be unique across runs, and offer an API to resume specific runs given a unique signal vs events.
+Этот метод приостанавливает выполнение запуска до тех пор, пока не будет получен определенный сигнал через наш SDK или API. Сигналы должны быть уникальными для каждого запуска и предлагают API для возобновления конкретных запусков по уникальному сигналу, в отличие от событий.
 
 <LanguageSection show="typescript">
 
@@ -404,7 +403,7 @@ export default inngest.createFunction(
       "wait-for-specific-signal",
       { signal: "task/0e7d16d1-8335-4b93-9122-76e7cc6d9eb6", timeout: "3d" }
     );
-    // Do something with signal data
+    // Сделать что-то с данными сигнала
   }
 );
 ```
@@ -426,22 +425,22 @@ inngestgo.CreateFunction(
 		ID: "send-delayed-email",
 	},
 	inngestgo.EventTrigger("app/user.signup", nil),
-	// handler function
+	// функция обработчик
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// Sample from the event stream for new events.  The function will stop
-		// running and automatically resume when a matching event is found, or if
-		// the timeout is reached.
+		// Опрос потока событий для новых событий. Функция остановится
+		// и автоматически возобновится при обнаружении подходящего события
+		// или при достижении тайм-аута.
 		signal, err := step.WaitForSignal[string](
 			ctx,
 			"wait-for-signal",
 			step.WaitForSignalOpts{
-				Name:    "Wait for a signal to be POSTed",
+				Name:    "Ожидание отправки сигнала (POST)",
 				Signal:   "task/0e7d16d1-8335-4b93-9122-76e7cc6d9eb6",
 				Timeout: time.Hour * 72,
 			},
 		)
 		if err == step.ErrSignalNotReceived {
-			// A signal wasn't received within 3 days.  Send a follow-up email.
+			// Сигнал не был получен в течение 3 дней. Отправить последующее письмо.
 		}
 		return nil, nil
 	},
@@ -467,7 +466,7 @@ async def send_onboarding_nudge_email(ctx: inngest.Context):
       if_exp="event.data.user_id == async.data.user_id",
       timeout=datetime.timedelta(days=1),
     );
-    # Do other steps
+    # Выполнить другие шаги
 ```
 
 </LanguageSection>
@@ -475,31 +474,31 @@ async def send_onboarding_nudge_email(ctx: inngest.Context):
 
 ### step.invoke()
 
-This method is used to asynchronously call another Inngest function ([written in any language SDK](/blog/cross-language-support-with-new-sdks)) and handle the result. Invoking other functions allows you to easily re-use functionality and compose them to create more complex workflows or map-reduce type jobs.
+Этот метод используется для асинхронного вызова другой функции Inngest ([написанной на любом языке SDK](/blog/cross-language-support-with-new-sdks)) и обработки результата. Вызов других функций позволяет легко повторно использовать функциональность и компоновать их для создания более сложных рабочих процессов или задач типа map-reduce.
 
-This method comes with its own configuration, which enables defining specific settings like concurrency limits.
+Этот метод имеет свою собственную конфигурацию, которая позволяет определять специфические настройки, такие как ограничения параллелизма.
 
 <LanguageSection show="typescript">
 
 ```typescript
-// A function we will call in another place in our app
+// Функция, которую мы будем вызывать в другом месте нашего приложения
 const computeSquare = inngest.createFunction(
   { id: "compute-square", triggers: { event: "calculate/square" } },
   async ({ event }) => {
-    return { result: event.data.number * event.data.number }; // Result typed as { result: number }
+    return { result: event.data.number * event.data.number }; // Результат типизирован как { result: number }
   }
 );
 
-// In this function, we'll call `computeSquare`
+// В этой функции мы вызовем `computeSquare`
 const mainFunction = inngest.createFunction(
   { id: "main-function", triggers: { event: "main/event" } },
   async ({ step }) => {
     const square = await step.invoke("compute-square-value", {
       function: computeSquare,
-      data: { number: 4 }, // input data is typed, requiring input if it's needed
+      data: { number: 4 }, // входные данные типизированы
     });
 
-    return `Square of 4 is ${square.result}.`; // square.result is typed as number
+    return `Квадрат 4 равен ${square.result}.`; // square.result типизирован как number
   }
 );
 ```
@@ -521,20 +520,20 @@ inngestgo.CreateFunction(
 		ID: "send-delayed-email",
 	},
 	inngestgo.EventTrigger("app/user.signup", nil),
-	// handler function
+	// функция обработчик
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// Invoke another function and wait for its result
+		// Вызвать другую функцию и дождаться её результата
 		result, err := step.Invoke[any](
 			ctx,
 			"invoke-email-function",
 			step.InvokeOpts{
 				FunctionID: "send-welcome-email",
-				// Pass data to the invoked function
+				// Передать данные в вызываемую функцию
 				Data: map[string]any{
 					"user_id": input.Event.Data["user_id"],
 					"email":   input.Event.Data["email"],
 				},
-				// Optional: Set a concurrency limit
+				// Опционально: Установить ограничение параллелизма
 				Concurrency: step.ConcurrencyOpts{
 					Limit: 5,
 					Key:   "user-{{event.data.user_id}}",
@@ -562,7 +561,7 @@ from src.inngest.client import inngest_client
     trigger=inngest.TriggerEvent(event="app/fn-1"),
 )
 async def fn_1(ctx: inngest.Context) -> None:
-    return "Hello!"
+    return "Привет!"
 
 @inngest_client.create_function(
     fn_id="fn-2",
@@ -574,7 +573,7 @@ async def fn_2(ctx: inngest.Context) -> None:
         function=fn_1,
     )
 
-    # Prints "Hello!"
+    # Выведет "Привет!"
     print(output)
 ```
 
@@ -582,7 +581,7 @@ async def fn_2(ctx: inngest.Context) -> None:
 
 ### step.sendEvent() / step.send_event()
 
-This method sends events to Inngest to invoke functions with a matching event. Use `sendEvent()` when you want to trigger other functions, but you do not need to return the result. It is useful for example in [fan-out functions](/docs/guides/fan-out-jobs).
+Этот метод отправляет события в Inngest для вызова функций с соответствующим событием. Используйте `sendEvent()`, когда вы хотите запустить другие функции, но вам не нужно возвращать результат. Это полезно, например, в [функциях разветвления (fan-out functions)](/docs/guides/fan-out-jobs).
 
 <LanguageSection show="typescript">
 
@@ -590,12 +589,12 @@ This method sends events to Inngest to invoke functions with a matching event. U
 export default inngest.createFunction(
   { id: "user-onboarding", triggers: { event: "app/user.signup" } },
   async ({ event, step }) => {
-    // Do something
+    // Сделать что-то
     await step.sendEvent("send-activation-event", {
       name: "app/user.activated",
       data: { userId: event.data.userId },
     });
-    // Do something else
+    // Сделать что-то еще
   }
 );
 ```
@@ -604,7 +603,7 @@ export default inngest.createFunction(
 
 <LanguageSection show="go">
 
-Go SDK does not have a dedicated `step.sendEvent()` method. Use the Inngest client's `Send()` method within a `step.Run()` instead.
+Go SDK не имеет выделенного метода `step.sendEvent()`. Используйте метод `Send()` клиента Inngest внутри `step.Run()` вместо этого.
 
 </LanguageSection>
 
@@ -626,8 +625,8 @@ async def fn(ctx: inngest.Context) -> list[str]:
 
 </LanguageSelector>
 
-## Further reading
+## Дополнительное чтение
 
-- [Quick Start](/docs/getting-started/nextjs-quick-start?ref=docs-inngest-steps): learn how to build complex workflows.
-- ["How Inngest functions are executed"](/docs/learn/how-functions-are-executed): Learn more about Inngest's execution model, including how steps are handled.
-- Docs guide: ["Multi-step functions"](/docs/guides/multi-step-functions).
+- [Быстрый старт](/docs/getting-started/nextjs-quick-start?ref=docs-inngest-steps): узнайте, как создавать сложные рабочие процессы.
+- ["Как выполняются функции Inngest"](/docs/learn/how-functions-are-executed): Узнайте больше о модели выполнения Inngest, включая обработку шагов.
+- Руководство в документации: ["Многошаговые функции"](/docs/guides/multi-step-functions).

@@ -1,11 +1,11 @@
 import { Info, Callout, CodeGroup, Col, Properties, Property, Row, VersionBadge } from "src/shared/Docs/mdx";
 
-export const description = 'TypeScript SDK reference for Durable Endpoints. Create HTTP handlers with step-based checkpointing.';
+export const description = 'Справочник TypeScript SDK для Durable Endpoints. Создание HTTP-обработчиков с чекпоинтингом на основе шагов.';
 
 # Durable Endpoints <VersionBadge version="Beta" />
 
 
-Create durable HTTP endpoints using `inngest.endpoint()`. Each step within the handler is checkpointed, allowing automatic recovery from failures.
+Создавайте надёжные HTTP-эндпоинты с помощью `inngest.endpoint()`. Каждый шаг в обработчике создаёт чекпоинт, обеспечивая автоматическое восстановление после сбоев.
 
 ```ts
 import { Inngest, step } from "inngest";
@@ -24,11 +24,11 @@ export const handler = inngest.endpoint(async (req: Request): Promise<Response> 
 
 ---
 
-## Setup
+## Настройка
 
 ### `endpointAdapter`
 
-The `endpointAdapter` must be passed to the Inngest client constructor to enable Durable Endpoints.
+`endpointAdapter` должен быть передан в конструктор клиента Inngest для включения Durable Endpoints.
 
 ```ts
 import { Inngest } from "inngest";
@@ -41,28 +41,28 @@ const inngest = new Inngest({
 ```
 
 <Callout>
-  The `endpointAdapter` is imported from `inngest/edge` (or any compatible
-  framework entrypoint) and is required for Durable Endpoints to function. Without it,
-  `inngest.endpoint()` will not be available.
+  `endpointAdapter` импортируется из `inngest/edge` (или любой совместимой
+  точки входа фреймворка) и обязателен для работы Durable Endpoints. Без него
+  `inngest.endpoint()` будет недоступен.
 </Callout>
 
 ---
 
 ## `inngest.endpoint(handler): Handler`
 
-Creates a durable endpoint handler that can use step primitives for checkpointing.
+Создаёт обработчик надёжного эндпоинта, который может использовать примитивы шагов для чекпоинтинга.
 
 <Row>
   <Col>
     <Properties>
       <Property name="handler" type="(...args: any[]) => any" required>
-        A handler function compatible with the framework you're using. This would be the usual function you use for a request handler before wrapping in `inngest.endpoint()`.
+        Функция-обработчик, совместимая с используемым фреймворком. Это обычная функция для обработки запросов, обёрнутая в `inngest.endpoint()`.
 
-        Within this handler, you can use all step primitives (`step.run()`, `step.sleep()`, `step.waitForEvent()`) for durable execution.
+        Внутри этого обработчика можно использовать все примитивы шагов (`step.run()`, `step.sleep()`, `step.waitForEvent()`) для надёжного выполнения.
       </Property>
     </Properties>
 
-    **Returns:** A request handler for your framework.
+    **Возвращает:** Обработчик запросов для вашего фреймворка.
   </Col>
   <Col>
   ```ts
@@ -84,15 +84,15 @@ Creates a durable endpoint handler that can use step primitives for checkpointin
 
 ---
 
-## Available Step Methods
+## Доступные методы шагов
 
-Within a Durable Endpoint handler, you have access to all step methods: see [Available Step Methods](/docs/learn/inngest-steps#available-step-methods).
+В обработчике Durable Endpoint доступны все методы шагов: смотрите [Доступные методы шагов](/docs/learn/inngest-steps#available-step-methods).
 
-For example:
+Например:
 
 ### `step.run(id, fn)`
 
-Execute and checkpoint a function. If the endpoint is retried, completed steps return their cached result instantly.
+Выполнение и чекпоинтинг функции. При повторной попытке эндпоинта завершённые шаги мгновенно возвращают кэшированный результат.
 
 ```ts
 const user = await step.run("fetch-user", async () => {
@@ -100,21 +100,21 @@ const user = await step.run("fetch-user", async () => {
 });
 ```
 
-See [step.run() reference](/docs/reference/typescript/v4/functions/step-run) for full documentation.
+Смотрите [справочник по step.run()](/docs/reference/typescript/v4/functions/step-run) для полной документации.
 
 ### `step.sleep(id, duration)`
 
-Pause execution for a specified duration. The endpoint will be resumed after the sleep completes.
+Приостановка выполнения на заданную длительность. Эндпоинт будет возобновлён после завершения паузы.
 
 ```ts
 await step.sleep("rate-limit-pause", "30s");
 ```
 
-See [step.sleep() reference](/docs/reference/typescript/v4/functions/step-sleep) for full documentation.
+Смотрите [справочник по step.sleep()](/docs/reference/typescript/v4/functions/step-sleep) для полной документации.
 
 ### `step.waitForEvent(id, options)`
 
-Wait for an external event before continuing. Useful for human-in-the-loop workflows.
+Ожидание внешнего события перед продолжением. Полезно для рабочих процессов с участием человека.
 
 ```ts
 const approval = await step.waitForEvent("wait-for-approval", {
@@ -124,25 +124,25 @@ const approval = await step.waitForEvent("wait-for-approval", {
 });
 ```
 
-See [step.waitForEvent() reference](/docs/reference/typescript/v4/functions/step-wait-for-event) for full documentation.
+Смотрите [справочник по step.waitForEvent()](/docs/reference/typescript/v4/functions/step-wait-for-event) для полной документации.
 
 ---
 
-## Passing Data to Endpoints
+## Передача данных в эндпоинты
 
 <Callout variant="warning">
-  **POST body is not yet supported.** Use query string parameters to pass data to Durable Endpoints. POST body support is coming soon.
+  **Тело POST-запроса пока не поддерживается.** Используйте параметры строки запроса для передачи данных в Durable Endpoints. Поддержка тела POST будет добавлена в ближайшее время.
 </Callout>
 
 ```ts
 export const handler = inngest.endpoint(async (req: Request): Promise<Response> => {
   const url = new URL(req.url);
 
-  // Read data from query parameters
+  // Читать данные из параметров запроса
   const userId = url.searchParams.get("userId");
   const action = url.searchParams.get("action");
 
-  // Process with durable steps
+  // Обработать с надёжными шагами
   const result = await step.run("process", async () => {
     return await processAction(userId, action);
   });
@@ -153,20 +153,20 @@ export const handler = inngest.endpoint(async (req: Request): Promise<Response> 
 
 ---
 
-## Returning Responses
+## Возврат ответов
 
-However you return data in your framework is compatible with Durable Endpoints.
+Любой способ возврата данных в вашем фреймворке совместим с Durable Endpoints.
 
-For example, using a regular Web API request:
+Например, с использованием стандартного Web API:
 
 ```ts
-// JSON response
+// JSON-ответ
 return Response.json({ success: true, data: result });
 
-// Text response
+// Текстовый ответ
 return new Response("OK", { status: 200 });
 
-// Error response
+// Ответ с ошибкой
 return new Response(JSON.stringify({ error: "Not found" }), {
   status: 404,
   headers: { "Content-Type": "application/json" },
@@ -175,9 +175,9 @@ return new Response(JSON.stringify({ error: "Not found" }), {
 
 ---
 
-## Error Handling
+## Обработка ошибок
 
-Errors thrown within `step.run()` will trigger automatic retries. Use standard try/catch for custom error handling:
+Ошибки, выброшенные внутри `step.run()`, вызывают автоматические повторные попытки. Используйте стандартный try/catch для пользовательской обработки ошибок:
 
 ```ts
 export const handler = inngest.endpoint(async (req: Request): Promise<Response> => {
@@ -188,7 +188,7 @@ export const handler = inngest.endpoint(async (req: Request): Promise<Response> 
 
     return Response.json({ result });
   } catch (error) {
-    // All retries exhausted, handle gracefully
+    // Все повторные попытки исчерпаны, обработать корректно
     return Response.json(
       { error: "Operation failed after retries" },
       { status: 500 }
@@ -199,29 +199,28 @@ export const handler = inngest.endpoint(async (req: Request): Promise<Response> 
 
 ---
 
-## Framework Integration
+## Интеграция с фреймворками
 
-Durable Endpoints is only available for Bun and Next.js API endpoints.
+Durable Endpoints доступны только для Bun и Next.js API endpoints.
 
-[Reach out on Discord](/discord) to ask support for additional frameworks.
+[Свяжитесь с нами в Discord](/discord) для запроса поддержки дополнительных фреймворков.
 
 ---
 
-## Requesting a Durable Endpoint
+## Запрос к Durable Endpoint
 
-Durable Endpoints behave like regular API endpoints on the success path. You can request them from your front-end (_or back-end_) using `fetch()` or your favorite query or http library.
+Durable Endpoints ведут себя как обычные API-эндпоинты при успешном выполнении. Их можно запрашивать из фронтенда (_или бэкенда_) с помощью `fetch()` или любой другой HTTP-библиотеки.
 
-When a failure triggers retries or long-running steps like `step.waitForEvent()`
-are used, a Durable Endpoint redirects to a separate endpoint that waits for the
-call to finish.
+При сбое с повторными попытками или использовании длительных шагов вроде `step.waitForEvent()`
+Durable Endpoint перенаправляет на отдельный эндпоинт, ожидающий завершения вызова.
 
-By default, this is an endpoint either in the Inngest Dev Server or Inngest
-Cloud, depending on which environment you're in, but `inngest.endpointProxy()`
-can be used to create your own URL to satisfy CORS constraints when the endpoint
-is used from browsers.
+По умолчанию это эндпоинт либо в Inngest Dev Server, либо в Inngest Cloud
+(в зависимости от вашей среды), но `inngest.endpointProxy()`
+можно использовать для создания собственного URL-адреса, удовлетворяющего ограничениям CORS при
+использовании эндпоинта из браузеров.
 
 ```typescript
-// When setting the `endpointAdapter`, use `.withOptions()` to set more config
+// При установке `endpointAdapter` используйте `.withOptions()` для дополнительных настроек
 const inngest = new Inngest({
   id: "my-app",
   endpointAdapter: endpointAdapter.withOptions({
@@ -229,7 +228,7 @@ const inngest = new Inngest({
   }),
 });
 
-// Then create the route with `inngest.endpointProxy()`
+// Затем создайте маршрут с `inngest.endpointProxy()`
 Bun.serve({
   port: 3000,
   routes: {
@@ -239,4 +238,4 @@ Bun.serve({
 });
 ```
 
-Requests will now be redirected to `/wait`.
+Запросы теперь будут перенаправляться на `/wait`.

@@ -1,18 +1,16 @@
 import { Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge, LanguageSelector, LanguageSection, Card, CardGroup } from "src/shared/Docs/mdx";
 
-# Using Middleware for Dependency Injection
+# Использование промежуточного ПО для внедрения зависимостей
 
-Inngest Functions running in the same application often need to share common clients instances such as database clients or third-party
-libraries.
+Функции Inngest, работающие в одном приложении, часто используют общие экземпляры клиентов — например, клиенты баз данных или сторонних библиотек.
 
-The following is an example of adding a OpenAI client to all Inngest functions, allowing them immediate access without needing to create the client themselves.
+Ниже пример добавления клиента OpenAI ко всем функциям Inngest, что даёт им немедленный доступ без необходимости создавать клиент самостоятельно.
 
 <LanguageSelector>
     <LanguageSection show="typescript-middleware">
-        We can use the `dependencyInjectionMiddleware` to add arguments to a
-        function's input.
+        Можно использовать `dependencyInjectionMiddleware` для добавления аргументов во входные данные функции.
 
-        Check out the [TypeScript example](?guide=typescript) for a customized middleware.
+        Смотрите [пример TypeScript](?guide=typescript) для кастомного промежуточного ПО.
 
         ```ts
         import { dependencyInjectionMiddleware } from "inngest";
@@ -28,7 +26,7 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         });
         ```
 
-        Our Inngest Functions can now access the OpenAI client through the context:
+        Теперь функции Inngest могут получать доступ к клиенту OpenAI через контекст:
 
          ```ts
         inngest.createFunction(
@@ -46,16 +44,16 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         ```
 
         <Callout>
-        💡 Types are inferred from middleware outputs, so your Inngest functions will see an appropriately-typed `openai` property in their input.
+        💡 Типы выводятся из вывода промежуточного ПО, поэтому функции Inngest увидят типизированное свойство `openai` в своих входных данных.
         </Callout>
 
-        Explore other examples in the [TypeScript SDK Middleware examples page](/docs/reference/typescript/v4/middleware/examples).
+        Изучите другие примеры на [странице примеров промежуточного ПО TypeScript SDK](/docs/reference/typescript/v4/middleware/examples).
 
-        ### Advanced mutation
+        ### Расширенная мутация
 
-        When the middleware runs, the types and data within the passed `ctx` are merged on top of the default provided by the library. This means that you can use a few tricks to overwrite data and types safely and more accurately.
+        Когда промежуточное ПО выполняется, типы и данные в переданном `ctx` накладываются поверх значений по умолчанию, предоставленных библиотекой. Это позволяет безопасно и точно перезаписывать данные и типы.
 
-        For example, here we use a `const` assertion to infer the literal value of our `foo` example above.
+        Например, здесь используется утверждение `const` для вывода литерального значения `foo`:
 
         ```ts
         // In middleware
@@ -69,15 +67,15 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         }
         ```
 
-        ## Ordering middleware and types
+        ## Порядок промежуточного ПО и типы
 
-        Middleware runs in the order specified when registering it (see [Middleware lifecycle](/docs/reference/typescript/v4/middleware/lifecycle)), which affects typing too.
+        Промежуточное ПО выполняется в порядке, указанном при регистрации (смотрите [жизненный цикл промежуточного ПО](/docs/reference/typescript/v4/middleware/lifecycle)), что также влияет на типизацию.
 
-        When inferring a mutated input or output, the SDK will apply changes from each middleware in sequence, just as it will at runtime. This means that for two middlewares that add a `foo` value to input arguments, the last one to run will be what it seen both in types and at runtime.
+        При выводе мутированных входных или выходных данных SDK применяет изменения каждого промежуточного ПО последовательно, так же как это происходит во время выполнения. Это означает, что для двух промежуточных ПО, добавляющих значение `foo` к входным аргументам, последнее выполненное будет видно как в типах, так и во время выполнения.
     </LanguageSection>
 
     <LanguageSection show="typescript">
-        Our custom `OpenAIMiddleware` relies on the [`transformFunctionInput` hook](/docs/reference/typescript/v4/middleware/lifecycle#transformfunctioninput) to mutate the function's context:
+        Наш `OpenAIMiddleware` использует [хук `transformFunctionInput`](/docs/reference/typescript/v4/middleware/lifecycle#transformfunctioninput) для мутации контекста функции:
 
         ```ts
         import { Middleware } from "inngest";
@@ -99,7 +97,7 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         }
         ```
 
-        Our Inngest Functions can now access the OpenAI client through the context:
+        Теперь функции Inngest могут получать доступ к клиенту OpenAI через контекст:
 
          ```ts
         inngest.createFunction(
@@ -117,16 +115,16 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         ```
 
         <Callout>
-        💡 Types are inferred from middleware outputs, so your Inngest functions will see an appropriately-typed `openai` property in their input.
+        💡 Типы выводятся из вывода промежуточного ПО, поэтому функции Inngest увидят типизированное свойство `openai` в своих входных данных.
         </Callout>
 
-        Explore other examples in the [TypeScript SDK Middleware examples page](/docs/reference/typescript/v4/middleware/examples).
+        Изучите другие примеры на [странице примеров промежуточного ПО TypeScript SDK](/docs/reference/typescript/v4/middleware/examples).
 
-        ### Advanced mutation
+        ### Расширенная мутация
 
-        When `transformFunctionInput()` returns a new `ctx`, the types and data within that returned `ctx` are merged on top of the default provided by the library. This means that you can use a few tricks to overwrite data and types safely and more accurately.
+        Когда `transformFunctionInput()` возвращает новый `ctx`, типы и данные внутри этого `ctx` накладываются поверх значений по умолчанию, предоставленных библиотекой. Это позволяет безопасно и точно перезаписывать данные и типы.
 
-        For example, here we use a `const` assertion to infer the literal value of our `foo` example above.
+        Например, здесь используется утверждение `const` для вывода литерального значения `foo`:
 
         ```ts
         // In middleware
@@ -146,9 +144,9 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         }
         ```
 
-        Because the returned `ctx` object and the default are merged together, sometimes good inferred types are overwritten by more generic types from middleware. A common example of this might be when handling event data in middleware.
+        Поскольку возвращаемый объект `ctx` и значения по умолчанию объединяются, иногда хорошо выведенные типы перезаписываются более общими типами из промежуточного ПО. Частый пример — обработка данных события в промежуточном ПО.
 
-        To get around this, you can provide the data but omit the type by using an `as` type assertion. For example, here we use a type assertion to add `foo` and alter the event data without affecting the type.
+        Чтобы обойти это, можно предоставить данные, но опустить тип, используя утверждение типа `as`. Например, здесь используется утверждение для добавления `foo` и изменения данных события без влияния на тип:
 
         ```ts
         transformFunctionInput(args: Middleware.TransformFunctionInputArgs) {
@@ -168,15 +166,15 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         }
         ```
 
-        ## Ordering middleware and types
+        ## Порядок промежуточного ПО и типы
 
-        Middleware runs in the order specified when registering it (see [Middleware lifecycle](/docs/reference/typescript/v4/middleware/lifecycle)), which affects typing too.
+        Промежуточное ПО выполняется в порядке, указанном при регистрации (смотрите [жизненный цикл промежуточного ПО](/docs/reference/typescript/v4/middleware/lifecycle)), что также влияет на типизацию.
 
-        When inferring a mutated input or output, the SDK will apply changes from each middleware in sequence, just as it will at runtime. This means that for two middlewares that add a `foo` value to input arguments, the last one to run will be what it seen both in types and at runtime.
+        При выводе мутированных входных или выходных данных SDK применяет изменения каждого промежуточного ПО последовательно, так же как это происходит во время выполнения. Это означает, что для двух промежуточных ПО, добавляющих значение `foo` к входным аргументам, последнее выполненное будет видно как в типах, так и во время выполнения.
     </LanguageSection>
 
     <LanguageSection show="python">
-        Our `OpenAIMiddleware` uses the [`transform_input` hook](/docs/reference/python/middleware/lifecycle#transform-input) to inject context:
+        Наш `OpenAIMiddleware` использует [хук `transform_input`](/docs/reference/python/middleware/lifecycle#transform-input) для внедрения контекста:
 
         ```py
         import inngest
@@ -208,7 +206,7 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
         )
         ```
 
-        Our Inngest Functions can now access the `openai` client through the context:
+        Теперь функции Inngest могут получать доступ к клиенту `openai` через контекст:
 
         ```py
             @inngest_client.create_function(
@@ -231,7 +229,7 @@ The following is an example of adding a OpenAI client to all Inngest functions, 
     <LanguageSection show="go">
 
       <Callout>
-        Support for Middleware in the Go SDK in planned.
+        Поддержка промежуточного ПО в Go SDK планируется.
       </Callout>
 
     </LanguageSection>

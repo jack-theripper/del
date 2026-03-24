@@ -1,18 +1,16 @@
 import { CodeGroup, Info } from "src/shared/Docs/mdx";
 
-# Multiple triggers & wildcards
+# Несколько триггеров и маски (wildcards)
 
-Inngest functions can be configured to trigger on multiple events or schedules.
+Функции Inngest можно настроить на запуск по нескольким событиям или расписаниям.
 
-Using multiple triggers is useful for running the same logic for a wide array of events, or
-ensuring something also runs on a schedule, for example running an integrity
-check every morning, or when requested using an event.
+Использование нескольких триггеров полезно для выполнения одной и той же логики для широкого спектра событий или для того, чтобы гарантировать, что задача также запускается по расписанию. Например, выполнение проверки целостности каждое утро или по запросу через событие.
 
-Multiple triggers can be configured using an [list of triggers](#multiple-triggers), or [wildcard event triggers](#wildcard-event-triggers).
+Несколько триггеров можно настроить с помощью [списка триггеров](#multiple-triggers) или [масок в именах событий (wildcard triggers)](#wildcard-event-triggers).
 
-## Multiple triggers
+## Несколько триггеров
 
-Functions support up to 10 unique triggers. This allows you to explicitly match multiple events, or schedules. Multiple schedules that overlap will be de-duplicated - Learn more about [overlapping crons](#overlapping-crons).
+Функции поддерживают до 10 уникальных триггеров. Это позволяет явно сопоставлять несколько событий или расписаний. Перекрывающиеся расписания будут дедуплицированы — подробнее об этом в разделе [«Перекрывающиеся cron-расписания»](#overlapping-crons).
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -22,7 +20,7 @@ inngest.createFunction(
     triggers: [
       { event: "user.created" },
       { event: "user.updated" },
-      { cron: "0 5 * * *" }, // Every morning at 5am
+      { cron: "0 5 * * *" }, // Каждое утро в 5:00
     ],
   },
   async ({ event, step }) => {
@@ -59,23 +57,23 @@ def my_handler(ctx: inngest.Context) -> None:
 ```
 </CodeGroup>
 
-## Wildcard event triggers
+## Триггеры событий с использованием масок (wildcards)
 
-Event triggers can be configured using wildcards to match multiple events. This is useful for matching entire groups of events for cases like forwarding events to another system, like an real-time ETL.
+Триггеры событий можно настраивать с использованием масок для сопоставления нескольких событий. Это полезно для обработки целых групп событий, например, при пересылке событий в другую систему или в ETL-процессах реального времени.
 
-Wildcards can be used after any `/` or `.` character to match entire groups of events. Here are some examples:
+Маски можно использовать после любого символа `/` или `.` для сопоставления групп событий. Вот несколько примеров:
 
-* `app/*` matches any event with the `app` prefix, like `app/user.created` and `app/blog.post.published`.
-* `app/user.*` matches any event with the `app/user.` prefix, like `app/user.created` and `app/user.updated`.
-* `app/blog.post.*` matches any event with the `app/blog.post.` prefix, like `app/blog.post.published`.
+* `app/*` сопоставляется с любым событием с префиксом `app`, например `app/user.created` и `app/blog.post.published`.
+* `app/user.*` сопоставляется с любым событием с префиксом `app/user.`, например `app/user.created` и `app/user.updated`.
+* `app/blog.post.*` сопоставляется с любым событием с префиксом `app/blog.post.`, например `app/blog.post.published`.
 
 <Info>
-Wildcards cannot be used following any characters other than `/` and `.` or in the middle of a pattern, so mid-word wildcards like `app/user.update*` and `app/blog.*.published` are not supported.
+Маски нельзя использовать после любых символов, отличных от `/` и `.`, а также в середине шаблона. Таким образом, маски внутри слова, такие как `app/user.update*`, или в середине пути, например `app/blog.*.published`, не поддерживаются.
 </Info>
 
-### Defining types for wildcard triggers
+### Определение типов для триггеров с масками
 
-To define types for wildcard triggers, you need to explicitly define
+Чтобы определить типы для триггеров с масками, вам необходимо явно их указать:
 
 ```ts
 import { eventType, Inngest } from "inngest";
@@ -110,21 +108,20 @@ inngest.createFunction(
 );
 ```
 
-## Determining event types
+## Определение типа события
 
-In the handler for a function with multiple triggers, the event that triggered
-the function can be determined using the `event.name` property.
+В обработчике функции с несколькими триггерами событие, запустившее функцию, можно определить с помощью свойства `event.name`.
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
 async ({ event }) => {
   //      ^? type event: EventA | EventB | InngestScheduledEvent | InngestFnInvoked
   if (event.name === "a") {
-    // `event` is type narrowed to only the `a` event
+    // Тип `event` сужается только до события `a`
   } else if (event.name === "b") {
-    // `event` is type narrowed to only the `b` event
+    // Тип `event` сужается только до события `b`
   } else {
-    // `event` is type narrowed to only the `inngest/function.invoked` event
+    // Тип `event` сужается только до события `inngest/function.invoked`
   }
 }
 ```
@@ -132,25 +129,24 @@ async ({ event }) => {
 func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
 	switch input.Event.Name {
 	case "a":
-		// Handle event A
+		// Обработка события A
 	case "b":
-		// Handle event B
+		// Обработка события B
 	case "inngest/function.invoked":
-		// Handle function invoked event
+		// Обработка события вызова функции
 	}
 	return nil, nil
 },
 ```
 </CodeGroup>
 
-Note that batches of `events` can contain many different events; you will need
-to assert the shape of each event in a batch individually.
+Обратите внимание, что пакеты `events` могут содержать множество различных событий; вам потребуется проверять структуру каждого события в пакете индивидуально.
 
-## Overlapping crons
+## Перекрывающиеся cron-расписания
 
-If your function defines multiple cron triggers, the schedules may sometimes overlap. For example, a cron `0 * * * *` that runs every hour and a cron `*/30 * * * *` that runs every half hour would overlap at the start of each hour.
+Если ваша функция определяет несколько cron-триггеров, расписания иногда могут перекрываться. Например, cron `0 * * * *`, который запускается каждый час, и cron `*/30 * * * *`, который запускается каждые полчаса, будут перекрываться в начале каждого часа.
 
-Only one cron job will be run for each given second, so in this case above, one cron would run every half hour.
+Для каждой конкретной секунды будет запущен только один cron-запуск, поэтому в приведенном выше случае одна задача будет запускаться каждые полчаса.
 
 {/* There's a place for wildcards here if we want to talk about them. They're
 pretty undocumented... */}

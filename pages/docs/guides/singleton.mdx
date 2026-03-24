@@ -1,51 +1,49 @@
 import { VersionBadge, Callout, ImageTheme, Info, CodeGroup } from "src/shared/Docs/mdx";
 
-# Singleton Functions <VersionBadge version="TypeScript v3.39.0+" /> <VersionBadge version="Go SDK v0.12.0+" /> <VersionBadge version="Python v0.5+" />
+a# Singleton-функции <VersionBadge version="TypeScript v3.39.0+" /> <VersionBadge version="Go SDK v0.12.0+" /> <VersionBadge version="Python v0.5+" />
 
 
-Singleton Functions enable you to ensure that only a single run of your function (_or a set of specific function runs, based on specific event properties_) is happening at a time.
+Singleton-функции позволяют гарантировать, что одновременно выполняется только один запуск вашей функции (_или набор конкретных запусков функции, основанных на определённых свойствах события_).
 
 <p>
   <ImageTheme
     dark={'/assets/docs/features/inngest-functions/flow-control/singleton-functions/diagram-dark.png'}
     light={'/assets/docs/features/inngest-functions/flow-control/singleton-functions/diagram-light.png'}
     className="my-0"
-    alt={'Singleton Functions only process one run at a time.'}
+    alt={'Singleton-функции обрабатывают только один запуск одновременно.'}
   />
 </p>
 
 <Callout variant="info" skipSearchCrawler>
-  Singleton Functions are available in the TypeScript SDK starting from version 3.39.0.
+  Singleton-функции доступны в TypeScript SDK начиная с версии 3.39.0.
 </Callout>
 
-## When to use Singleton Functions
+## Когда использовать Singleton-функции
 
-Singleton Functions are useful when you want to ensure that only a single instance of a function is running at a time, for example:
-- A third-party data synchronization workflow
-- A compute- or time-intensive function that should not be run multiple times at the same time (ex: AI processing)
-
-
-### Singleton compared to concurrency:
-
-While [Concurrency](/docs/guides/concurrency) set to `1` ensures that only a single step of a given function is running at a time, Singleton Functions ensure that only a single run of a given function is happening at a time.
+Singleton-функции полезны, когда вы хотите гарантировать, что одновременно выполняется только один экземпляр функции, например:
+- Рабочий процесс синхронизации данных со сторонним сервисом
+- Вычислительно- или времязатратная функция, которая не должна выполняться несколько раз одновременно (например, AI-обработка)
 
 
-### Singleton compared to Rate Limiting:
+### Singleton в сравнении с параллелизмом (concurrency):
 
-[Rate Limiting](/docs/guides/rate-limiting) is similar to Singleton Functions, but it is designed to limit the number of runs started within a time period, whereas Singleton Functions are designed to ensure that only a single run of a function occurs over a given time window.
-
-Rate Limiting is useful for controlling the rate of execution of a function, while Singleton Functions are useful for ensuring that only a single run of a function occurs over a given time window.
+Тогда как [Параллелизм (Concurrency)](/docs/guides/concurrency), установленный на `1`, гарантирует, что одновременно выполняется только один шаг данной функции, Singleton-функции гарантируют, что одновременно происходит только один запуск данной функции.
 
 
+### Singleton в сравнении с ограничением частоты (Rate Limiting):
+
+[Ограничение частоты (Rate Limiting)](/docs/guides/rate-limiting) похоже на Singleton-функции, но предназначено для ограничения количества запусков в течение временного периода, тогда как Singleton-функции предназначены для обеспечения того, что только один запуск функции происходит в течение заданного временного окна.
+
+Ограничение частоты полезно для контроля скорости выполнения функции, тогда как Singleton-функции полезны для обеспечения того, что только один запуск функции происходит в течение заданного временного окна.
 
 
 
 
-## How it works
+## Как это работает
 
-Singleton Functions are configured using the `singleton` property in the function definition.
+Singleton-функции настраиваются с помощью свойства `singleton` в определении функции.
 
-The following `data-sync` function demonstrates singleton behavior scoped to individual users. Depending on the `mode`, new runs will either be skipped or will cancel the existing run:
+Следующая функция `data-sync` демонстрирует singleton-поведение в рамках отдельных пользователей. В зависимости от `mode`, новые запуски будут либо пропускаться, либо отменять существующий запуск:
 
 ```ts
 const dataSync = inngest.createFunction({
@@ -62,33 +60,32 @@ const dataSync = inngest.createFunction({
 );
 ```
 
-Refer to the [reference documentation](/docs/reference/functions/singleton) for more details.
+Подробнее см. в [справочной документации](/docs/reference/functions/singleton).
 
-### Using a `key`
+### Использование `key`
 
-When a `key` is added, the unique runs rule is applied for each unique value of the `key` expression. For example, if your `key` is set to `event.data.user_id`,
-each user would have their individual singleton rule applied to functions runs, ensuring that only a single run of the function is happening at a time for each user. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more information.
+Когда задан `key`, правило уникальных запусков применяется для каждого уникального значения выражения `key`. Например, если ваш `key` установлен как `event.data.user_id`, для каждого пользователя будет применяться своё индивидуальное singleton-правило, гарантируя, что для каждого пользователя одновременно выполняется только один запуск функции. Подробнее о написании выражений — в [нашем руководстве по выражениям](/docs/guides/writing-expressions).
 
 
-### Two modes: Skip vs Cancel
+### Два режима: Skip и Cancel
 
-Singleton Functions can be configured to either skip the new run or cancel the existing run and start a new one.
+Singleton-функции можно настроить так, чтобы они либо пропускали новый запуск, либо отменяли существующий и запускали новый.
 
-The `mode` property configures the behavior of the Singleton Function:
+Свойство `mode` настраивает поведение Singleton-функции:
 
-- `"skip"` - Skips the new run if another run is already executing.
-- `"cancel"` - Cancels the existing run and starts the new one.
+- `"skip"` — Пропускает новый запуск, если уже выполняется другой запуск.
+- `"cancel"` — Отменяет существующий запуск и запускает новый.
 
 <Callout variant="info" skipSearchCrawler>
-  **Cancel mode behavior**: Triggering multiple function runs with the same key in very rapid succession may result in some runs being skipped rather than cancelled, similar to a debounce effect. This prevents excessive cancellation overhead when events are triggered in quick bursts.
+  **Поведение режима Cancel**: Запуск нескольких функций с одним и тем же ключом в очень быстрой последовательности может привести к тому, что некоторые запуски будут пропущены, а не отменены, — аналогично эффекту debounce. Это предотвращает избыточные накладные расходы на отмену при быстрой серии событий.
 </Callout>
 
-#### When should I use "cancel" mode vs "skip" mode?
+#### Когда использовать режим "cancel" vs. режим "skip"?
 
-Use `"skip"` mode when you want to prevent duplicate work and preserve the currently running function. Use `"cancel"` mode when you want to ensure the most recent event is always processed, even if it means cancelling an in-progress run.
+Используйте режим `"skip"`, когда хотите предотвратить дублирование работы и сохранить текущую выполняющуюся функцию. Используйте режим `"cancel"`, когда хотите гарантировать, что всегда обрабатывается самое последнее событие, даже если это означает отмену выполняющегося запуска.
 
 <CodeGroup>
-```ts {{ title: "Skip mode" }}
+```ts {{ title: "Режим Skip" }}
 const dataSync = inngest.createFunction({
     id: "data-sync",
     singleton: {
@@ -100,15 +97,15 @@ const dataSync = inngest.createFunction({
   async ({ event }) => {
     const userId = event.data.user_id;
 
-    // This long-running sync process will not be interrupted
-    // If another sync is triggered for this user, it will be skipped
+    // Этот длительный процесс синхронизации не будет прерван
+    // Если для этого пользователя будет запущена другая синхронизация, она будет пропущена
     const data = await syncUserDataFromExternalAPI(userId);
     const processed = await processLargeDataset(data);
     await updateDatabase(processed);
   },
 );
 ```
-```ts {{ title: "Cancel mode" }}
+```ts {{ title: "Режим Cancel" }}
 const latestDataSync = inngest.createFunction({
     id: "latest-data-sync",
     singleton: {
@@ -120,8 +117,8 @@ const latestDataSync = inngest.createFunction({
   async ({ event }) => {
     const userId = event.data.user_id;
 
-    // If a newer sync is triggered, this run will be cancelled
-    // ensuring only the most recent data is processed
+    // Если запускается более новая синхронизация, этот запуск будет отменён,
+    // гарантируя обработку только самых актуальных данных
     const payload = await fetchLatestUserData(userId);
     await applyRealTimeUpdates(payload);
   },
@@ -130,21 +127,21 @@ const latestDataSync = inngest.createFunction({
 </CodeGroup>
 
 
-## Compatibility with other flow control features
+## Совместимость с другими функциями управления потоком
 
-Singleton Functions can be combined with other flow control features, with the following considerations:
+Singleton-функции можно комбинировать с другими функциями управления потоком, учитывая следующее:
 
-| Flow control | Compatibility | Considerations |
+| Управление потоком | Совместимость | Примечания |
 | --- | --- | --- |
-| [Debounce](/docs/guides/debounce) | ✅ | Can be used together without issues. |
-| [Rate limiting](/docs/guides/rate-limiting) | ✅ | Similar functionality but rate limiting operates over a predefined time window rather than function execution duration. |
-| [Throttling](/docs/guides/throttling) | ✅ | Similar functionality but throttling enqueues events over time rather than discarding/canceling them. |
-| [Concurrency](/docs/guides/concurrency) | ❌ | Singleton functions implicitly have a concurrency of 1. A concurrency setting can be set but should be used with caution. |
-| [Batching](/docs/guides/batching) | ❌ | Singleton isn't compatible with batching; function registration will fail if both are set. |
+| [Debounce](/docs/guides/debounce) | ✅ | Можно использовать совместно без проблем. |
+| [Ограничение частоты (Rate limiting)](/docs/guides/rate-limiting) | ✅ | Похожая функциональность, но ограничение частоты работает в рамках заданного временного окна, а не продолжительности выполнения функции. |
+| [Троттлинг (Throttling)](/docs/guides/throttling) | ✅ | Похожая функциональность, но троттлинг ставит события в очередь с течением времени, а не отбрасывает/отменяет их. |
+| [Параллелизм (Concurrency)](/docs/guides/concurrency) | ❌ | Singleton-функции неявно имеют параллелизм равный 1. Настройку параллелизма можно задать, но следует использовать с осторожностью. |
+| [Пакетирование (Batching)](/docs/guides/batching) | ❌ | Singleton несовместим с пакетированием; регистрация функции завершится ошибкой, если установлены оба параметра. |
 
 
-## FAQ
+## Часто задаваемые вопросы
 
-### How does Singleton Functions work with retries?
+### Как Singleton-функции работают с повторными попытками (retries)?
 
-If a singleton function fails and is retrying, it should still skip new incoming runs.
+Если singleton-функция завершилась с ошибкой и выполняет повторную попытку, новые входящие запуски всё равно должны пропускаться.

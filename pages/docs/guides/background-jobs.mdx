@@ -1,38 +1,38 @@
 import { Callout, CodeGroup, Row, Col, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-export const description = `Define background jobs in just a few lines of code.`
+export const description = `Определяйте фоновые задачи всего несколькими строками кода.`
 
-# Background jobs
-This guide will walk you through creating background jobs with retries in a few minutes.
+# Фоновые задачи
+Это руководство поможет вам за несколько минут создать фоновые задачи с повторными попытками.
 
-By running background tasks in Inngest:
+Запуская фоновые задачи в Inngest:
 
-- You don't need to create queues, workers, or subscriptions.
-- You can run background jobs on serverless functions without setting up infrastructure.
-- You can enqueue jobs to run in the future, similar to a task queue, without any configuration.
+- Вам не нужно создавать очереди, воркеры или подписки.
+- Вы можете запускать фоновые задачи в серверлесс-функциях без настройки инфраструктуры.
+- Вы можете ставить задачи в очередь для выполнения в будущем, аналогично очереди задач, без какой-либо конфигурации.
 
-## How to create background jobs
+## Как создавать фоновые задачи
 
 <LanguageSelector>
 
-Background jobs in Inngest are executed in response to a trigger (an event or cron).
+Фоновые задачи в Inngest выполняются в ответ на триггер (событие или cron).
 
-The example below shows a background job that uses an event (here called `app/user.created`) to send an email to new signups. It consists of two parts: creating the function that runs in the background and triggering the function.
+Пример ниже показывает фоновую задачу, которая использует событие (здесь оно называется `app/user.created`) для отправки электронного письма новым зарегистрированным пользователям. Она состоит из двух частей: создания функции, которая выполняется в фоновом режиме, и запуска этой функции.
 
 <aside>
-👉 To be able to use the code below, remember to first [serve your functions in your Inngest API](/docs/learn/serving-inngest-functions) to make it available to Inngest.
+👉 Чтобы иметь возможность использовать код ниже, не забудьте сначала [развернуть ваши функции в Inngest API](/docs/learn/serving-inngest-functions), чтобы они были доступны для Inngest.
 </aside>
 
-### 1. Create a function that runs in the background
+### 1. Создайте функцию, которая выполняется в фоновом режиме
 
 <LanguageSection show="typescript">
 <Row>
   <Col>
-Let's walk through the code step by step:
-1. We [create a new Inngest function](/docs/reference/functions/create), which will run in the background any time the `app/user.created` event is sent to Inngest.
-2. We send an email reliably using the [`step.run()`](/docs/reference/functions/step-run) method. Every [Inngest step](/docs/steps) is automatically retried upon failure.
-3. We pause the execution of the function until a specific date using [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until). The function will be resumed automatically, across server restarts or serverless functions. You don't have to worry about scale, memory leaks, connections, or restarts.
-4. We resume execution and perform other tasks.
+Давайте разберем код пошагово:
+1. Мы [создаем новую функцию Inngest](/docs/reference/functions/create), которая будет запускаться в фоновом режиме каждый раз, когда событие `app/user.created` отправляется в Inngest.
+2. Мы надежно отправляем электронное письмо, используя метод [`step.run()`](/docs/reference/functions/step-run). Каждый [шаг Inngest](/docs/steps) автоматически повторяется в случае сбоя.
+3. Мы приостанавливаем выполнение функции до определенной даты, используя [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until). Выполнение функции будет возобновлено автоматически, несмотря на перезапуски сервера или особенности серверлесс-функций. Вам не нужно беспокоиться о масштабировании, утечках памяти, соединениях или перезапусках.
+4. Мы возобновляем выполнение и выполняем другие задачи.
   </Col>
 <Col>
 <CodeGroup>
@@ -53,7 +53,7 @@ export const sendSignUpEmail = inngest.createFunction(
     await step.sleepUntil("wait-for-the-future", "2023-02-01T16:30:00");
 
     await step.run("do-some-work-in-the-future", async () => {
-      // Code here runs in the future automatically.
+      // Этот код выполнится в будущем автоматически.
     });
   }
 );
@@ -62,16 +62,16 @@ export const sendSignUpEmail = inngest.createFunction(
   </Col>
 </Row>
 
-### 2. Trigger the function
+### 2. Запустите функцию
 
-Your `sendSignUpEmail` function will be triggered whenever Inngest receives an event called `app/user.created`. is received. You send this event to Inngest like so:
+Ваша функция `sendSignUpEmail` будет запускаться всякий раз, когда Inngest получает событие с именем `app/user.created`. Вы отправляете это событие в Inngest следующим образом:
 
 ```ts
 await inngest.send({
-  name: "app/user.created", // This matches the event used in `createFunction`
+  name: "app/user.created", // Это совпадает с событием, используемым в `createFunction`
   data: {
     email: "test@example.com",
-    // any data you want to send
+    // любые данные, которые вы хотите отправить
   },
 });
 ```
@@ -79,19 +79,19 @@ await inngest.send({
 </LanguageSection>
 <LanguageSection show="go">
 
-Let's walk through the code step by step:
-1. We [create a new Inngest function](https://pkg.go.dev/github.com/inngest/inngestgo#CreateFunction), which will run in the background any time the `app/user.created` event is sent to Inngest.
-2. We send an email reliably using the [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run) method. Every [Inngest step](/docs/steps) is automatically retried upon failure.
-3. We pause the execution of the function for 4 hours using [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep). The function will be resumed automatically, across server restarts or serverless functions. You don't have to worry about scale, memory leaks, connections, or restarts.
-4. We resume execution and perform other tasks.
+Давайте разберем код пошагово:
+1. Мы [создаем новую функцию Inngest](https://pkg.go.dev/github.com/inngest/inngestgo#CreateFunction), которая будет запускаться в фоновом режиме каждый раз, когда событие `app/user.created` отправляется в Inngest.
+2. Мы надежно отправляем электронное письмо, используя метод [`step.Run()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Run). Каждый [шаг Inngest](/docs/steps) автоматически повторяется в случае сбоя.
+3. Мы приостанавливаем выполнение функции на 4 часа, используя [`step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.7.4/step#Sleep). Выполнение функции будет возобновлено автоматически, несмотря на перезапуски сервера или особенности серверлесс-функций. Вам не нужно беспокоиться о масштабировании, утечках памяти, соединениях или перезапусках.
+4. Мы возобновляем выполнение и выполняем другие задачи.
 
 ```go
 !snippet:path=snippets/go/docs/functions/delayed_function.go
 ```
 
-### 2. Trigger the function
+### 2. Запустите функцию
 
-Your `sendSignUpEmail` function will be triggered whenever Inngest receives an event called `app/user.created`. is received. You send this event to Inngest like so:
+Ваша функция `sendSignUpEmail` будет запускаться всякий раз, когда Inngest получает событие с именем `app/user.created`. Вы отправляете это событие в Inngest следующим образом:
 
 ```go
 !snippet:path=snippets/go/docs/events/user_created.go
@@ -100,11 +100,11 @@ Your `sendSignUpEmail` function will be triggered whenever Inngest receives an e
 </LanguageSection>
 <LanguageSection show="python">
 
-Let's walk through the code step by step:
-1. We [create a new Inngest function](/docs/reference/python/functions/create), which will run in the background any time the `app/user.created` event is sent to Inngest.
-2. We send an email reliably using the [`step.run()`](/docs/reference/python/steps/run) method. Every [Inngest step](/docs/steps) is automatically retried upon failure.
-3. We pause the execution of the function until a specific date using [`step.sleep_until()`](/docs/reference/python/steps/sleep-until). The function will be resumed automatically, across server restarts or serverless functions. You don't have to worry about scale, memory leaks, connections, or restarts.
-4. We resume execution and perform other tasks.
+Давайте разберем код пошагово:
+1. Мы [создаем новую функцию Inngest](/docs/reference/python/functions/create), которая будет запускаться в фоновом режиме каждый раз, когда событие `app/user.created` отправляется в Inngest.
+2. Мы надежно отправляем электронное письмо, используя метод [`step.run()`](/docs/reference/python/steps/run). Каждый [шаг Inngest](/docs/steps) автоматически повторяется в случае сбоя.
+3. Мы приостанавливаем выполнение функции до определенной даты, используя [`step.sleep_until()`](/docs/reference/python/steps/sleep-until). Выполнение функции будет возобновлено автоматически, несмотря на перезапуски сервера или особенности серверлесс-функций. Вам не нужно беспокоиться о масштабировании, утечках памяти, соединениях или перезапусках.
+4. Мы возобновляем выполнение и выполняем другие задачи.
 
 ```python
 import inngest
@@ -130,45 +130,45 @@ async def send_signup_email(ctx: inngest.Context):
     await ctx.step.sleep_until("wait-for-the-future", "2023-02-01T16:30:00")
 
     async def future_work():
-        # Code here runs in the future automatically
+        # Этот код выполнится в будущем автоматически
         pass
 
     await ctx.step.run("do-some-work-in-the-future", future_work)
 ```
 
 
-### 2. Trigger the function
+### 2. Запустите функцию
 
-Your `sendSignUpEmail` function will be triggered whenever Inngest receives an event called `app/user.created`. is received. You send this event to Inngest like so:
+Ваша функция `sendSignUpEmail` будет запускаться всякий раз, когда Inngest получает событие с именем `app/user.created`. Вы отправляете это событие в Inngest следующим образом:
 
 ```python
 from src.inngest.client import inngest_client
 
 await inngest_client.send(
-    name="app/user.created",  # This matches the event used in `create_function`
+    name="app/user.created",  # Это совпадает с событием, используемым в `create_function`
     data={
         "email": "test@example.com",
-        # any data you want to send
+        # любые данные, которые вы хотите отправить
     }
 )
 ```
 
 </LanguageSection>
 
-When you send an event to Inngest, it automatically finds any functions that are triggered by the event ID and automatically runs those functions in the background. The entire JSON object you pass in to `inngest.send()` will be available to your functions.
+Когда вы отправляете событие в Inngest, он автоматически находит любые функции, которые запускаются по ID события, и автоматически запускает эти функции в фоновом режиме. Весь JSON-объект, который вы передаете в `inngest.send()`, будет доступен вашим функциям.
 
 <Callout>
-💡 Tip: You can create many functions which listen to the same event, and all of them will run in the background. Learn more about this pattern in our ["Fan out" guide](/docs/guides/fan-out-jobs).
+💡 Подсказка: Вы можете создать множество функций, которые слушают одно и то же событие, и все они будут работать в фоновом режиме. Узнайте больше об этом паттерне в нашем [руководстве по "Fan out"](/docs/guides/fan-out-jobs).
 </Callout>
 
 </LanguageSelector>
 
-## Further reading
+## Дополнительная литература
 
-More information on background jobs:
-- [Email sequence examples](/docs/examples/email-sequence) implemented with Inngest.
-- [Customer story: Soundcloud](/customers/soundcloud): building scalable video pipelines with Inngest to streamline dynamic video generation.
-- [Customer story: GitBook](/customers/gitbook): how GitBook scaled background job processing with Inngest.
-- [Customer story: Fey](/customers/fey): how Fey cut execution time and costs by 50x in data-intensive processes.
-- Blog post: [building Truckload](/blog/mux-migrating-video-collections), a tool for heavy video migration between hosting platforms, from Mux.
-- Blog post: building _banger.show_'s [video rendering pipeline](/blog/banger-video-rendering-pipeline).
+Больше информации о фоновых задачах:
+- [Примеры последовательностей писем](/docs/examples/email-sequence), реализованные с помощью Inngest.
+- [История клиента: Soundcloud](/customers/soundcloud): создание масштабируемых видео-пайплайнов с помощью Inngest для оптимизации динамической генерации видео.
+- [История клиента: GitBook](/customers/gitbook): как GitBook масштабировал обработку фоновых задач с помощью Inngest.
+- [История клиента: Fey](/customers/fey): как Fey сократила время выполнения и затраты в 50 раз в процессах с интенсивным использованием данных.
+- Пост в блоге: [создание Truckload](/blog/mux-migrating-video-collections), инструмента для тяжелой миграции видео между хостинг-платформами, от Mux.
+- Пост в блоге: создание [пайплайна рендеринга видео](/blog/banger-video-rendering-pipeline) для _banger.show_.

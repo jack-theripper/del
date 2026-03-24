@@ -1,12 +1,12 @@
-export const description = "Expand your agentic system by delegating tasks to sub-agents. Sub-agents allow tasks to have their own context windows, tools, and token budgets."
+export const description = "Расширьте свою агентную систему, делегируя задачи суб-агентам. Суб-агенты позволяют задачам иметь собственные контекстные окна, инструменты и бюджеты токенов."
 
-# Delegate Tasks to Sub-Agents
+# Делегирование задач суб-агентам
 
-Delegation gives sub-agents their own context window, tools, and token budget. A sub-agent can be modeled as a separate Inngest function that runs its own [agent loop](/docs/ai-patterns/agent-tool-loops) — the parent either waits for a result or fires and forgets.
+Делегирование даёт суб-агентам собственное контекстное окно, инструменты и бюджет токенов. Суб-агент можно смоделировать как отдельную функцию Inngest, которая запускает собственный [цикл агента](/docs/ai-patterns/agent-tool-loops) — родитель либо ожидает результата, либо запускает и забывает.
 
-## Define a sub-agent function
+## Определение функции суб-агента
 
-A sub-agent is a regular Inngest function. It receives a task, runs an agent loop, and returns a result:
+Суб-агент — это обычная функция Inngest. Она получает задачу, запускает цикл агента и возвращает результат:
 
 ```typescript
 import { inngest } from "./client";
@@ -35,11 +35,11 @@ export const subAgent = inngest.createFunction(
 );
 ```
 
-The sub-agent uses a **restricted tool set** without delegation tools to prevent infinite recursion ([details below](#prevent-recursion)).
+Суб-агент использует **ограниченный набор инструментов** без инструментов делегирования, чтобы предотвратить бесконечную рекурсию ([подробнее ниже](#prevent-recursion)).
 
-## Define the delegation tool
+## Определение инструмента делегирования
 
-Give the parent agent's LLM a tool that makes delegation a natural choice:
+Предоставьте LLM родительского агента инструмент, который сделает делегирование естественным выбором:
 
 ```typescript
 const delegateTaskTool = {
@@ -66,9 +66,9 @@ const delegateTaskTool = {
 };
 ```
 
-## Delegate synchronously with `step.invoke()`
+## Синхронное делегирование с `step.invoke()`
 
-To delegate and wait for a result, use [`step.invoke()`](/docs/guides/invoking-functions-directly) — the parent blocks until the sub-agent returns:
+Чтобы делегировать задачу и ожидать результата, используйте [`step.invoke()`](/docs/guides/invoking-functions-directly) — родитель блокируется до тех пор, пока суб-агент не вернёт результат:
 
 ```typescript
 import { subAgent } from "./sub-agent";
@@ -122,11 +122,11 @@ export const parentAgent = inngest.createFunction(
 );
 ```
 
-Because `step.invoke()` is a durable step, the parent pauses execution and resumes exactly where it left off when the sub-agent completes. The parent's LLM sees only the sub-agent's summary, not its full internal conversation.
+Поскольку `step.invoke()` является надёжным шагом, родитель приостанавливает выполнение и возобновляет его ровно с того места, где остановился, когда суб-агент завершается. LLM родителя видит только сводку суб-агента, но не его полный внутренний диалог.
 
-## Delegate asynchronously with `step.sendEvent()`
+## Асинхронное делегирование с `step.sendEvent()`
 
-To delegate without waiting, use [`step.sendEvent()`](/docs/guides/sending-events-from-functions) — the parent fires an event and continues:
+Чтобы делегировать без ожидания, используйте [`step.sendEvent()`](/docs/guides/sending-events-from-functions) — родитель отправляет событие и продолжает работу:
 
 ```typescript
 if (toolCall.name === "delegate_background_task") {
@@ -147,7 +147,7 @@ if (toolCall.name === "delegate_background_task") {
 }
 ```
 
-To deliver results when the sub-agent finishes, handle async mode in the sub-agent:
+Чтобы доставить результаты по завершении суб-агента, обработайте асинхронный режим в суб-агенте:
 
 ```typescript
 export const subAgent = inngest.createFunction(
@@ -180,7 +180,7 @@ export const subAgent = inngest.createFunction(
 );
 ```
 
-Alternatively, the sub-agent can emit a result event and a separate function handles delivery — this decouples the sub-agent from routing logic:
+В качестве альтернативы суб-агент может отправить событие с результатом, а отдельная функция займётся доставкой — это отделяет суб-агент от логики маршрутизации:
 
 ```typescript
 // Sub-agent emits result as an event
@@ -211,31 +211,31 @@ export const deliverSubAgentResult = inngest.createFunction(
 );
 ```
 
-### Choose sync vs. async
+### Выбор между синхронным и асинхронным режимом
 
-| | Sync (`step.invoke()`) | Async (`step.sendEvent()`) |
+| | Синхронно (`step.invoke()`) | Асинхронно (`step.sendEvent()`) |
 |---|---|---|
-| **Parent blocks?** | Yes — waits for result | No — continues immediately |
-| **Result flows to** | Parent agent's tool output | Separate delivery (webhook, event, notification) |
-| **Best for** | Tasks where the parent needs the answer to continue (research, lookups, analysis) | Long-running tasks where the user can be notified later (reports, batch processing) |
-| **Timeout** | Subject to function execution time limits | Sub-agent runs on its own timeline |
-| **Retry behavior** | If sub-agent fails, parent's step retries | Sub-agent retries independently |
+| **Родитель блокируется?** | Да — ожидает результата | Нет — продолжает немедленно |
+| **Результат передаётся** | В вывод инструмента родительского агента | Через отдельную доставку (webhook, событие, уведомление) |
+| **Лучше для** | Задач, где родителю нужен ответ для продолжения (исследование, поиск, анализ) | Длительных задач, о результате которых пользователь может быть уведомлен позже (отчёты, пакетная обработка) |
+| **Тайм-аут** | Ограничен временем выполнения функции | Суб-агент работает по собственному расписанию |
+| **Поведение при повторе** | При сбое суб-агента шаг родителя повторяется | Суб-агент повторяется независимо |
 
-## Prevent recursion
+## Предотвращение рекурсии
 
-If a sub-agent has delegation tools, it could spawn sub-agents indefinitely. Prevent this by restricting the tool set:
+Если у суб-агента есть инструменты делегирования, он может порождать суб-агентов бесконечно. Предотвратите это, ограничив набор инструментов:
 
 ```typescript
-// Tools available to the parent agent
+// Инструменты, доступные родительскому агенту
 const PARENT_TOOLS = [
   searchTool,
   readFileTool,
   writeFileTool,
-  delegateTaskTool,        // Can delegate
-  delegateBackgroundTool,  // Can delegate async
+  delegateTaskTool,        // Может делегировать
+  delegateBackgroundTool,  // Может делегировать асинхронное управление
 ];
 
-// Tools available to sub-agents — no delegation
+// Инструменты, доступные субагентам - без делегирования полномочий
 const SUB_AGENT_TOOLS = [
   searchTool,
   readFileTool,
@@ -244,7 +244,7 @@ const SUB_AGENT_TOOLS = [
 ];
 ```
 
-Combine tool restriction with a hard iteration cap for two layers of protection:
+Совместите ограничение инструментов с жёстким лимитом итераций для двухуровневой защиты:
 
 ```typescript
 export const subAgent = inngest.createFunction(
@@ -264,9 +264,9 @@ export const subAgent = inngest.createFunction(
 );
 ```
 
-## Handle sub-agent failures
+## Обработка сбоев суб-агента
 
-`step.invoke()` retries the sub-agent based on its `retries` config. If all retries are exhausted, the error propagates to the parent. To let the parent LLM adapt, catch the error:
+`step.invoke()` повторяет суб-агент согласно его конфигурации `retries`. Если все попытки исчерпаны, ошибка передаётся родителю. Чтобы позволить LLM родителя адаптироваться, перехватите ошибку:
 
 ```typescript
 let toolResult: string;
@@ -281,9 +281,9 @@ try {
 }
 ```
 
-## Schedule a sub-agent
+## Планирование суб-агента
 
-To run a sub-agent at a future time, include a [timestamp](/docs/guides/delayed-functions#schedule-a-function-for-later) (`ts`) when sending the event:
+Чтобы запустить суб-агент в будущем, включите [временную метку](/docs/guides/delayed-functions#schedule-a-function-for-later) (`ts`) при отправке события:
 
 ```typescript
 await step.sendEvent("schedule-daily-report", {
@@ -298,31 +298,31 @@ await step.sendEvent("schedule-daily-report", {
 });
 ```
 
-For recurring work, use a [cron-triggered function](/docs/guides/scheduled-functions) instead.
+Для повторяющейся работы используйте вместо этого [функцию, запускаемую по расписанию cron](/docs/guides/scheduled-functions).
 
-## Write self-contained task descriptions
+## Написание самодостаточных описаний задач
 
-In this set up, you can choose how context is shared between parent and sub-agents. With the above approach, the sub-agent gets it's main context from the "task" given to the sub-agent. In this approach, you'll want to include everything it needs in the task itself:
+В этой схеме вы можете выбрать, как контекст передаётся между родительским и суб-агентами. При описанном подходе суб-агент получает основной контекст из «задачи», переданной ему. В этом случае необходимо включать в задачу всё необходимое:
 
 ```typescript
-// ❌ Bad — relies on context the sub-agent doesn't have
+// ❌ Плохой — зависит от контекста, которого нет у субагента
 { task: "Summarize what we discussed above" }
 
-// ✅ Good — self-contained with all necessary context
+// ✅ Хороший — самодостаточный, со всем необходимым контекстом
 { task: "Summarize the key findings from the Q4 2025 revenue report. Focus on: 1) YoY growth rate, 2) top performing segments, 3) areas of concern." }
 ```
 
-## Generic vs. specialized sub-agents
+## Универсальные и специализированные суб-агенты
 
-Generic sub-agents are a great way to get started and work for many use cases. If your system requires more specialized sets of tools or different models for sub-agents, you might consider creating specialized sub-agents.
+Универсальные суб-агенты — отличный способ начать работу, и они подходят для многих сценариев. Если вашей системе требуются более специализированные наборы инструментов или разные модели для суб-агентов, рассмотрите создание специализированных суб-агентов.
 
-To create a system with specialized sub-agents, follow the patterns above, but create multiple tools, with each that invoke their own agent or a "loader" sub-agent that can handle multiple agent types conditionally. As a recommendation, LLMs often do better with separate tools for separate sub-agents rather than a single tool with different parameters for selection.
+Чтобы создать систему со специализированными суб-агентами, следуйте описанным выше шаблонам, но создайте несколько инструментов, каждый из которых вызывает собственного агента или «загрузчик» суб-агента, способный условно обрабатывать несколько типов агентов. Рекомендуется использовать отдельные инструменты для отдельных суб-агентов, а не один инструмент с разными параметрами выбора — LLM обычно справляются с этим лучше.
 
-The task description and available tools are enough to specialize behavior.
+Описание задачи и доступные инструменты достаточны для специализации поведения.
 
-## Next steps
+## Следующие шаги
 
-- [Build an Agent Tool Loop](/docs/ai-patterns/agent-tool-loops) — Build the agent loop that powers both parent and sub-agents.
-- [Pause for Human Approval](/docs/ai-patterns/human-in-the-loop) — Add approval gates before or after delegation with `step.waitForEvent()`.
-- [Three sub-agent patterns you need for your agentic system](/blog/three-patterns-you-need-for-agentic-systems) — sync, async, and scheduled delegation patterns in depth
-{/*- [Run Sub-Agents in Parallel](/docs/ai-patterns/parallelization) — Spawn multiple sub-agents simultaneously and aggregate results. - [Manage Context Across Agents](/docs/ai-patterns/context-management) — Strategies for managing token budgets across agent hierarchies.*/}
+- [Создать цикл инструментов агента](/docs/ai-patterns/agent-tool-loops) — Построить цикл агента, который работает как у родительских, так и у суб-агентов.
+- [Пауза для одобрения человеком](/docs/ai-patterns/human-in-the-loop) — Добавить шлюзы одобрения до или после делегирования с помощью `step.waitForEvent()`.
+- [Три паттерна суб-агентов для агентной системы](/blog/three-patterns-you-need-for-agentic-systems) — паттерны синхронного, асинхронного и запланированного делегирования подробно
+{/*- [Запуск суб-агентов параллельно](/docs/ai-patterns/parallelization) — Одновременный запуск нескольких суб-агентов и агрегация результатов. - [Управление контекстом между агентами](/docs/ai-patterns/context-management) — Стратегии управления бюджетами токенов в иерархиях агентов.*/}

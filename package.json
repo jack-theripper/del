@@ -12,7 +12,7 @@
   "author": "Inngest Inc. <info@inngest.com> (https://inngest.com/)",
   "main": "n/a",
   "scripts": {
-    "dev": "next dev -p ${PORT:-3001}",
+    "dev": "next dev -p 3001",
     "build": "next build && next-sitemap",
     "start": "next start",
     "broken-link-checker": "pnpm dlx ts-node ./scripts/brokenLinkChecker.ts",

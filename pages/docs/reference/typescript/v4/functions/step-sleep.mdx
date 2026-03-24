@@ -3,7 +3,7 @@ import { Info, Callout, CodeGroup, Col, Properties, Property, Row, VersionBadge 
 # Sleep `step.sleep()`
 
 
-Use `step.sleep()` to pause your function's execution for a specified duration. This is useful for adding delays between steps, such as waiting before sending a follow-up email or polling an external service at intervals.
+Используйте `step.sleep()` для приостановки выполнения функции на заданную длительность. Это полезно для добавления задержек между шагами, например при ожидании перед отправкой повторного письма или опросе внешнего сервиса с интервалами.
 
 ## `step.sleep(id, duration): Promise`
 
@@ -11,20 +11,20 @@ Use `step.sleep()` to pause your function's execution for a specified duration. 
   <Col>
     <Properties>
       <Property name="id" type="string" required>
-        The ID of the step. This will be what appears in your function's logs and is used to memoize step state across function versions.
+        ID шага. Будет отображаться в логах функции и используется для мемоизации состояния шага между версиями функции.
       </Property>
       <Property name="duration" type="number | string | Temporal.Duration" required>
-        The duration of time to sleep:
+        Длительность паузы:
 
-        * `number` of milliseconds
-        * `string` compatible with the [ms](https://npm.im/ms) package, e.g. `"30m"`, `"3 hours"`, or `"2.5d"`
+        * `number` — миллисекунды
+        * `string` — совместимая с пакетом [ms](https://npm.im/ms) строка, например `"30m"`, `"3 hours"` или `"2.5d"`
         * [`Temporal.Duration`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/Duration)
       </Property>
     </Properties>
   </Col>
   <Col>
   ```ts
-  // Sleep for 30 minutes
+  // Спать 30 минут
   const thirtyMins = Temporal.Duration.from({ minutes: 30 });
   await step.sleep("wait-with-temporal", thirtyMins);
 
@@ -36,5 +36,5 @@ Use `step.sleep()` to pause your function's execution for a specified duration. 
 </Row>
 
 <Callout>
-  `step.sleep()` must be called using `await` or some other Promise handler to ensure your function sleeps correctly.
+  `step.sleep()` должен вызываться с `await` или другим обработчиком Promise для корректной работы функции.
 </Callout>

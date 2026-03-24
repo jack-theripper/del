@@ -6,45 +6,45 @@ import {
   RiFileSearchLine,
 } from "@remixicon/react";
 
-# Middleware
+# Промежуточное ПО (Middleware)
 
-Middleware allows your code to run at various points in an Inngest client's lifecycle, such as during a function's execution or when sending an event. 
+Промежуточное ПО позволяет запускать код в различные моменты жизненного цикла клиента Inngest — например, во время выполнения функции или при отправке события.
 
-This can be used for a wide range of uses:
+Это можно использовать в широком спектре сценариев:
 
 <CardGroup cols={2}>
-  <Card title="Custom observability" icon={<RiFileSearchLine className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/create'}>
-    Add custom logging, tracing or helpers to your Inngest Functions.
+  <Card title="Пользовательская наблюдаемость" icon={<RiFileSearchLine className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/create'}>
+    Добавьте пользовательское логирование, трассировку или вспомогательные инструменты в функции Inngest.
   </Card>
-  <Card title="Dependency Injection" icon={<RiPlugLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/dependency-injection'}>
-    Provide shared client instances (ex, OpenAI) to your Inngest Functions.
+  <Card title="Внедрение зависимостей" icon={<RiPlugLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/dependency-injection'}>
+    Предоставляйте общие экземпляры клиентов (например, OpenAI) функциям Inngest.
   </Card>
-  <Card title="Encryption Middleware" icon={<RiEyeOffLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/encryption-middleware'}>
-    End-to-end encryption for events, step output, and function output.
+  <Card title="Промежуточное ПО шифрования" icon={<RiEyeOffLine className="text-basis h-4 w-4" />} href={'/docs/features/middleware/encryption-middleware'}>
+    Сквозное шифрование событий, вывода шагов и вывода функций.
   </Card>
-  <Card title="Sentry Middleware" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/sentry-middleware'}>
-    Quickly setup Sentry for your Inngest Functions.
+  <Card title="Промежуточное ПО Sentry" icon={<RiMistFill className="text-basis h-4 w-4"/>} href={'/docs/features/middleware/sentry-middleware'}>
+    Быстрая настройка Sentry для функций Inngest.
   </Card>
 </CardGroup>
 
 
 
-## Middleware SDKs support
+## Поддержка в SDK
 
-Middleware is available in the [TypeScript SDK](/docs/reference/typescript/v4/middleware/lifecycle) and [Python SDK](/docs/reference/python/middleware/lifecycle).
+Промежуточное ПО доступно в [TypeScript SDK](/docs/reference/typescript/v4/middleware/lifecycle) и [Python SDK](/docs/reference/python/middleware/lifecycle).
 
-Support in the Go SDK is planned.
+Поддержка в Go SDK планируется.
 
-## Middleware lifecycle
+## Жизненный цикл промежуточного ПО
 
-Middleware can be registered at the Inngest clients or functions level.
+Промежуточное ПО можно регистрировать на уровне клиента Inngest или функций.
 
-Adding middleware contributes to an overall "stack" of middleware. If you register multiple middlewares, the SDK will group and run hooks for each middleware in the following order:
+Добавление промежуточного ПО формирует общий «стек» промежуточного ПО. При регистрации нескольких промежуточных ПО SDK группирует и выполняет хуки каждого в следующем порядке:
 
-1. Middleware registered on the **client**, in descending order
-2. Middleware registered on the **function**, in descending order
+1. Промежуточное ПО, зарегистрированное на **клиенте**, в порядке убывания
+2. Промежуточное ПО, зарегистрированное на **функции**, в порядке убывания
 
-For example:
+Например:
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -96,4 +96,4 @@ async def fn(ctx: inngest.Context):
 ```
 </CodeGroup>
 
-Learn more about the Middleware hooks and their execution order in ["Creating a Middleware"](/docs/features/middleware/create).
+Подробнее о хуках промежуточного ПО и порядке их выполнения в разделе [«Создание промежуточного ПО»](/docs/features/middleware/create).

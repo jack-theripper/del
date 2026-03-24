@@ -1,41 +1,41 @@
 import { CodeGroup, Callout, LanguageSection, LanguageSelector } from "src/shared/Docs/mdx";
 
-# Crons (Scheduled Functions)
+# Cron-задачи (Запланированные функции)
 
-You can create scheduled jobs using cron schedules within Inngest natively.  Inngest's cron schedules also support timezones, allowing you to schedule work in whatever timezone you need work to run in.
+Вы можете создавать запланированные задачи с помощью cron-расписаний непосредственно в Inngest. Cron-расписания Inngest также поддерживают часовые пояса, что позволяет запускать задачи в любом нужном вам часовом поясе.
 
 
 <LanguageSelector>
 
 <LanguageSection show="typescript">
 
-You can create scheduled functions that run in any timezone using the SDK's [`createFunction()`](/docs/reference/functions/create):
+Вы можете создавать запланированные функции, работающие в любом часовом поясе, используя [`createFunction()`](/docs/reference/functions/create) из SDK:
 
-```ts 
+```ts
 import { Inngest } from "inngest";
 
 const inngest = new Inngest({ id: "signup-flow" });
 
-// This weekly digest function will run at 12:00pm on Friday in the Paris timezone
+// Эта функция еженедельного дайджеста будет запускаться в 12:00 в пятницу по парижскому времени
 export const prepareWeeklyDigest = inngest.createFunction(
   { id: "prepare-weekly-digest", triggers: { cron: "TZ=Europe/Paris 0 12 * * 5" } },
   async ({ step }) => {
-    // Load all the users from your database:
+    // Загружаем всех пользователей из базы данных:
     const users = await step.run(
       "load-users",
       async () => await db.load("SELECT * FROM users")
     );
 
-    // 💡 Since we want to send a weekly digest to each one of these users
-    // it may take a long time to iterate through each user and send an email.
+    // 💡 Поскольку мы хотим отправить еженедельный дайджест каждому пользователю,
+    // перебор всех пользователей и отправка писем может занять много времени.
 
-    // Instead, we'll use this scheduled function to send an event to Inngest
-    // for each user then handle the actual sending of the email in a separate
-    // function triggered by that event.
+    // Вместо этого мы используем эту запланированную функцию для отправки события в Inngest
+    // для каждого пользователя, а затем обрабатываем фактическую отправку письма
+    // в отдельной функции, запускаемой этим событием.
 
-    // ✨ This is known as a "fan-out" pattern ✨
+    // ✨ Это называется паттерном «fan-out» ✨
 
-    // 1️⃣ First, we'll create an event object for every user return in the query:
+    // 1️⃣ Сначала создаём объект события для каждого пользователя из запроса:
     const events = users.map((user) => {
       return {
         name: "app/send.weekly.digest",
@@ -46,29 +46,29 @@ export const prepareWeeklyDigest = inngest.createFunction(
       };
     });
 
-    // 2️⃣ Now, we'll send all events in a single batch:
+    // 2️⃣ Теперь отправляем все события одним пакетом:
     await step.sendEvent("send-digest-events", events);
 
-    // This function can now quickly finish and the rest of the logic will
-    // be handled in the function below ⬇️
+    // Эта функция может быстро завершиться, а вся остальная логика будет
+    // обработана в функции ниже ⬇️
   }
 );
 
-// This is a regular Inngest function that will send the actual email for
-// every event that is received (see the above function's inngest.send())
+// Это обычная функция Inngest, которая будет отправлять фактическое письмо
+// для каждого полученного события (см. inngest.send() в функции выше)
 
-// Since we are "fanning out" with events, these functions can all run in parallel
+// Поскольку мы «распределяем» задачи через события, эти функции могут выполняться параллельно
 export const sendWeeklyDigest = inngest.createFunction(
   { id: "send-weekly-digest-email", triggers: { event: "app/send.weekly.digest" } },
   async ({ event }) => {
-    // 3️⃣ We can now grab the email and user id from the event payload
+    // 3️⃣ Получаем email и id пользователя из полезной нагрузки события
     const { email, user_id } = event.data;
 
-    // 4️⃣ Finally, we send the email itself:
+    // 4️⃣ Наконец, отправляем само письмо:
     await email.send("weekly_digest", email, user_id);
 
-    // 🎇 That's it! - We've used two functions to reliably perform a scheduled
-    // task for a large list of users!
+    // 🎇 Вот и всё! — Мы использовали две функции для надёжного выполнения
+    // запланированной задачи для большого списка пользователей!
   }
 );
 ```
@@ -76,7 +76,7 @@ export const sendWeeklyDigest = inngest.createFunction(
 </LanguageSection>
 <LanguageSection show="go">
 
-You can create scheduled functions that run in any timezone using the SDK's [`CreateFunction()`](https://pkg.go.dev/github.com/inngest/inngestgo#CreateFunction):
+Вы можете создавать запланированные функции, работающие в любом часовом поясе, используя [`CreateFunction()`](https://pkg.go.dev/github.com/inngest/inngestgo#CreateFunction) из SDK:
 
 ```go
 package main
@@ -89,13 +89,13 @@ import (
 )
 
 func init() {
-	// This weekly digest function will run at 12:00pm on Friday in the Paris timezone
+	// Эта функция еженедельного дайджеста будет запускаться в 12:00 в пятницу по парижскому времени
 	inngestgo.CreateFunction(
 		client,
 		inngestgo.FunctionOpts{Name: "prepare-weekly-digest"},
 		inngestgo.CronTrigger("TZ=Europe/Paris 0 12 * * 5"),
 		func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-			// Load all the users from your database:
+			// Загружаем всех пользователей из базы данных:
 			users, err := step.Run(ctx, "load-users", func(ctx context.Context) ([]*User, error) {
 				return loadUsers()
 			})
@@ -103,16 +103,16 @@ func init() {
 				return nil, err
 			}
 
-			// 💡 Since we want to send a weekly digest to each one of these users
-			// it may take a long time to iterate through each user and send an email.
+			// 💡 Поскольку мы хотим отправить еженедельный дайджест каждому пользователю,
+			// перебор всех пользователей и отправка писем может занять много времени.
 
-			// Instead, we'll use this scheduled function to send an event to Inngest
-			// for each user then handle the actual sending of the email in a separate
-			// function triggered by that event.
+			// Вместо этого мы используем эту запланированную функцию для отправки события в Inngest
+			// для каждого пользователя, а затем обрабатываем фактическую отправку письма
+			// в отдельной функции, запускаемой этим событием.
 
-			// ✨ This is known as a "fan-out" pattern ✨
+			// ✨ Это называется паттерном «fan-out» ✨
 
-			// 1️⃣ First, we'll create an event object for every user return in the query:
+			// 1️⃣ Сначала создаём объект события для каждого пользователя из запроса:
 			events := make([]inngestgo.Event, len(users))
 			for i, user := range users {
 				events[i] = inngestgo.Event{
@@ -124,39 +124,39 @@ func init() {
 				}
 			}
 
-			// 2️⃣ Now, we'll send all events in a single batch:
+			// 2️⃣ Теперь отправляем все события одним пакетом:
 			err = step.SendMany(ctx, "send-digest-events", events)
 			if err != nil {
 				return nil, err
 			}
 
-			// This function can now quickly finish and the rest of the logic will
-			// be handled in the function below ⬇️
+			// Эта функция может быстро завершиться, а вся остальная логика будет
+			// обработана в функции ниже ⬇️
 			return nil, nil
 		},
 	)
 
-	// This is a regular Inngest function that will send the actual email for
-	// every event that is received (see the above function's inngest.send())
+	// Это обычная функция Inngest, которая будет отправлять фактическое письмо
+	// для каждого полученного события (см. inngest.send() в функции выше)
 
-	// Since we are "fanning out" with events, these functions can all run in parallel
+	// Поскольку мы «распределяем» задачи через события, эти функции могут выполняться параллельно
 	inngestgo.CreateFunction(
 		client,
 		inngestgo.FunctionOpts{Name: "send-weekly-digest-email"},
 		inngestgo.EventTrigger("app/send.weekly.digest", nil),
 		func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-			// 3️⃣ We can now grab the email and user id from the event payload
+			// 3️⃣ Получаем email и id пользователя из полезной нагрузки события
 			email := input.Event.Data["email"].(string)
 			userID := input.Event.Data["user_id"].(string)
 
-			// 4️⃣ Finally, we send the email itself:
+			// 4️⃣ Наконец, отправляем само письмо:
 			err := email.Send("weekly_digest", email, userID)
 			if err != nil {
 				return nil, err
 			}
 
-			// 🎇 That's it! - We've used two functions to reliably perform a scheduled
-			// task for a large list of users!
+			// 🎇 Вот и всё! — Мы использовали две функции для надёжного выполнения
+			// запланированной задачи для большого списка пользователей!
 			return nil, nil
 		},
 	)
@@ -166,35 +166,35 @@ func init() {
 </LanguageSection>
 <LanguageSection show="python">
 
-You can create scheduled functions that run in any timezone using the SDK's [`create_function()`](/docs/reference/python/functions/create):
+Вы можете создавать запланированные функции, работающие в любом часовом поясе, используя [`create_function()`](/docs/reference/python/functions/create) из SDK:
 
 ```py
 from inngest import Inngest
 
 inngest_client = Inngest(app_id="signup-flow")
 
-# This weekly digest function will run at 12:00pm on Friday in the Paris timezone
+# Эта функция еженедельного дайджеста будет запускаться в 12:00 в пятницу по парижскому времени
 @inngest_client.create_function(
     fn_id="prepare-weekly-digest",
     trigger=inngest.TriggerCron(cron="TZ=Europe/Paris 0 12 * * 5")
 )
 async def prepare_weekly_digest(ctx: inngest.Context) -> None:
-    # Load all the users from your database:
+    # Загружаем всех пользователей из базы данных:
     users = await ctx.step.run(
         "load-users",
         lambda: db.load("SELECT * FROM users")
     )
 
-    # 💡 Since we want to send a weekly digest to each one of these users
-    # it may take a long time to iterate through each user and send an email.
+    # 💡 Поскольку мы хотим отправить еженедельный дайджест каждому пользователю,
+    # перебор всех пользователей и отправка писем может занять много времени.
 
-    # Instead, we'll use this scheduled function to send an event to Inngest
-    # for each user then handle the actual sending of the email in a separate
-    # function triggered by that event.
+    # Вместо этого мы используем эту запланированную функцию для отправки события в Inngest
+    # для каждого пользователя, а затем обрабатываем фактическую отправку письма
+    # в отдельной функции, запускаемой этим событием.
 
-    # ✨ This is known as a "fan-out" pattern ✨
+    # ✨ Это называется паттерном «fan-out» ✨
 
-    # 1️⃣ First, we'll create an event object for every user return in the query:
+    # 1️⃣ Сначала создаём объект события для каждого пользователя из запроса:
     events = [
         {
             "name": "app/send.weekly.digest",
@@ -206,44 +206,44 @@ async def prepare_weekly_digest(ctx: inngest.Context) -> None:
         for user in users
     ]
 
-    # 2️⃣ Now, we'll send all events in a single batch:
+    # 2️⃣ Теперь отправляем все события одним пакетом:
     await ctx.step.send_event("send-digest-events", events)
 
-    # This function can now quickly finish and the rest of the logic will
-    # be handled in the function below ⬇️
+    # Эта функция может быстро завершиться, а вся остальная логика будет
+    # обработана в функции ниже ⬇️
 
 
-# This is a regular Inngest function that will send the actual email for
-# every event that is received (see the above function's inngest.send())
+# Это обычная функция Inngest, которая будет отправлять фактическое письмо
+# для каждого полученного события (см. inngest.send() в функции выше)
 
-# Since we are "fanning out" with events, these functions can all run in parallel
+# Поскольку мы «распределяем» задачи через события, эти функции могут выполняться параллельно
 @inngest_client.create_function(
     fn_id="send-weekly-digest-email",
     trigger=inngest.TriggerEvent(event="app/send.weekly.digest")
 )
 async def send_weekly_digest(ctx: inngest.Context) -> None:
-    # 3️⃣ We can now grab the email and user id from the event payload
+    # 3️⃣ Получаем email и id пользователя из полезной нагрузки события
     email = ctx.event.data["email"]
     user_id = ctx.event.data["user_id"]
 
-    # 4️⃣ Finally, we send the email itself:
+    # 4️⃣ Наконец, отправляем само письмо:
     await email.send("weekly_digest", email, user_id)
 
-    # 🎇 That's it! - We've used two functions to reliably perform a scheduled
-    # task for a large list of users!
+    # 🎇 Вот и всё! — Мы использовали две функции для надёжного выполнения
+    # запланированной задачи для большого списка пользователей!
 ```
 
 </LanguageSection>
 </LanguageSelector>
 
 <Callout>
-👉 Note: You'll need to [serve these functions in your Inngest API](/docs/learn/serving-inngest-functions) for the functions to be available to Inngest.
+👉 Примечание: Вам нужно [подключить эти функции в вашем Inngest API](/docs/learn/serving-inngest-functions), чтобы они стали доступны для Inngest.
 </Callout>
 
-On the free plan, if your function fails 20 times consecutively it will automatically be paused.
+На бесплатном плане, если ваша функция завершается с ошибкой 20 раз подряд, она будет автоматически приостановлена.
 
 <Callout>
-⚠️ **Daylight Saving Time (DST) disclaimer:** Schedules near DST transition times can behave unexpectedly in local timezones. Depending on the timezone and the exact schedule, a cron may run zero, one, or two times in a day when clocks change.
+⚠️ **Предупреждение о переходе на летнее/зимнее время (DST):** Расписания вблизи времени перехода на летнее/зимнее время могут вести себя непредсказуемо в местных часовых поясах. В зависимости от часового пояса и точного расписания cron может выполниться ноль, один или два раза в день при переводе часов.
 
-Inngest's cron behavior follows the underlying cron library and does not apply special DST correction. To reduce risk, avoid transition-hour schedules (such as `2:00 AM` in many US regions, or `12:00 AM` in some other regions), and prefer `TZ=UTC` when you need consistent execution timing.
+Поведение cron в Inngest следует базовой библиотеке cron и не применяет специальную коррекцию для DST. Чтобы снизить риск, избегайте расписаний в час перехода (например, `2:00 AM` во многих регионах США или `12:00 AM` в некоторых других регионах) и предпочитайте `TZ=UTC`, когда вам нужна стабильная синхронизация выполнения.
 </Callout>

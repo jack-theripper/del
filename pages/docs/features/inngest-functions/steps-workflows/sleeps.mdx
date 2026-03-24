@@ -1,28 +1,28 @@
 import { Callout, LanguageSelector, LanguageSection, CodeGroup } from "src/shared/Docs/mdx";
 
 
-# Sleeps
+# Сны (Sleeps)
 
-Two step methods, `step.sleep` and `step.sleepUntil`, are available to pause the execution of your function for a specific amount of time. Your function can sleep for seconds, minutes, or days, up to a maximum of one year.
+Два метода шага, `step.sleep` и `step.sleepUntil`, позволяют приостановить выполнение функции на определённое время. Функция может «спать» секунды, минуты или дни — максимум один год.
 
-Using sleep methods can avoid the need to run multiple cron jobs or use additional queues. For example, Sleeps enable you to create a user onboarding workflow that sequences multiple actions in time: first send a welcome email, then send a tutorial each day for a week.
+Использование методов сна позволяет избежать необходимости запускать несколько cron-задач или использовать дополнительные очереди. Например, сны позволяют создать рабочий процесс онбординга пользователей, последовательно выполняющий действия во времени: сначала отправить приветственное письмо, затем каждый день в течение недели отправлять обучающие материалы.
 
-## How Sleeps work
+## Как работают сны
 
-`step.sleep` and `step.sleepUntil` tell Inngest to resume execution of your function at a future time. Your code doesn't need to be running during the sleep interval, allowing sleeps to be used in any environment, even serverless platforms.
+`step.sleep` и `step.sleepUntil` указывают Inngest возобновить выполнение функции в будущем. Код не должен быть запущен в течение интервала сна, что позволяет использовать сны в любой среде, включая бессерверные платформы.
 
-A Function paused by a sleeping Step doesn't affect your account capacity; i.e. it does not count against your plan's concurrency limit. A sleeping Function doesn't count against any [concurrency policy](/docs/guides/concurrency) you've set on the function, either.
+Функция, приостановленная спящим шагом, не влияет на ёмкость аккаунта — она не учитывается в лимите параллелизма плана. Спящая функция также не учитывается в [политике параллелизма](/docs/guides/concurrency), установленной для функции.
 
 
 <LanguageSelector>
 
 
-## Pausing an execution for a given time
+## Приостановка выполнения на заданное время
 
 
 <LanguageSection show="typescript">
 
-  Use `step.sleep()` to pause the execution of your function for a specific amount of time.
+  Используйте `step.sleep()` для приостановки выполнения функции на определённый промежуток времени.
 
 
 ```ts
@@ -36,13 +36,13 @@ export default inngest.createFunction(
 ```
 
 
-Check out the [`step.sleep()` TypeScript reference.](/docs/reference/functions/step-sleep)
+Смотрите [справочник TypeScript для `step.sleep()`](/docs/reference/functions/step-sleep).
 
 </LanguageSection>
 
 <LanguageSection show="python">
 
-  Use `step.sleep()` to pause the execution of your function for a specific amount of time.
+  Используйте `step.sleep()` для приостановки выполнения функции на определённый промежуток времени.
 
   ```py
   @inngest_client.create_function(
@@ -53,13 +53,13 @@ Check out the [`step.sleep()` TypeScript reference.](/docs/reference/functions/s
       await ctx.step.sleep("zzz", datetime.timedelta(seconds=2))
   ```
 
-Check out the [`step.sleep()` Python reference.](/docs/reference/python/steps/sleep)
+Смотрите [справочник Python для `step.sleep()`](/docs/reference/python/steps/sleep).
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-  Use `step.Sleep()` to pause the execution of your function for a specific amount of time.
+  Используйте `step.Sleep()` для приостановки выполнения функции на определённый промежуток времени.
 
   ```go
   func AccountCreated(ctx context.Context, input inngestgo.Input[AccountCreatedEvent]) (any, error) {
@@ -72,17 +72,17 @@ Check out the [`step.sleep()` Python reference.](/docs/reference/python/steps/sl
   }
   ```
 
-  Check out the [`step.Sleep()` Go reference.](https://pkg.go.dev/github.com/inngest/inngestgo@v0.9.0/step#Sleep)
+  Смотрите [справочник Go для `step.Sleep()`](https://pkg.go.dev/github.com/inngest/inngestgo@v0.9.0/step#Sleep).
 
 </LanguageSection>
 
 
-## Pausing an execution until a given date
+## Приостановка выполнения до заданной даты
 
 
 <LanguageSection show="typescript">
 
-Use `step.sleepUntil()` to pause the execution of your function until a specific date time.
+Используйте `step.sleepUntil()` для приостановки выполнения функции до определённого момента времени.
 
 
 ```ts
@@ -97,13 +97,13 @@ export default inngest.createFunction(
 ```
 
 
-Check out the [`step.sleepUntil()` TypeScript reference.](/docs/reference/functions/step-sleep-until)
+Смотрите [справочник TypeScript для `step.sleepUntil()`](/docs/reference/functions/step-sleep-until).
 
 </LanguageSection>
 
 <LanguageSection show="python">
 
-  Use `step.sleep_until()` to pause the execution of your function until a specific date time.
+  Используйте `step.sleep_until()` для приостановки выполнения функции до определённого момента времени.
 
 ```py
 @inngest_client.create_function(
@@ -116,25 +116,25 @@ async def fn(ctx: inngest.Context) -> None:
         datetime.datetime.now() + datetime.timedelta(seconds=2),
     )
 ```
-Check out the [`step.sleep_until()` Python reference.](/docs/reference/python/steps/sleep-until)
+Смотрите [справочник Python для `step.sleep_until()`](/docs/reference/python/steps/sleep-until).
 
 </LanguageSection>
 
 <LanguageSection show="go">
 
-  _Sleep until a given date is not yet available in the Go SDK._
+  _Сон до заданной даты пока недоступен в Go SDK._
 
 </LanguageSection>
 
 </LanguageSelector>
 
 <Callout variant={'info'}>
-  **Sleeps and trace/log history**
+  **Сны и история трассировки/логов**
 
-  You may notice that Inngest Cloud's Function Runs view doesn't show function runs that use sleeps longer than your [Inngest plan's](/pricing?ref=docs-sleeps) trace & log history limit, even though the functions are still sleeping and will continue to run as expected. **This is a known limitation** in our current dashboard and we're working to improve it.
+  Вы можете заметить, что в представлении «Запуски функций» в Inngest Cloud не отображаются запуски функций, использующие сны длиннее лимита истории трассировки и логов вашего [плана Inngest](/pricing?ref=docs-sleeps), хотя функции всё ещё спят и продолжат выполняться в запланированное время. **Это известное ограничение** текущей панели управления, которое мы работаем исправить.
 
-  In the meantime:
+  В настоящее время:
 
-  - Rest assured that your sleeping functions *are* still sleeping and will resume as scheduled, even if they're not visible in the Function Runs list.
-  - Given a function run's ID, you can inspect its status using Inngest Cloud's Quick Search feature (Ctrl-K or ⌘K) or the [REST API](https://api-docs.inngest.com/docs/inngest-api/).
+  - Будьте уверены, что спящие функции *действительно* спят и возобновятся по расписанию, даже если они не отображаются в списке «Запуски функций».
+  - Зная ID запуска функции, можно проверить его статус с помощью функции быстрого поиска Inngest Cloud (Ctrl-K или ⌘K) или [REST API](https://api-docs.inngest.com/docs/inngest-api/).
 </Callout>

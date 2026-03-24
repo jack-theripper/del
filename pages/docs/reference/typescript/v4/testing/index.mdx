@@ -1,14 +1,14 @@
 import { Info, Callout, CodeGroup, Tip } from "shared/Docs/mdx";
 
-# Testing
+# Тестирование
 
 
-To test your Inngest functions programmatically, use the `@inngest/test`
-library, available on [npm](https://www.npmjs.com/package/@inngest/test) and [JSR](https://jsr.io/@inngest/test).
+Для программного тестирования функций Inngest используйте библиотеку `@inngest/test`,
+доступную на [npm](https://www.npmjs.com/package/@inngest/test) и [JSR](https://jsr.io/@inngest/test).
 
-This allows you to mock function state, step tooling, and inputs with a
-Jest-compatible API supporting all major testing frameworks, runtimes, and
-libraries:
+Это позволяет мокировать состояние функций, инструменты шагов и входные данные с помощью
+Jest-совместимого API, поддерживающего все основные тестовые фреймворки, среды выполнения и
+библиотеки:
 
 - `jest`
 - `vitest`
@@ -16,9 +16,9 @@ libraries:
 - `@std/expect` (Deno)
 - `chai`/`expect`
 
-## Installation
+## Установка
 
-The `@inngest/test` package requires `inngest@>=4.0.0`.
+Пакет `@inngest/test` требует `inngest@>=4.0.0`.
 
 <CodeGroup>
 ```shell {{ title: "npm" }}
@@ -40,13 +40,13 @@ deno add --dev jsr:@inngest/test
 ```
 </CodeGroup>
 
-## Unit tests
+## Юнит-тесты
 
-Use whichever supported testing framework; `@inngest/test` is unopinionated
-about how your tests are run. We'll demonstrate here using `jest`.
+Используйте любой поддерживаемый тестовый фреймворк; `@inngest/test` не диктует,
+как запускать тесты. Здесь мы продемонстрируем с использованием `jest`.
 
-Import `InngestTestEngine`, our function to test, and create a new
-`InngestTestEngine` instance.
+Импортируйте `InngestTestEngine`, тестируемую функцию и создайте новый
+экземпляр `InngestTestEngine`.
 
 ```ts
 import { InngestTestEngine } from "@inngest/test";
@@ -59,7 +59,7 @@ describe("helloWorld function", () => {
 });
 ```
 
-Now we can use the primary API for testing, `t.execute()`:
+Теперь можно использовать основной API для тестирования — `t.execute()`:
 
 ```ts
 test("returns a greeting", async () => {
@@ -68,11 +68,11 @@ test("returns a greeting", async () => {
 });
 ```
 
-This will run the entire function (steps and all) to completion, then return the
-response from the function, where we assert that it was the string `"Hello
+Это выполнит всю функцию (включая шаги) до завершения, затем вернёт
+ответ функции, где мы проверяем, что это строка `"Hello
 World!"`.
 
-A serialized `error` will be returned instead of `result` if the function threw:
+Сериализованная `error` будет возвращена вместо `result`, если функция выбросила исключение:
 
 ```ts
 test("throws an error", async () => {
@@ -82,17 +82,16 @@ test("throws an error", async () => {
 ```
 
 <Tip>
-  When using steps that delay execution, like `step.sleep` or `step.waitForEvent`, you will need to mock them. [Learn more about mocking steps](#steps).
+  При использовании шагов, задерживающих выполнение, таких как `step.sleep` или `step.waitForEvent`, их необходимо мокировать. [Узнайте больше о мокировании шагов](#steps).
 </Tip>
 
-### Running an individual step
+### Запуск отдельного шага
 
-`t.executeStep()` can be used to run the function until a particular step has
-been executed.
+`t.executeStep()` можно использовать для выполнения функции до тех пор, пока не выполнится определённый шаг.
 
-This is useful to test a single step within a function or to see that a
-non-runnable step such as `step.waitForEvent()` has been registered with the
-correct options.
+Это полезно для тестирования отдельного шага внутри функции или для проверки того, что
+невыполнимый шаг, например `step.waitForEvent()`, был зарегистрирован с
+правильными опциями.
 
 ```ts
 test("runs the price calculations", async () => {
@@ -101,48 +100,48 @@ test("runs the price calculations", async () => {
 });
 ```
 
-Assertions can also be made on steps in any part of a run, regardless of if
-that's the checkpoint we've waited for. See [Assertions -> State](#assertions).
+Утверждения также можно делать для шагов в любой части запуска, независимо от того,
+является ли это проверяемым чекпоинтом. Смотрите [Утверждения -> State](#assertions).
 
-### Assertions
+### Утверждения
 
-`@inngest/test` adds Jest-compatible mocks by default that can help you assert
-function and step input and output. You can assert:
+`@inngest/test` по умолчанию добавляет Jest-совместимые моки, которые могут помочь вам проверить
+входные и выходные данные функций и шагов. Можно проверять:
 
-- Function input
-- Function output
-- Step output
-- Step tool usage
+- Входные данные функции
+- Выходные данные функции
+- Выходные данные шага
+- Использование инструментов шага
 
-All of these values are returned from both `t.execute()` and `t.executeStep()`;
-we'll only show one for simplicity here.
+Все эти значения возвращаются из обоих `t.execute()` и `t.executeStep()`;
+для простоты здесь показан только один.
 
-The `result` is returned, which is the output of the run or step:
+Возвращается `result` — вывод запуска или шага:
 
 ```ts
 const { result } = await t.execute();
 expect(result).toEqual("Hello World!");
 ```
 
-`ctx` is the input used for the function run. This can be used to assert outputs
-that are based on input data such as `event` or `runId`, or to confirm that
-middleware is working correctly and affecting input arguments.
+`ctx` — это входные данные, использованные для запуска функции. Это можно использовать для проверки выводов,
+основанных на входных данных, таких как `event` или `runId`, или для подтверждения того, что
+промежуточное ПО работает правильно и влияет на входные аргументы.
 
 ```ts
 const { ctx, result } = await t.execute();
 expect(result).toEqual(`Run ID was: "${ctx.runId}"`);
 ```
 
-The step tooling at `ctx.step` are all Jest-compatible spy functions, so you can
-use them to assert that they've been called and used correctly:
+Инструменты шагов в `ctx.step` — это все Jest-совместимые функции-шпионы, поэтому можно
+использовать их для проверки того, что они были вызваны и использованы правильно:
 
 ```ts
 const { ctx } = await t.execute();
 expect(ctx.step.run).toHaveBeenCalledWith("my-step", expect.any(Function));
 ```
 
-`state` is also returned, which is a view into the outputs of all steps in the
-run. This allows you to test each individual step output for any given input:
+Также возвращается `state` — представление выводов всех шагов в
+запуске. Это позволяет тестировать вывод каждого отдельного шага для любых входных данных:
 
 ```ts
 const { state } = await t.execute();
@@ -150,13 +149,12 @@ expect(state["my-step"]).resolves.toEqual("some successful output");
 expect(state["dangerous-step"]).rejects.toThrowError("something failed");
 ```
 
-### Mocking
+### Мокирование
 
-Some mocking is done automatically by `@inngest/test`, but can be overwritten if
-needed.
+Часть мокирования выполняется `@inngest/test` автоматически, но при необходимости может быть перезаписана.
 
-All mocks detailed below can be specified either when creating an
-`InngestTestEngine` instance or for each individual execution:
+Все описанные ниже моки можно указать как при создании экземпляра
+`InngestTestEngine`, так и для каждого отдельного выполнения:
 
 ```ts
 // Set the events for every execution
@@ -175,8 +173,8 @@ t.executeStep("my-step", {
 })
 ```
 
-You can also clone an existing `InngestTestEngine` instance to encourage re-use
-of complex mocks:
+Также можно клонировать существующий экземпляр `InngestTestEngine` для повторного использования
+сложных моков:
 
 ```ts
 // Make a direct clone, which includes any mocks
@@ -188,13 +186,13 @@ const anotherT = t.clone({
 });
 ```
 
-For simplicity, the following examples will show usage of `t.execute()`, but the
-mocks can be placed in any of these locations.
+Для простоты следующие примеры показывают использование `t.execute()`, но
+моки можно размещать в любом из этих мест.
 
-#### Events
+#### События
 
-The incoming event data can be mocked. They are always specified as an array of
-events to allow also mocking batches.
+Входящие данные событий можно мокировать. Они всегда указываются в виде массива
+событий, чтобы позволить мокировать также батчи.
 
 ```ts
 t.execute({
@@ -203,17 +201,17 @@ t.execute({
 ```
 
 <Callout>
-If no event mocks are given at all (or `events: undefined` is explicitly set),
-an `inngest/function.invoked` event will be mocked for you.
+Если моки событий вообще не заданы (или явно указано `events: undefined`),
+для вас будет автоматически создан мок события `inngest/function.invoked`.
 </Callout>
 
-#### Steps
+#### Шаги
 
-Mocking steps can help you model different paths and situations within your
-function. To do so, any step can be mocked by providing the `steps` option. You should always mock `sleep` and `waitForEvent` steps - [learn more here](#sleep-and-wait-for-event).
+Мокирование шагов помогает моделировать различные пути и ситуации внутри вашей
+функции. Для этого любой шаг можно замокировать, передав опцию `steps`. Всегда следует мокировать шаги `sleep` и `waitForEvent` — [узнайте больше здесь](#sleep-and-wait-for-event).
 
-Here we mock two steps, one that will run successfully and another that will
-model a failure and throw an error:
+Здесь мы мокируем два шага: один, который выполнится успешно, и другой, который
+смоделирует сбой и выбросит ошибку:
 
 ```ts
 t.execute({
@@ -234,8 +232,8 @@ t.execute({
 });
 ```
 
-These handlers will run lazily when they are found during a function's execution.
-This means you can write complex mocks that respond to other information:
+Эти обработчики будут лениво выполняться при обнаружении во время выполнения функции.
+Это означает, что можно писать сложные моки, реагирующие на другую информацию:
 
 ```ts
 let message = "";
@@ -259,9 +257,9 @@ t.execute({
 });
 ```
 
-#### Sleep and waitForEvent
+#### Sleep и waitForEvent
 
-Steps that pause the function, `step.sleep`, `step.sleepUntil`, and `step.waitForEvent` should always be mocked.
+Шаги, приостанавливающие функцию — `step.sleep`, `step.sleepUntil` и `step.waitForEvent` — всегда следует мокировать.
 
 <CodeGroup>
 ```ts {{ title: 'step.sleep' }}
@@ -333,27 +331,25 @@ t.execute({
 ```
 </CodeGroup>
 
-#### Modules and imports
+#### Модули и импорты
 
-Any mocking of modules or imports outside of Inngest which your functions may
-rely on should be done outside of Inngest with the testing framework you're
-using.
+Мокирование модулей или импортов вне Inngest, на которые могут полагаться ваши функции,
+следует выполнять за пределами Inngest с помощью используемого вами тестового фреймворка.
 
-Here are some links to the major supported frameworks and their guidance for
-mocking imports:
+Вот ссылки на основные поддерживаемые фреймворки и их рекомендации по
+мокированию импортов:
 
 - [`jest`](https://jestjs.io/docs/mock-functions#mocking-modules)
 - [`vitest`](https://vitest.dev/guide/mocking#modules)
 - [`bun:test` (Bun)](https://bun.sh/docs/test/mocks#module-mocks-with-mock-module)
 - [`@std/testing` (Deno)](https://jsr.io/@std/testing/doc/mock/~)
 
-#### Custom
+#### Кастомное мокирование
 
-You can also provide your own custom mocks for the function input.
+Также можно предоставить собственные кастомные моки для входных данных функции.
 
-When instantiating a new `InngestTestEngine` or starting an execution, provide a
-`transformCtx` function that will add these mocks every time the function is
-run:
+При создании экземпляра `InngestTestEngine` или запуске выполнения передайте функцию
+`transformCtx`, которая будет добавлять эти моки каждый раз при запуске функции:
 
 ```ts
 const t = new InngestTestEngine({
@@ -367,9 +363,8 @@ const t = new InngestTestEngine({
 });
 ```
 
-If you wish to still add the automatic mocking from `@inngest/test` (such as the
-spies on `ctx.step.*`), you can import and use the automatic transforms as part
-of your own:
+Если вы хотите сохранить автоматическое мокирование из `@inngest/test` (например,
+шпионы на `ctx.step.*`), можно импортировать и использовать автоматические преобразования в рамках своего:
 
 ```ts
 import { InngestTestEngine, mockCtx } from "@inngest/test";

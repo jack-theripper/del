@@ -3,49 +3,49 @@ import { Info, Warning, CodeGroup, Steps, Step } from "shared/Docs/mdx";
 # Connect
 
 <Info>
-  Connect is currently in Public Beta. Read more about the [Public Beta release phase here](/docs/release-phases#public-beta).
+  Connect в настоящее время находится в публичной бета-версии. Подробнее о [фазе публичной беты здесь](/docs/release-phases#public-beta).
 </Info>
 
-The `connect` API allows your app to create an outbound persistent connection to Inngest. Each app can establish multiple connections to Inngest, which enable you to scale horizontally across multiple workers. The key benefits of using `connect` compared to [`serve`](/docs/learn/serving-inngest-functions) are:
+API `connect` позволяет вашему приложению создавать исходящее постоянное соединение с Inngest. Каждое приложение может устанавливать несколько соединений с Inngest, что позволяет горизонтально масштабироваться на нескольких воркерах. Ключевые преимущества использования `connect` по сравнению с [`serve`](/docs/learn/serving-inngest-functions):
 
-- **Lowest latency** - Persistent connections enable the lowest latency between your app and Inngest.
-- **Elastic horizontal scaling** - Easily add more capacity by running additional workers.
-- **Ideal for container runtimes** -  Deploy on Kubernetes or ECS without the need of a load balancer for inbound traffic
-- **Simpler long running steps** - Step execution is not bound by platform http timeouts.
+- **Минимальная задержка** — Постоянные соединения обеспечивают наименьшую задержку между вашим приложением и Inngest.
+- **Эластичное горизонтальное масштабирование** — Легко добавляйте мощности, запуская дополнительные воркеры.
+- **Идеально для контейнерных сред** — Развёртывание в Kubernetes или ECS без необходимости в балансировщике нагрузки для входящего трафика.
+- **Упрощённые долгоработающие шаги** — Выполнение шагов не ограничено тайм-аутами HTTP платформы.
 
-The number of concurrent worker connections available depends on your plan. For new plans, the limits are:
+Количество доступных одновременных соединений воркеров зависит от вашего тарифного плана. Для новых планов ограничения следующие:
 
-* Free plan: 3 concurrent worker connections
-* All paid plans: 20 concurrent worker connections
-* Max apps per connection: 10
+* Бесплатный план: 3 одновременных соединения воркеров
+* Все платные планы: 20 одновременных соединений воркеров
+* Максимум приложений на соединение: 10
 
-You can find your plan's connection limits on your [billing page](https://app.inngest.com/billing).
+Ограничения соединений вашего плана можно найти на [странице биллинга](https://app.inngest.com/billing).
 
-## Minimum requirements
+## Минимальные требования
 
-### Language
-- **TypeScript**: SDK `3.34.1` or higher.
-- **Go**: SDK `0.11.2` or higher.
-- **Python**: SDK `0.5.0` or higher.
-  - Install the SDK with `pip install inngest[connect]` since there are additional dependencies required.
-  - We also recommend the following constraints:
+### Язык
+- **TypeScript**: SDK `3.34.1` или выше.
+- **Go**: SDK `0.11.2` или выше.
+- **Python**: SDK `0.5.0` или выше.
+  - Установите SDK командой `pip install inngest[connect]`, так как требуются дополнительные зависимости.
+  - Также рекомендуются следующие версии:
     - `protobuf>=5.29.4,<6.0.0`
     - `psutil>=6.0.0,<7.0.0`
     - `websockets>=15.0.0,<16.0.0`
 
-### Runtime
+### Среда выполнения
 
-You must use a long running server (Render, Fly.io, Kubernetes, etc.). Serverless runtimes (AWS Lambda, Vercel, etc.) are not supported.
+Необходимо использовать долгоработающий сервер (Render, Fly.io, Kubernetes и т.д.). Бессерверные среды выполнения (AWS Lambda, Vercel и т.д.) не поддерживаются.
 
-If using TypeScript, your runtime must support built-in WebSocket support (Node `22.4.0` or higher, Deno `1.4` or higher, Bun `1.1` or higher).
+При использовании TypeScript среда выполнения должна поддерживать встроенный WebSocket (Node `22.4.0` или выше, Deno `1.4` или выше, Bun `1.1` или выше).
 
 
 
-## Getting started
+## Начало работы
 
-Using `connect` with your app is simple. Using each SDK's "connect" method only requires a list of functions that are available to be executed. (Note: Python support is in beta; [upvote on our roadmap](https://roadmap.inngest.com/roadmap?id=2bac8d74-288f-47c7-8afc-3fd1a0e94654))
+Использовать `connect` с вашим приложением очень просто. Метод «connect» каждого SDK требует только список функций, доступных для выполнения. (Примечание: поддержка Python находится в бета-версии; [проголосуйте за неё в нашем роадмапе](https://roadmap.inngest.com/roadmap?id=2bac8d74-288f-47c7-8afc-3fd1a0e94654))
 
-Here is a one-file example of a fully-functioning app that connects to Inngest.
+Ниже приведён пример полностью рабочего приложения в одном файле, подключающегося к Inngest.
 
 <CodeGroup>
 ```ts
@@ -85,7 +85,7 @@ func main() {
 	client, err := inngestgo.NewClient(inngestgo.ClientOpts{
 		AppID:      "my-app",
 		Logger:     logger.StdlibLogger(ctx),
-		AppVersion: nil, // Optional, defaults to the git commit SHA
+		AppVersion: nil, // Необязательно, по умолчанию — git commit SHA
 	})
 	if err != nil {
 		panic(err)
@@ -148,56 +148,56 @@ asyncio.run(
 ```
 </CodeGroup>
 
-## How does it work?
+## Как это работает?
 
-The `connect` API establishes a persistent WebSocket connection to Inngest. Each connection can handle executing multiple functions and steps concurrently. Each app can create multiple connections to Inngest enabling horizontal scaling. Additionally, connect has the following features:
+API `connect` устанавливает постоянное WebSocket-соединение с Inngest. Каждое соединение может одновременно обрабатывать выполнение нескольких функций и шагов. Каждое приложение может создавать несколько соединений с Inngest, обеспечивая горизонтальное масштабирование. Кроме того, connect поддерживает следующие возможности:
 
-- **Automatic re-connections** - The connection will automatically reconnect if it is closed.
-- **Graceful shutdown** - The connection will gracefully shutdown when the app receives a signal to terminate (`SIGTERM`). New steps will not be accepted after the connection is closed, and existing steps will be allowed to complete.
-- **Worker-level maximum concurrency (Coming soon)** - Each worker can configure the maximum number of concurrent steps it can handle. This allows Inngest to distribute load across multiple workers and not overload a single worker.
+- **Автоматическое переподключение** — Соединение автоматически восстанавливается при разрыве.
+- **Корректное завершение** — Соединение корректно закрывается при получении приложением сигнала завершения (`SIGTERM`). После закрытия соединения новые шаги не принимаются, а текущие шаги завершаются.
+- **Максимальный параллелизм на уровне воркера (скоро)** — Каждый воркер может настроить максимальное количество одновременно обрабатываемых шагов. Это позволяет Inngest распределять нагрузку между воркерами и не перегружать один воркер.
 
-## Local development
+## Локальная разработка
 
-During local development, set the `INNGEST_DEV=1` environment variable to enable local development mode. This will cause the SDK to connect to [the Inngest dev server](/docs/dev-server). When your worker process is running it will automatically connect to the dev server and sync your functions' configurations.
+При локальной разработке установите переменную окружения `INNGEST_DEV=1` для включения режима локальной разработки. Это заставит SDK подключаться к [dev-серверу Inngest](/docs/dev-server). При запуске процесса воркера он автоматически подключится к dev-серверу и синхронизирует конфигурации ваших функций.
 
-No signing or event keys are required in local development mode.
+В режиме локальной разработки ключи подписи и события не требуются.
 
-## Deploying to production
+## Развёртывание в production
 
 <Steps>
-  <Step title="Set signing and event keys">
-    To enable your application to securely connect to Inngest, you must set the `INNGEST_SIGNING_KEY` and `INNGEST_EVENT_KEY` environment variables.
+  <Step title="Установите ключи подписи и события">
+    Для безопасного подключения приложения к Inngest необходимо задать переменные окружения `INNGEST_SIGNING_KEY` и `INNGEST_EVENT_KEY`.
 
-    These keys can be found in the Inngest Dashboard. Learn more about [Event keys](/docs/events/creating-an-event-key) and [Signing Keys](/docs/platform/signing-keys).
+    Эти ключи можно найти в панели управления Inngest. Подробнее о [ключах событий](/docs/events/creating-an-event-key) и [ключах подписи](/docs/platform/signing-keys).
   </Step>
-  <Step title="Set your app version">
-    The `appVersion` is used to identify the version of your app that is connected to Inngest. This allows Inngest to support rolling deploys where multiple versions of your app may be connected to Inngest.
+  <Step title="Установите версию приложения">
+    `appVersion` используется для идентификации версии вашего приложения, подключённой к Inngest. Это позволяет Inngest поддерживать скользящие развёртывания, при которых к Inngest могут быть подключены несколько версий приложения.
 
-    When a new version of your app is connected to Inngest, the functions' configurations are synced to Inngest. When a new version is connected, Inngest update the function configuration in your environment and starts routing new function runs to the latest version.
+    При подключении новой версии приложения конфигурации функций синхронизируются с Inngest. После подключения новой версии Inngest обновляет конфигурацию функций в вашей среде и начинает направлять новые запуски функций на последнюю версию.
 
-    You can set the `appVersion` to whatever you want, but we recommend using something that automatically changes with each deploy, like a git commit sha or Docker image tag.
+    Вы можете установить `appVersion` в любое значение, но рекомендуется использовать что-то, что автоматически изменяется при каждом развёртывании, например git commit sha или тег Docker-образа.
 
     <CodeGroup>
-    ```ts {{ title: "Any platform" }}
-    // You can set the app version to any environment variable, you might use
-    // a build number ('v2025.02.12.01'), git commit sha ('f5a40ff'), or
-    // a custom value ('my-app-v1').
+    ```ts {{ title: "Любая платформа" }}
+    // Можно установить версию приложения в любую переменную окружения,
+    // например номер сборки ('v2025.02.12.01'), git commit sha ('f5a40ff')
+    // или произвольное значение ('my-app-v1').
     const inngest = new Inngest({
       id: 'my-app',
-      appVersion: process.env.MY_APP_VERSION, // Use any environment variable you choose
+      appVersion: process.env.MY_APP_VERSION, // Используйте любую переменную окружения
     })
     ```
     ```ts {{ title: "GitHub Actions" }}
-    // If you're using Github Actions to build your app, you can set the
-    // app version to the GITHUB_SHA environment variable during build time
-    // or inject into the build of a Docker image.
+    // При использовании Github Actions для сборки приложения можно установить
+    // версию приложения в переменную окружения GITHUB_SHA во время сборки
+    // или передать её в Docker-образ.
     const inngest = new Inngest({
       id: 'my-app',
       appVersion: process.env.GITHUB_SHA,
     })
     ```
     ```ts {{ title: "Render" }}
-    // Render includes the RENDER_GIT_COMMIT env var at build and runtime.
+    // Render включает переменную окружения RENDER_GIT_COMMIT во время сборки и выполнения.
     // https://render.com/docs/environment-variables
     const inngest = new Inngest({
       id: 'my-app',
@@ -205,7 +205,7 @@ No signing or event keys are required in local development mode.
     })
     ```
     ```ts {{ title: "Fly.io" }}
-    // Fly includes a machine version env var at runtime.
+    // Fly включает переменную окружения версии машины во время выполнения.
     // https://fly.io/docs/machines/runtime-environment/
     const inngest = new Inngest({
       id: 'my-app',
@@ -214,31 +214,31 @@ No signing or event keys are required in local development mode.
     ```
     </CodeGroup>
   </Step>
-  <Step title="Set the instance id (recommended)">
-    The `instanceId` is used to identify the worker instance of your app that is connected to Inngest. This allows Inngest to support multiple instances (workers) of your app connected to Inngest.
+  <Step title="Установите ID экземпляра (рекомендуется)">
+    `instanceId` используется для идентификации экземпляра воркера вашего приложения, подключённого к Inngest. Это позволяет Inngest поддерживать несколько экземпляров (воркеров) приложения, подключённых к Inngest.
 
-    By default, Inngest will attempt to use the hostname of the worker as the instance id. If you're running your app in a containerized environment, you can set the `instanceId` to the container id.
+    По умолчанию Inngest пытается использовать имя хоста воркера в качестве ID экземпляра. При запуске приложения в контейнерной среде можно задать `instanceId` равным ID контейнера.
 
     <CodeGroup>
-    ```ts {{ title: "Any platform" }}
-    // Set the instance ID to any environment variable that is unique to the worker
+    ```ts {{ title: "Любая платформа" }}
+    // Установите ID экземпляра в любую переменную окружения, уникальную для воркера
     await connect({
       apps: [...],
       instanceId: process.env.MY_CONTAINER_ID,
     })
     ```
     ```ts {{ title: "Kubernetes + Docker" }}
-    // instanceId defaults to the HOSTNAME environment variable.
-    // By default, Kubernetes and Docker set the HOSTNAME environment variable to the pod name
-    // so it is automatically set for you.
+    // instanceId по умолчанию использует переменную окружения HOSTNAME.
+    // Kubernetes и Docker по умолчанию устанавливают HOSTNAME равным имени пода,
+    // поэтому значение задаётся автоматически.
     await connect({
       apps: [...],
-      // This is what happens under the hood if you don't set instanceId
+      // Это происходит под капотом, если instanceId не задан
       // instanceId: process.env.HOSTNAME,
     })
     ```
     ```ts {{ title: "Render" }}
-    // Render includes the RENDER_INSTANCE_ID env var at runtime.
+    // Render включает переменную окружения RENDER_INSTANCE_ID во время выполнения.
     // https://render.com/docs/environment-variables
     await connect({
       apps: [...],
@@ -246,7 +246,7 @@ No signing or event keys are required in local development mode.
     })
     ```
     ```ts {{ title: "Fly.io" }}
-    // Fly includes the FLY_MACHINE_ID env var at runtime.
+    // Fly включает переменную окружения FLY_MACHINE_ID во время выполнения.
     // https://fly.io/docs/machines/runtime-environment/
     await connect({
       apps: [...],
@@ -255,9 +255,9 @@ No signing or event keys are required in local development mode.
     ```
     </CodeGroup>
   </Step>
-  <Step title="Set the max concurrency (recommended)">
-    The `maxWorkerConcurrency` option is used to limit the number of concurrent steps that can be executed by the worker instance.
-    This allows Inngest to distribute load across multiple workers and not overload a single worker.
+  <Step title="Установите максимальный параллелизм (рекомендуется)">
+    Параметр `maxWorkerConcurrency` используется для ограничения количества шагов, одновременно выполняемых экземпляром воркера.
+    Это позволяет контролировать использование ресурсов и предотвращать перегрузку одного воркера слишком большим числом одновременных запросов.
 
     <CodeGroup>
     ```ts
@@ -270,25 +270,25 @@ No signing or event keys are required in local development mode.
   </Step>
 </Steps>
 
-## Lifecycle
+## Жизненный цикл
 
-As a connect worker is a long-running process, it's important to understand the lifecycle of the worker and how it relates to the deployment of a new version of your app. Here is an overview of the lifecycle of a connect worker and where you can hook into it to handle graceful shutdowns and other lifecycle events.
+Поскольку connect-воркер является долгоработающим процессом, важно понимать его жизненный цикл и его связь с развёртыванием новых версий приложения. Ниже представлен обзор жизненного цикла connect-воркера и точки, в которых можно перехватить управление для корректного завершения работы и других событий.
 
 <Steps>
   <Step>
-    `CONNECTING` - The worker is establishing a connection to Inngest. This starts when `connect()` is called.
+    `CONNECTING` — Воркер устанавливает соединение с Inngest. Начинается при вызове `connect()`.
 
-    First, the worker sends a request to the Inngest API via HTTP to get connection information. The response includes the WebSocket gateway URL. The worker then connects to the WebSocket gateway.
+    Сначала воркер отправляет HTTP-запрос в Inngest API для получения информации о соединении. Ответ содержит URL WebSocket-шлюза. Затем воркер подключается к WebSocket-шлюзу.
   </Step>
   <Step>
-    `ACTIVE` - The worker is connected to Inngest and ready to execute functions.
+    `ACTIVE` — Воркер подключён к Inngest и готов выполнять функции.
 
-    * The new `appVersion` is synced including the latest function configurations.
-    * The worker begins sending and receiving "heartbeat" messages to Inngest to ensure the connection is still active.
-    * The worker will automatically reconnect if the connection is lost.
+    * Синхронизируется новая `appVersion`, включая актуальные конфигурации функций.
+    * Воркер начинает отправлять и получать «heartbeat»-сообщения Inngest для проверки активности соединения.
+    * Воркер автоматически переподключается при потере соединения.
 
     ```ts {{ title: "TypeScript" }}
-    // The connect promise will resolve when the connection is ACTIVE
+    // Promise от connect разрешится, когда соединение станет ACTIVE
     const connection = await connect({
       apps: [...],
     })
@@ -297,37 +297,37 @@ As a connect worker is a long-running process, it's important to understand the 
     ```
   </Step>
   <Step>
-    `RECONNECTING` - The worker is reconnecting to Inngest after a connection was lost.
+    `RECONNECTING` — Воркер переподключается к Inngest после потери соединения.
 
-    The worker will automatically flush any in-flight steps via the HTTP API when the WebSocket connection is lost.
+    При потере WebSocket-соединения воркер автоматически отправит все выполняющиеся шаги через HTTP API.
 
-    By default, the worker will attempt to reconnect to Inngest an infinite number of times.
+    По умолчанию воркер будет пытаться переподключиться к Inngest бесконечное количество раз.
   </Step>
   <Step>
-    `CLOSING` - The worker is beginning the shutdown process.
+    `CLOSING` — Воркер начинает процесс завершения работы.
 
-    * New steps will not be accepted after this state is entered.
-    * Existing steps will be allowed to complete. The worker will flush any in-flight steps via the HTTP API after the WebSocket connection is closed.
+    * После перехода в это состояние новые шаги не принимаются.
+    * Текущие шаги завершаются. После закрытия WebSocket-соединения воркер отправит все выполняющиеся шаги через HTTP API.
 
-    By default, the SDK listens for `SIGTERM` and `SIGINT` signals and begins the shutdown process. You can customize this behavior by in each SDK:
+    По умолчанию SDK прослушивает сигналы `SIGTERM` и `SIGINT` и начинает процесс завершения. Это поведение можно настроить в каждом SDK:
 
     <CodeGroup>
     ```ts
-    // You can explicitly configure which signals the SDK should
-    // listen for by an array of signals to `handleShutdownSignals`:
+    // Можно явно указать, какие сигналы SDK должен прослушивать,
+    // передав массив сигналов в handleShutdownSignals:
     const connection = await connect({
       apps: [...],
-      // ex. Only listen for SIGTERM, or pass an empty array to listen to no signals
+      // Например, слушать только SIGTERM или передать пустой массив, чтобы не слушать сигналы
       handleShutdownSignals: ['SIGTERM'],
     })
     ```
     ```go
-    // The Go SDK must receive a Context object that will be notified
-    // when the correct signals are received. Use signal.NotifyContext:
+    // Go SDK должен получить объект Context, который будет уведомлён
+    // при получении нужных сигналов. Используйте signal.NotifyContext:
     ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
     defer cancel()
 
-    // Later in your function - pass the context to the connect function:
+    // Далее в функции — передайте контекст в connect:
     ws, err := inngestgo.Connect(ctx, inngestgo.ConnectOpts{
         InstanceID: inngestgo.Ptr("example-worker"),
         Apps:       []inngestgo.Client{client},
@@ -335,57 +335,57 @@ As a connect worker is a long-running process, it's important to understand the 
     ```
     </CodeGroup>
 
-    You can manually close the connection with the `close` method on the connection object:
+    Соединение можно закрыть вручную с помощью метода `close` объекта соединения:
 
     ```ts
     await connection.close()
-    // Connection is now closed
+    // Соединение закрыто
     ```
   </Step>
   <Step>
-    `CLOSED` - The worker's WebSocket connection has closed.
+    `CLOSED` — WebSocket-соединение воркера закрыто.
 
-    By this stage, all in-flight steps will be flushed via the HTTP API as the WebSocket connection is closed, ensuring that no in-progress steps are lost.
+    К этому моменту все выполняющиеся шаги будут отправлены через HTTP API по мере закрытия WebSocket-соединения, что гарантирует отсутствие потерь выполняющихся шагов.
 
     ```ts {{ title: "TypeScript" }}
-    // The `closed` promise will resolve when the connection is "CLOSED"
+    // Promise `closed` разрешится, когда соединение перейдёт в состояние "CLOSED"
     await connection.closed
-    // Connection is now closed
+    // Соединение закрыто
     ```
   </Step>
 </Steps>
 
 <Info>
-  **WebSocket connection and HTTP fallback** - While a WebSocket connection is open, the worker will receive and send all step results via the WebSocket connection. When the connection closes, the worker will fallback to the HTTP API to send any remaining step results.
+  **WebSocket-соединение и HTTP-резерв** — Пока WebSocket-соединение открыто, воркер получает и отправляет все результаты шагов через него. При закрытии соединения воркер переключается на HTTP API для отправки оставшихся результатов шагов.
 </Info>
 
-## Worker observability
+## Наблюдаемость воркеров
 
-In the Inngest Cloud dashboard, you can view the connection status of each of your workers. At a glance, you can see each worker's instance id, connection status, connected at timestamp, last heartbeat, the app version, and app version.
+В панели управления Inngest Cloud вы можете просматривать статус соединения каждого воркера. С первого взгляда видны ID экземпляра, статус соединения, время подключения, время последнего heartbeat, версия приложения.
 
-This view is helpful for debugging connection issues or verifying rolling deploys of new app versions.
+Этот раздел полезен для отладки проблем с соединением или проверки скользящих развёртываний новых версий приложения.
 
-![App worker observability](/assets/docs/connect/cloud-app-workers.png)
+![Наблюдаемость воркеров приложения](/assets/docs/connect/cloud-app-workers.png)
 
-## Syncing and Rollbacks
+## Синхронизация и откаты
 
-[//]: <> (TODO: Create diagram to explain syncing)
+[//]: <> (TODO: Создать диаграмму для объяснения синхронизации)
 
-Inngest keeps track of the version your workers are running on. This internal representation changes when you update your function configuration, provide a new app version identifier to the client configuration, or change the SDK version or language.
+Inngest отслеживает версию, на которой работают ваши воркеры. Это внутреннее представление изменяется при обновлении конфигурации функции, предоставлении нового идентификатора версии приложения в конфигурации клиента или изменении версии SDK либо языка.
 
-When you deploy a new version of your application, the first worker to connect to Inngest will automatically sync your app. This will update function configurations to the desired state configured in your code.
+При развёртывании новой версии приложения первый воркер, подключившийся к Inngest, автоматически синхронизирует приложение. При этом конфигурации функций обновляются до желаемого состояния, заданного в коде.
 
-`connect` supports rolling releases: During a deployment of your app, Inngest will run functions on all connected workers, regardless of the version, as long as they are able to process a request for a given function. This prevents traffic from concentrating on a single instance during rollouts and causing a thundering herd issue.
+`connect` поддерживает скользящие релизы: во время развёртывания приложения Inngest будет запускать функции на всех подключённых воркерах независимо от версии, если они способны обработать запрос для данной функции. Это предотвращает концентрацию трафика на одном экземпляре во время развёртывания и проблему «стада громов».
 
-Once all old workers have terminated after a deployment, you can roll back to an old version by bringing back an old worker. Similar to the deployment process, this will update the function configuration to the previous state and gradually allow you to shift traffic to the old version by bringing up more old workers while terminating workers running the newer version.
+После завершения работы всех старых воркеров после развёртывания можно откатиться к старой версии, вернув старый воркер. Аналогично процессу развёртывания, это обновит конфигурацию функций до предыдущего состояния и позволит постепенно перенаправлять трафик на старую версию, добавляя старые воркеры и останавливая воркеры с новой версией.
 
-## Health checks
+## Проверки работоспособности
 
-If you are running your app in a containerized environment, we recommend using a health check to ensure that your app is running and ready to accept connections. This is key for graceful rollouts of new app versions. If you are using Kubernetes, we recommend using the `readinessProbe` to check that the app is ready to accept connections.
+При запуске приложения в контейнерной среде рекомендуется использовать проверку работоспособности, чтобы убедиться, что приложение запущено и готово принимать соединения. Это ключевой элемент для корректного скользящего развёртывания новых версий. При использовании Kubernetes рекомендуется применять `readinessProbe` для проверки готовности приложения принимать соединения.
 
-The simplest way to implement a health check is to create an http endpoint that listens for health check requests. As connect is an outbound WebSocket connection, you'll need to create a small http server that listens for health check requests and returns a 200 status code when the connection to Inngest is active.
+Простейший способ реализовать проверку работоспособности — создать HTTP-эндпоинт, прослушивающий запросы проверки. Поскольку connect является исходящим WebSocket-соединением, необходимо создать небольшой HTTP-сервер, который прослушивает запросы проверки и возвращает код 200, когда соединение с Inngest активно.
 
-Here is an example of using `connect` with a basic Node.js http server to listen for health check requests and return a 200 status code when the connection to Inngest is active.
+Ниже приведён пример использования `connect` с базовым HTTP-сервером Node.js для обработки запросов проверки работоспособности и возврата кода 200 при активном соединении с Inngest.
 
 <CodeGroup>
 ```ts {{ title: "Node.js" }}
@@ -400,8 +400,8 @@ import { inngest, functions } from "./src/inngest";
 
   console.log("Worker: connected", connection);
 
-  // This is a basic web server that only listens for the /ready endpoint
-  // and returns a 200 status code when the connection to Inngest is active.
+  // Базовый веб-сервер, прослушивающий только эндпоинт /ready
+  // и возвращающий 200, когда соединение с Inngest активно.
   const httpServer = createServer((req, res) => {
     if (req.url === "/ready") {
       if (connection.state === ConnectionState.ACTIVE) {
@@ -417,17 +417,17 @@ import { inngest, functions } from "./src/inngest";
     res.end("NOT FOUND");
   });
 
-  // Start the server on a port of your choice
+  // Запускаем сервер на выбранном порту
   httpServer.listen(8080, () => {
     console.log("Worker: HTTP server listening on port 8080");
   });
 
-  // When the Inngest connection has gracefully closed,
-  // this will resolve and the app will exit.
+  // Когда соединение Inngest корректно закроется,
+  // этот промис разрешится и приложение завершится.
   await connection.closed;
   console.log("Worker: Shut down");
 
-  // Stop the HTTP server
+  // Останавливаем HTTP-сервер
   httpServer.close();
 })();
 ```
@@ -441,8 +441,8 @@ const connection = await connect({
 
 console.log("Worker: connected", connection);
 
-// Start a basic web server that only listens for the /ready endpoint
-// and returns a 200 status code when the connection to Inngest is active.
+// Запускаем базовый веб-сервер, прослушивающий только эндпоинт /ready
+// и возвращающий 200, когда соединение с Inngest активно.
 const server = Bun.serve({
   port: 8080,
   routes: {
@@ -459,19 +459,19 @@ const server = Bun.serve({
 
 console.log("Worker: HTTP server listening on port 8080");
 
-// When the Inngest connection has gracefully closed,
-// this will resolve and the app will exit.
+// Когда соединение Inngest корректно закроется,
+// этот промис разрешится и приложение завершится.
 await connection.closed;
 console.log("Worker: Shut down");
 
-// Stop the HTTP server
+// Останавливаем HTTP-сервер
 await server.stop();
 ```
 </CodeGroup>
 
-### Kubernetes readiness probe
+### Проба готовности Kubernetes
 
-If you are running your app in Kubernetes, you can use the `readinessProbe` to check that the app is ready to accept connections. For the above example running on port 8080, the readiness probe would look like this:
+При запуске приложения в Kubernetes можно использовать `readinessProbe` для проверки готовности принимать соединения. Для примера выше, работающего на порту 8080, проба готовности выглядит так:
 
 ```yaml
 readinessProbe:
@@ -483,41 +483,41 @@ readinessProbe:
   failureThreshold: 3
 ```
 
-## Worker concurrency
+## Параллелизм воркеров
 
-{/* TODO: Mention minimum supported version for this feature */}
+{/* TODO: Указать минимально поддерживаемую версию для этой функции */}
 
-Worker concurrency is supported in the following versions of the SDK:
-- **TypeScript**: SDK `3.45.1` or higher.
-- **Go**: SDK `0.14.3` or higher.
-- **Python**: SDK `0.5.12` or higher.
+Параллелизм воркеров поддерживается в следующих версиях SDK:
+- **TypeScript**: SDK `3.45.1` или выше.
+- **Go**: SDK `0.14.3` или выше.
+- **Python**: SDK `0.5.12` или выше.
 
-Each worker can configure the maximum number of concurrent steps it can execute simultaneously using the `maxWorkerConcurrency` option.
-This allows you to control resource usage and prevent a single worker from being overwhelmed with too many concurrent requests.
+Каждый воркер может настроить максимальное количество одновременно выполняемых шагов с помощью параметра `maxWorkerConcurrency`.
+Это позволяет контролировать использование ресурсов и предотвращать перегрузку одного воркера слишком большим числом одновременных запросов.
 
-By default, there is no limit on concurrent step execution. The worker will accept as many steps as Inngest sends to it.
+По умолчанию ограничения на одновременное выполнение шагов нет. Воркер будет принимать столько шагов, сколько отправит Inngest.
 
-When you set `maxWorkerConcurrency`, Inngest will distribute load across multiple workers based on their available capacity.
-Workers with available capacity will receive more work, while workers at their limit will not receive additional steps until capacity becomes available.
+При установке `maxWorkerConcurrency` Inngest будет распределять нагрузку между воркерами в зависимости от их доступной ёмкости.
+Воркеры с доступной ёмкостью будут получать больше работы, тогда как воркеры, достигшие лимита, не будут получать дополнительные шаги до освобождения ёмкости.
 
 <Info>
-  When a worker reaches its `maxWorkerConcurrency` limit, you may see an **"All workers are at capacity"** error in the Inngest dashboard. This is expected behavior — the worker rejects the step and Inngest automatically re-enqueues it, retrying until a worker has available capacity. These capacity errors do **not** count towards your function's [retries](/docs/functions/retries) configuration.
+  Когда воркер достигает лимита `maxWorkerConcurrency`, в панели управления Inngest может появиться ошибка **«All workers are at capacity»** («Все воркеры заняты»). Это ожидаемое поведение — воркер отклоняет шаг, а Inngest автоматически повторно ставит его в очередь, повторяя попытки до появления воркера со свободной ёмкостью. Эти ошибки ёмкости **не** учитываются в настройках [повторных попыток](/docs/functions/retries) вашей функции.
 </Info>
 
-Inngest uses the `instanceId` to track the `maxWorkerConcurrency` for each worker.
-This means that if you have multiple workers with the same `instanceId`, they will share the same `maxWorkerConcurrency` limit.
+Inngest использует `instanceId` для отслеживания `maxWorkerConcurrency` каждого воркера.
+Это означает, что при наличии нескольких воркеров с одинаковым `instanceId` они будут делить одинаковый лимит `maxWorkerConcurrency`.
 
-Inngest considers the `maxWorkerConcurrency` from the latest connection request.
-This means that if you update the `maxWorkerConcurrency` after a worker is connected and create a new connection, the worker's `maxWorkerConcurrency` will be updated to the new limit.
+Inngest учитывает `maxWorkerConcurrency` из последнего запроса на соединение.
+Это значит, что при обновлении `maxWorkerConcurrency` после подключения воркера и создании нового соединения лимит воркера будет обновлён до нового значения.
 
-**Benefits:**
-- Prevents worker resource exhaustion (CPU, memory, connections)
-- Enables predictable resource allocation per worker
-- Helps with horizontal scaling over both homogeneous and heterogenous workers
+**Преимущества:**
+- Предотвращение исчерпания ресурсов воркера (CPU, память, соединения)
+- Предсказуемое распределение ресурсов по воркерам
+- Помощь в горизонтальном масштабировании как однородных, так и разнородных воркеров
 
-{/* TODO: Uncomment when we have intelligent load balancing
-- Allows Inngest to intelligently distribute load across your worker fleet
-- Helps with horizontal scaling by ensuring even distribution
+{/* TODO: Раскомментировать при появлении интеллектуального балансирования нагрузки
+- Позволяет Inngest интеллектуально распределять нагрузку по парку воркеров
+- Помогает с горизонтальным масштабированием за счёт равномерного распределения
 */}
 
 <CodeGroup>
@@ -525,13 +525,13 @@ This means that if you update the `maxWorkerConcurrency` after a worker is conne
 await connect({
   apps: [{ client: inngest, functions }],
   instanceId: "example-worker",
-  maxWorkerConcurrency: 10, // Max 10 concurrent steps on this worker
+  maxWorkerConcurrency: 10, // Макс. 10 одновременных шагов на этом воркере
 })
 ```
 ```go
 conn, err := inngestgo.Connect(ctx, inngestgo.ConnectOpts{
   InstanceID:           inngestgo.Ptr("example-worker"),
-  MaxWorkerConcurrency: inngestgo.Ptr(int64(10)), // Max 10 concurrent steps
+  MaxWorkerConcurrency: inngestgo.Ptr(int64(10)), // Макс. 10 одновременных шагов
   Apps:                 []inngestgo.Client{client},
 })
 ```
@@ -540,45 +540,45 @@ asyncio.run(
     connect(
         apps=[(client, functions)],
         instance_id="example-worker",
-        max_worker_concurrency=10,  # Max 10 concurrent steps
+        max_worker_concurrency=10,  # Макс. 10 одновременных шагов
     ).start()
 )
 ```
 </CodeGroup>
 
-**Environment variable:**
+**Переменная окружения:**
 
-You can also set the maximum worker concurrency via the `INNGEST_CONNECT_MAX_WORKER_CONCURRENCY` environment variable.
-This is useful for configuring concurrency without changing code.
+Максимальный параллелизм воркера также можно задать через переменную окружения `INNGEST_CONNECT_MAX_WORKER_CONCURRENCY`.
+Это удобно для настройки параллелизма без изменения кода.
 
 ```bash
 INNGEST_CONNECT_MAX_WORKER_CONCURRENCY=100
 ```
 
-If both the option and environment variable are set, the option takes precedence.
+Если заданы и параметр, и переменная окружения, параметр имеет приоритет.
 
-**Default behavior:**
+**Поведение по умолчанию:**
 
-If `maxWorkerConcurrency` is not set (or set to `0`), there is no limit on concurrent step execution.
-Inngest will send as many steps as limited by your account's concurrency limit.
+Если `maxWorkerConcurrency` не задан (или задан равным `0`), ограничения на одновременное выполнение шагов нет.
+Inngest будет отправлять столько шагов, сколько допускает лимит параллелизма вашего аккаунта.
 
-### Connection-level concurrency
+### Параллелизм на уровне соединения
 
-You can set a different `maxWorkerConcurrency` for each connection from the same worker by specifying a unique `instanceId` for each connection.
-This will allow you to have different `maxWorkerConcurrency` limits for different connections.
+Для каждого соединения одного воркера можно задать разное значение `maxWorkerConcurrency`, указав уникальный `instanceId` для каждого соединения.
+Это позволит иметь разные лимиты `maxWorkerConcurrency` для разных соединений.
 
-Due to different `instanceId` value, Inngest will consider each connection as a separate worker and will not share the same `maxWorkerConcurrency` limit.
+Из-за разных значений `instanceId` Inngest будет считать каждое соединение отдельным воркером и не будет делить между ними одинаковый лимит `maxWorkerConcurrency`.
 
 <CodeGroup>
 ```ts
-// Connection 1 with different concurrency limit
+// Соединение 1 с отдельным лимитом параллелизма
 await connect({
   apps: [{ client: inngest, functions }],
   instanceId: "worker-1-conn-1",
   maxWorkerConcurrency: 50,
 })
 
-// Connection 2 with different concurrency limit
+// Соединение 2 с отдельным лимитом параллелизма
 await connect({
   apps: [{ client: inngest, functions }],
   instanceId: "worker-1-conn-2",
@@ -586,14 +586,14 @@ await connect({
 })
 ```
 ```go
-// Connection 1 with different concurrency limit
+// Соединение 1 с отдельным лимитом параллелизма
 conn1, err := inngestgo.Connect(ctx, inngestgo.ConnectOpts{
   InstanceID:           inngestgo.Ptr("worker-1-conn-1"),
   MaxWorkerConcurrency: inngestgo.Ptr(int64(50)),
   Apps:                 []inngestgo.Client{client},
 })
 
-// Connection 2 with different concurrency limit
+// Соединение 2 с отдельным лимитом параллелизма
 conn2, err := inngestgo.Connect(ctx, inngestgo.ConnectOpts{
   InstanceID:           inngestgo.Ptr("worker-1-conn-2"),
   MaxWorkerConcurrency: inngestgo.Ptr(int64(20)),
@@ -601,7 +601,7 @@ conn2, err := inngestgo.Connect(ctx, inngestgo.ConnectOpts{
 })
 ```
 ```python
-# Connection 1 with different concurrency limit
+# Соединение 1 с отдельным лимитом параллелизма
 asyncio.run(
     connect(
         apps=[(client, functions)],
@@ -610,7 +610,7 @@ asyncio.run(
     ).start()
 )
 
-# Connection 2 with different concurrency limit
+# Соединение 2 с отдельным лимитом параллелизма
 asyncio.run(
     connect(
         apps=[(client, functions)],
@@ -621,15 +621,15 @@ asyncio.run(
 ```
 </CodeGroup>
 
-## Self hosted Inngest
+## Self-hosted Inngest
 
 <Info>
-  Self-hosting support for `connect` is in development. Please [contact us](https://app.inngest.com/support) for more info.
+  Поддержка self-hosted для `connect` находится в разработке. Пожалуйста, [свяжитесь с нами](https://app.inngest.com/support) для получения дополнительной информации.
 </Info>
 
-If you are [self-hosting](/docs/self-hosting?ref=docs-connect) Inngest, you need to ensure that the Inngest WebSocket gateway is accessible within your network. The Inngest WebSocket gateway is available at port `8289`.
+При [самостоятельном размещении](/docs/self-hosting?ref=docs-connect) Inngest необходимо убедиться, что WebSocket-шлюз Inngest доступен в вашей сети. WebSocket-шлюз Inngest доступен на порту `8289`.
 
-Depending on your network configuration, you may need to set the gateway URL that the SDK uses to connect.
+В зависимости от конфигурации сети может потребоваться задать URL шлюза, используемый SDK для подключения.
 
 ```ts
 const connection = await connect({
@@ -638,12 +638,12 @@ const connection = await connect({
 })
 ```
 
-{/* TODO: multiple apps in a single worker */}
+{/* TODO: несколько приложений в одном воркере */}
 
-## Migrating from serve
+## Миграция с serve
 
 <Info>
-  We are working on enabling more fine-grained function and app migrations from existing `serve` apps to `connect`.
+  Мы работаем над поддержкой более детальной миграции функций и приложений с существующих `serve`-приложений на `connect`.
 </Info>
 
-We recommend setting up a new app for trying out `connect` before migrating your existing `serve` apps. {/* We will support gradually migrating your existing `serve` apps in a future release. */}
+Рекомендуется создать новое приложение для опробования `connect` перед миграцией существующих `serve`-приложений. {/* Постепенная миграция существующих `serve`-приложений будет поддержана в будущем релизе. */}

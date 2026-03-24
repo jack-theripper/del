@@ -1,14 +1,14 @@
 import { CodeGroup, Properties, Property, Callout, Tip } from "src/shared/Docs/mdx";
 
-# Logging
+# Логирование
 
-The Inngest SDK uses **Pino-style object-first** logging, where structured data is passed before the message string:
+SDK Inngest использует логирование **в стиле Pino (объект перед сообщением)**, где структурированные данные передаются перед строкой сообщения:
 
 ```ts
 logger.info({ userId: "abc123" }, "Processing user event");
 ```
 
-A `logger` is available on the function context as `ctx.logger`. It provides `.info()`, `.warn()`, `.error()`, and `.debug()` methods.
+Объект `logger` доступен в контексте функции как `ctx.logger`. Он предоставляет методы `.info()`, `.warn()`, `.error()` и `.debug()`.
 
 ```ts
 export default inngest.createFunction(
@@ -30,9 +30,9 @@ export default inngest.createFunction(
 );
 ```
 
-## Logger interface
+## Интерфейс логгера
 
-Any object that implements these four methods can be used as a logger:
+Любой объект, реализующий эти четыре метода, можно использовать как логгер:
 
 ```ts
 interface Logger {
@@ -43,9 +43,9 @@ interface Logger {
 }
 ```
 
-## Setting a logger
+## Установка логгера
 
-Pass a logger to the `logger` option on the [Inngest client](/docs/reference/typescript/v4/client/create). This logger will be available on `ctx.logger` in all functions.
+Передайте логгер в опцию `logger` на [клиенте Inngest](/docs/reference/typescript/v4/client/create). Этот логгер будет доступен как `ctx.logger` во всех функциях.
 
 <CodeGroup>
 ```ts {{ title: "Pino" }}
@@ -69,7 +69,7 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-// Winston uses string-first logging, so wrap it for compatibility
+// Winston использует логирование строка-первая, оберните для совместимости
 export const inngest = new Inngest({
   id: "my-app",
   logger: wrapStringFirstLogger(logger),
@@ -77,23 +77,23 @@ export const inngest = new Inngest({
 ```
 </CodeGroup>
 
-### Object-first vs string-first loggers
+### Логгеры с объектом первым vs строкой первой
 
-The SDK expects **object-first** loggers (like [Pino](https://github.com/pinojs/pino)), where structured data comes before the message:
+SDK ожидает **логгеры с объектом первым** (как [Pino](https://github.com/pinojs/pino)), где структурированные данные идут перед сообщением:
 
 ```ts
-// Object-first (Pino style) - works out of the box
+// Объект-первый (стиль Pino) - работает сразу
 logger.info({ userId: "abc" }, "User created");
 ```
 
-Some loggers like [Winston](https://github.com/winstonjs/winston) use **string-first** conventions, where the message comes first:
+Некоторые логгеры, например [Winston](https://github.com/winstonjs/winston), используют **строка-первой** соглашение, где сообщение идёт первым:
 
 ```ts
-// String-first (Winston style) - needs wrapping
+// Строка-первая (стиль Winston) - требует обёртки
 logger.info("User created", { userId: "abc" });
 ```
 
-For string-first loggers, use `wrapStringFirstLogger` to adapt them:
+Для логгеров строка-первой используйте `wrapStringFirstLogger` для адаптации:
 
 ```ts
 import { wrapStringFirstLogger } from "inngest";
@@ -108,9 +108,9 @@ const winstonLogger = winston.createLogger({
 const logger = wrapStringFirstLogger(winstonLogger);
 ```
 
-## Default logger
+## Логгер по умолчанию
 
-If no `logger` is set, the SDK uses a built-in `ConsoleLogger` that defaults to `"info"` level. You can customize the level:
+Если `logger` не задан, SDK использует встроенный `ConsoleLogger` с уровнем по умолчанию `"info"`. Можно настроить уровень:
 
 ```ts
 import { ConsoleLogger, Inngest } from "inngest";
@@ -121,16 +121,16 @@ export const inngest = new Inngest({
 });
 ```
 
-`ConsoleLogger` is intended for local development. For production, use a structured logger like Pino.
+`ConsoleLogger` предназначен для локальной разработки. В продакшене используйте структурированный логгер, например Pino.
 
-## Internal logger
+## Внутренний логгер
 
-The SDK produces two categories of logs:
+SDK производит две категории логов:
 
-- **Function logs** - your logs via `ctx.logger` inside Inngest functions
-- **SDK internal logs** - registration, request handling, middleware errors, etc.
+- **Логи функций** — ваши логи через `ctx.logger` внутри функций Inngest
+- **Внутренние логи SDK** — регистрация, обработка запросов, ошибки промежуточного ПО и т.д.
 
-By default, both use the same `logger`. Set `internalLogger` to route SDK internal logs separately:
+По умолчанию оба используют один и тот же `logger`. Установите `internalLogger` для раздельной маршрутизации внутренних логов SDK:
 
 ```ts
 import pino from "pino";
@@ -145,7 +145,7 @@ export const inngest = new Inngest({
 });
 ```
 
-This is useful for filtering or routing SDK internals to a different destination without affecting your function logs.
+Это полезно для фильтрации или маршрутизации внутренних логов SDK в отдельное место назначения без влияния на логи функций.
 
 <CodeGroup>
 ```ts {{ title: "Separate destinations" }}
@@ -170,7 +170,7 @@ const appLogger = pino({ level: "info" });
 export const inngest = new Inngest({
   id: "my-app",
   logger: appLogger,
-  // Silence all SDK internal logs
+  // Заглушить все внутренние логи SDK
   internalLogger: new ConsoleLogger({ level: "silent" }),
 });
 ```
@@ -198,4 +198,4 @@ export const inngest = new Inngest({
 ```
 </CodeGroup>
 
-If `internalLogger` is not set, it falls back to `logger`.
+Если `internalLogger` не задан, используется `logger`.

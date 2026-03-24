@@ -1,16 +1,16 @@
 import { CodeGroup, Callout } from "src/shared/Docs/mdx";
 
-export const description = 'Prevent excessive function runs over a given time period by skipping events beyond a specific limit. Ideal for protecting against abuse.'
+export const description = 'Предотвращайте избыточные запуски функций за заданный период времени, пропуская события сверх установленного лимита. Идеально для защиты от злоупотреблений.'
 
-# Rate limiting
+# Ограничение частоты (Rate limiting)
 
-Rate limiting is a _hard limit_ on how many function runs can start within a time period. Events that exceed the rate limit are _skipped_ and do not trigger functions to start. This prevents excessive function runs over a given time period. Some use cases for rate limiting include:
+Ограничение частоты — это _жесткий лимит_ на количество запусков функции, которые могут начаться в течение заданного периода времени. События, превышающие лимит, _пропускаются_ и не запускают функцию. Это предотвращает избыточные запуски функций за определенный период. Некоторые варианты использования:
 
-* Preventing abuse of your system.
-* Reducing frequency of data synchronization functions.
-* Skipping noisy or duplicate [webhook](/docs/platform/webhooks) events.
+* Защита системы от злоупотреблений.
+* Снижение частоты функций синхронизации данных.
+* Пропуск шумных или дублирующихся событий [вебхуков](/docs/platform/webhooks).
 
-## How to configure rate limiting
+## Как настроить ограничение частоты
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
@@ -25,8 +25,8 @@ export default inngest.createFunction(
     triggers: { event: "intercom/company.updated" },
   },
   async ({ event, step }) => {
-    // This function will be rate limited
-    // It will only run once per 4 hours for a given event payload with matching company_id
+    // Функция будет ограничена по частоте
+    // Она запустится не чаще одного раза в 4 часа для данного company_id в полезной нагрузке события
   }
 );
 ```
@@ -44,7 +44,7 @@ inngestgo.CreateFunction(
 	},
 	inngestgo.EventTrigger("intercom/company.updated", nil),
 	func(ctx context.Context, input inngestgo.Input[map[string]any]) (any, error) {
-		// This function will be rate limited to 1 run per 4 hours for a given event payload with matching company_id
+		// Функция будет ограничена до 1 запуска за 4 часа для заданного company_id
 		return nil, nil
 	},
 )
@@ -61,79 +61,79 @@ inngestgo.CreateFunction(
   trigger=inngest.Trigger(event="intercom/company.updated")
 )
 async def synchronize_data(ctx: inngest.Context):
-    # This function will be rate limited to 1 run per 4 hours for a given event payload with matching company_id
+    # Функция будет ограничена до 1 запуска за 4 часа для заданного company_id
 ```
 
 </CodeGroup>
 
-### Configuration reference
+### Справочник по конфигурации
 
-* `limit` - The maximum number of functions to run in the given time period.
-* `period` - The time period of which to set the limit. The period begins when the first matching event is received.
-* `key` - An optional [expression](/docs/guides/writing-expressions) using event data to apply each limit too. Each unique value of the `key` has its own limit, enabling you to rate limit function runs by any particular key, like a user ID.
-
-<Callout>
-  Any events received in excess of your `limit` are ignored. This means this is not the right approach if you need to process every single event sent to Inngest. Consider using [throttle](/docs/guides/throttling) instead.
-</Callout>
-
-## How rate limiting works
-
-Each time an event is received that matches your function's trigger, it is evaluated prior to executing your function. If `rateLimit` is configured, Inngest uses the `limit` and `period` options to only execute a maximum number of functions during that period.
-
-Inngest's rate limiting implementation uses the [“Generic Cell Rate Algorithm”](https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm) (GCRA). To _overly simplify_ how this works, Inngest will use the `limit` and `period` options to create "buckets" of time in which your function can execute _once_.
-
-```
-limit / period = bucket time window
-```
-
-For example, this means that for a `limit: 10` and `period: '60m'` (60 minutes), the bucket time window will be 6 minutes. Any event triggering the function "fills up" the bucket for that time window and any additional events are ignored until the bucket's time window is reset. The algorithm (GCRA) is more sophisticated than this, but at the basic level - `rateLimit` ensures that you'll only run the max `limit` number of items over the `period` that you specify.
+* `limit` — максимальное количество запусков функции в заданный период времени.
+* `period` — период времени, на который устанавливается лимит. Период начинается, когда получено первое подходящее событие.
+* `key` — необязательное [выражение](/docs/guides/writing-expressions), использующее данные события для применения лимита. Каждое уникальное значение `key` имеет свой собственный лимит, что позволяет ограничивать частоту запусков функций по конкретному ключу (например, ID пользователя).
 
 <Callout>
-  Events that are ignored by the function will continue to be stored by Inngest.
+  Любые события сверх вашего `limit` игнорируются. Это означает, что данный подход не подходит, если вам необходимо обработать абсолютно каждое событие, отправленное в Inngest. Рассмотрите вместо этого [дросселирование (throttling)](/docs/guides/throttling).
 </Callout>
 
-**How the rate limit is applied with a consistent rate of events received**
+## Как это работает
+
+Каждый раз, когда поступает событие, соответствующее триггеру вашей функции, перед выполнением функции оно сначала проверяется. Если настроен `rateLimit`, Inngest использует параметры `limit` и `period`, чтобы запускать не более заданного количества функций в течение этого периода.
+
+Реализация ограничения частоты в Inngest использует [Generic Cell Rate Algorithm (GCRA)](https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm). Упрощенно: Inngest использует `limit` и `period`, чтобы создать «окна» времени (buckets), в каждом из которых ваша функция может выполниться _один раз_.
+
+```
+limit / period = размер временного окна (bucket)
+```
+
+Например, при `limit: 10` и `period: '60m'` (60 минут) размер окна составит 6 минут. Любое событие, запускающее функцию, «заполняет» окно на этот интервал, и дополнительные события игнорируются, пока окно не обновится. Алгоритм (GCRA) сложнее, но базовая идея такова — `rateLimit` гарантирует, что вы выполните максимум `limit` запусков за указанный `period`.
+
+<Callout>
+  События, проигнорированные функцией, продолжат храниться в Inngest.
+</Callout>
+
+**Как применяется ограничение частоты при равномерном поступлении событий**
 
 <img
   src="/assets/docs/reference/function-rate-limit.png"
   width="800"
   height={280}
   quality="95"
-  alt="Visualization of how the rate limit is applied with a consistent rate of events received"
+  alt="Визуализация применения ограничения частоты при равномерном поступлении событий"
 />
 
-**How the rate limit is applied with sporadic events received**
+**Как применяется ограничение частоты при нерегулярном поступлении событий**
 
 <img
   src="/assets/docs/reference/function-rate-limit-gaps.png"
   width="800"
   height={280}
   quality="95"
-  alt="Visualization of how the rate limit is applied with sporadic events received"
+  alt="Визуализация применения ограничения частоты при нерегулярном поступлении событий"
 />
 
-**How the rate limit is applied when limit is set to 1**
+**Как применяется ограничение частоты при лимите 1**
 
 <img
   src="/assets/docs/reference/function-rate-limit-equal-1.png"
   width="800"
   height={280}
   quality="95"
-  alt="Visualization of how the rate limit is applied when limit is set to 1"
+  alt="Визуализация применения ограничения частоты при лимите 1"
 />
 
-### Using a `key`
+### Использование ключа (`key`)
 
-When a `key` is added, a separate limit is applied for each unique value of the `key` expression. For example, if your `key` is set to `event.data.customer_id`, each customer would have their individual rate limit applied to functions run meaning different users might have the same function run in same bucket time window, but two runs will not happen for the same `event.data.customer_id`. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more information.
+При добавлении `key` отдельный лимит применяется к каждому уникальному значению выражения `key`. Например, если ваш `key` установлен в `event.data.customer_id`, для каждого клиента будет применяться свой собственный лимит. Это означает, что разные пользователи могут запускать одну и ту же функцию в одном и том же временном окне, но два запуска не произойдут для одного и того же `event.data.customer_id`. Подробнее — в [руководстве по написанию выражений](/docs/guides/writing-expressions).
 
-**Note** - To prevent duplicate events from triggering your function more than once in a 24 hour period, use [the `idempotency` option](/docs/guides/handling-idempotency#at-the-function-level-the-consumer) which is the equivalent to setting `rateLimit` with a `key`, a `limit` of `1`  and `period` of `24hr`.
+**Примечание.** Чтобы предотвратить повторный запуск функции одним и тем же дублирующим событием чаще, чем раз в 24 часа, используйте [опцию `idempotency`](/docs/guides/handling-idempotency#at-the-function-level-the-consumer), что эквивалентно `rateLimit` с `key`, `limit: 1` и `period: '24hr'`.
 
-## Limitations
+## Ограничения
 
-* The maximum rate limit `period` is 24 hours.
+* Максимальное значение `period` — 24 часа.
 
-## Further reference
+## Дополнительные справочные материалы
 
-* [Rate limiting vs Throttling](/docs/guides/throttling#throttling-vs-rate-limiting)
-* [TypeScript SDK Reference](/docs/reference/functions/rate-limit)
-* [Python SDK Reference](/docs/reference/python/functions/create#configuration)
+* [Ограничение частоты vs дросселирование](/docs/guides/throttling#throttling-vs-rate-limiting)
+* [Справочник по TypeScript SDK](/docs/reference/functions/rate-limit)
+* [Справочник по Python SDK](/docs/reference/python/functions/create#configuration)

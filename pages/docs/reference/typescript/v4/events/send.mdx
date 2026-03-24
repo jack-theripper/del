@@ -1,11 +1,11 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup } from "src/shared/Docs/mdx";
 
-export const description = `Send one or more events to Inngest via inngest.send() in the TypeScript SDK.`
+export const description = `Отправка одного или нескольких событий в Inngest через inngest.send() в TypeScript SDK.`
 
-# Send events
+# Отправка событий
 
 
-Send events to Inngest. Functions with matching event triggers will be invoked.
+Отправка событий в Inngest. Функции с соответствующими триггерами будут вызваны.
 
 ```ts
 import { inngest } from "./client";
@@ -23,10 +23,10 @@ await inngest.send({
 })
 ```
 
-To send events from within the context of a function, use [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event).
+Для отправки событий внутри функции используйте [`step.sendEvent()`](/docs/reference/typescript/v4/functions/step-send-event).
 
 <Callout>
-  Use [`eventType().create()`](/docs/reference/typescript/v4/functions/triggers#with-inngestsend-and-stepsendevent) to build fully typed event payloads for `inngest.send()`.
+  Используйте [`eventType().create()`](/docs/reference/typescript/v4/functions/triggers#with-inngestsend-and-stepsendevent) для создания полностью типизированных полезных нагрузок событий для `inngest.send()`.
 </Callout>
 
 ---
@@ -38,44 +38,42 @@ To send events from within the context of a function, use [`step.sendEvent()`](/
   <Col>
     <Properties>
       <Property name="eventPayload" type="object | object[]" required>
-        An event payload object or an array of event payload objects.
+        Объект полезной нагрузки события или массив объектов полезной нагрузки событий.
 
         <Properties nested={true}>
           <Property name="name" type="string" required>
-            The event name. We recommend using lowercase dot notation for names, prepending `prefixes/` with a slash for organization.
+            Имя события. Рекомендуем использовать нижний регистр с точечной нотацией, добавляя префиксы через слеш для организации.
           </Property>
           <Property name="data" type="object" required>
-            Any data to associate with the event. Will be serialized as JSON.
+            Любые данные, связанные с событием. Будут сериализованы как JSON.
           </Property>
           <Property name="user" type="object">
-            Any relevant user identifying data or attributes associated with the event. **This data is encrypted at rest.**
+            Любые идентифицирующие данные пользователя, связанные с событием. **Эти данные шифруются при хранении.**
             <Properties nested>
               <Property name="external_id" type="string">
-                An external identifier for the user. Most commonly, their user id in your system.
+                Внешний идентификатор пользователя. Чаще всего это идентификатор пользователя в вашей системе.
               </Property>
             </Properties>
           </Property>
           <Property name="id" type="string">
-            A unique ID used to idempotently trigger function runs.  If duplicate event IDs are seen,
-	    only the first event will trigger function runs. [Read the idempotency guide here](/docs/guides/handling-idempotency).
+            Уникальный ID для идемпотентного запуска функций. При получении повторяющихся ID событий только первое событие запустит функции. [Читайте руководство по идемпотентности здесь](/docs/guides/handling-idempotency).
           </Property>
           <Property name="ts" type="number">
-            A timestamp integer representing the time (in milliseconds) at which the event occurred. Defaults to the time the Inngest receives the event.
+            Временная метка в целых числах, представляющая время (в миллисекундах) наступления события. По умолчанию используется время получения события Inngest.
 
-	    If the `ts` time is in the future, function runs will be scheduled to start at the given time.   This has the same effect as running `await step.sleepUntil(event.ts)` at
-	    the start of the function.
+	    Если время `ts` в будущем, запуск функций будет запланирован на указанное время. Это имеет тот же эффект, что выполнение `await step.sleepUntil(event.ts)` в начале функции.
 
-            Note: This does not apply to functions waiting for events. Functions waiting for events will immediately resume, regardless of the timestamp.
+            Примечание: это не применяется к функциям, ожидающим событий. Функции, ожидающие событий, возобновятся немедленно, независимо от временной метки.
           </Property>
           <Property name="v" type="string">
-            A version identifier for a particular event payload. e.g. `"2023-04-14.1"`
+            Идентификатор версии конкретной полезной нагрузки события. Например: `"2023-04-14.1"`
           </Property>
         </Properties>
       </Property>
       <Property name="options" type="object">
         <Properties nested={true}>
           <Property name="env" type="string">
-            The [environment](/docs/platform/environments) to send the events to.
+            [Среда](/docs/platform/environments), в которую отправляются события.
           </Property>
         </Properties>
       </Property>
@@ -83,13 +81,13 @@ To send events from within the context of a function, use [`step.sendEvent()`](/
   </Col>
   <Col>
   ```ts
-  // Send a single event
+  // Отправить одно событие
   await inngest.send({
     name: "app/post.created",
     data: { postId: "01H08SEAXBJFJNGTTZ5TAWB0BD" }
   });
 
-  // Send an array of events
+  // Отправить массив событий
   await inngest.send([
     {
       name: "app/invoice.created",
@@ -101,7 +99,7 @@ To send events from within the context of a function, use [`step.sendEvent()`](/
     },
   ]);
 
-  // Send user data that will be encrypted at rest
+  // Отправить данные пользователя, которые будут зашифрованы при хранении
   await inngest.send({
     name: "app/account.created",
     data: { billingPlan: "pro" },
@@ -111,9 +109,9 @@ To send events from within the context of a function, use [`step.sendEvent()`](/
     }
   });
 
-  // Specify the idempotency id, version, and timestamp
+  // Указать ID идемпотентности, версию и временную метку
   await inngest.send({
-    // Use an id specific to the event type & payload
+    // Используйте ID, специфичный для типа и данных события
     id: "cart-checkout-completed-ed12c8bde",
     name: "storefront/cart.checkout.completed",
     data: { cartId: "ed12c8bde" },
@@ -125,9 +123,9 @@ To send events from within the context of a function, use [`step.sendEvent()`](/
   </Col>
 </Row>
 
-### Return values
+### Возвращаемые значения
 
-The function returns a promise that resolves to an object with an array of Event IDs that were sent. These events can be used to look up the event in the Inngest dashboard or via [the REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event).
+Функция возвращает промис, разрешающийся в объект с массивом ID событий, которые были отправлены. Эти события можно использовать для поиска в панели управления Inngest или через [REST API](https://api-docs.inngest.com/docs/inngest-api/pswkqb7u3obet-get-an-event).
 
 ```ts
 const { ids } = await inngest.send([
@@ -148,18 +146,18 @@ const { ids } = await inngest.send([
  */
 ```
 
-## User data encryption 🔐
+## Шифрование данных пользователя 🔐
 
-All data sent in the `user` object is fully encrypted at rest.
+Все данные, отправленные в объекте `user`, полностью шифруются при хранении.
 
 <Callout variant="warning">
-  <span className="text-yellow-300">⚠️</span> When [replaying a function](/docs/platform/replay), `event.user` will be empty. This will be fixed in the future, but for now assume that you cannot replay functions that rely on `event.user` data.
+  <span className="text-yellow-300">⚠️</span> При [воспроизведении функции](/docs/platform/replay) поле `event.user` будет пустым. Это будет исправлено в будущем, но пока предполагается, что нельзя воспроизводить функции, зависящие от данных `event.user`.
 </Callout>
 
-In the future, this object will be used to support programmatic deletion via API endpoint to support certain right-to-be-forgotten flows in your system. This will use the `user.external_id` property for lookup.
+В будущем этот объект будет использоваться для поддержки программного удаления через API для поддержки определённых процессов соблюдения права на забвение в вашей системе. Для поиска будет использоваться свойство `user.external_id`.
 
-## Usage limits
+## Ограничения использования
 
-See [usage limits][usage-limits] for more details.
+Смотрите [ограничения использования][usage-limits] для подробностей.
 
 [usage-limits]: /docs/usage-limits/inngest#events

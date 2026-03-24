@@ -1,62 +1,62 @@
 import { Callout, CodeGroup, Card, CardGroup, ImageTheme } from "src/shared/Docs/mdx";
 import GithubIcon from "shared/Icons/Github"
 
-# Build workflows configurable by your users
+# Создание рабочих процессов, настраиваемых пользователями
 
-Users today are demanding customization and integrations from every product. Your users may want your product to support custom workflows to automate key user actions.
-Leverage our [Workflow Kit](/docs/reference/workflow-kit) to add powerful user-defined workflows features to your product.
+Современные пользователи требуют кастомизации и интеграций от каждого продукта. Ваши пользователи могут захотеть, чтобы ваш продукт поддерживал пользовательские рабочие процессы для автоматизации ключевых действий.
+Используйте наш [Workflow Kit](/docs/reference/workflow-kit) для добавления мощных функций пользовательских рабочих процессов в ваш продукт.
 
-Inngest's Workflow Kit ships as a full-stack package ([`@inngest/workflow-kit`](https://npmjs.com/package/@inngest/workflow-kit)), aiming to simplify the development of user-defined workflows on both the front end and back end:
+Workflow Kit от Inngest поставляется как full-stack пакет ([`@inngest/workflow-kit`](https://npmjs.com/package/@inngest/workflow-kit)), призванный упростить разработку пользовательских рабочих процессов как на фронтенде, так и на бэкенде:
 
 
 <ImageTheme
   dark={'/assets/docs/reference/workflow-kit/workflow-kit-architecture-dark.jpg'}
   light={'/assets/docs/reference/workflow-kit/workflow-kit-architecture-light.jpg'}
   className="my-0"
-  alt={'The Workflow Kit provides a Workflow Engine to compose workflow actions on the back end and a set of pre-defined React components for the front end.'}
+  alt={'Workflow Kit предоставляет Workflow Engine для составления действий рабочего процесса на бэкенде и набор готовых React-компонентов для фронтенда.'}
 />
 
-## Use case: adding AI automation to a Next.js CMS application
+## Сценарий использования: добавление AI-автоматизации в CMS-приложение на Next.js
 
 <CardGroup cols={1}>
-<Card href={'https://github.com/inngest/workflow-kit/tree/main/examples/nextjs-blog-cms#readme'} title={"Clone or deploy this use case"} icon={<GithubIcon className="text-basis h-4 w-4" />}>
-  This use case is available a open-source Next.js demo on GitHub.
+<Card href={'https://github.com/inngest/workflow-kit/tree/main/examples/nextjs-blog-cms#readme'} title={"Клонировать или развернуть этот сценарий"} icon={<GithubIcon className="text-basis h-4 w-4" />}>
+  Этот сценарий доступен как открытое демо-приложение Next.js на GitHub.
 </Card>
 </CardGroup>
 
 
-Our  Next.js CMS application features the following `blog_posts` table:
+Наше CMS-приложение на Next.js содержит следующую таблицу `blog_posts`:
 
-|Column name|Column type|Description|
-|-----------|-----------|-----------|
+|Название столбца|Тип столбца|Описание|
+|----------------|-----------|--------|
 id| `bigint`|
-title | `text`| _The title of the blog post_
-subtitle | `text`| _The subtitle of the blog post_
-status | `text`| _"draft" or "published"_
-markdown | `text`| _The content of the blog post as markdown_
+title | `text`| _Заголовок записи блога_
+subtitle | `text`| _Подзаголовок записи блога_
+status | `text`| _«draft» или «published»_
+markdown | `text`| _Содержимое записи блога в формате markdown_
 created_at | `timestamp`|
 
 <Callout>
 
-You will find a ready-to-use database seed [in the repository](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/supabase/seed.sql).
+Готовые данные для заполнения базы данных можно найти [в репозитории](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/supabase/seed.sql).
 
 </Callout>
 
-We would like to provide the following AI automation tasks to our users:
+Мы хотим предоставить нашим пользователям следующие задачи AI-автоматизации:
 
-**Review tasks**
-- Add a Table of Contents: _a task leveraging OpenAI to insert a Table of Contents in the blog post_
-- Perform a grammar review: _a task leveraging OpenAI to perform some grammar fixes_
+**Задачи проверки**
+- Добавить оглавление: _задача, использующая OpenAI для вставки оглавления в запись блога_
+- Выполнить проверку грамматики: _задача, использующая OpenAI для исправления грамматических ошибок_
 
-**Social content tasks**
-- Generate LinkedIn posts: _a task leveraging OpenAI to generate some Tweets_
-- Generate Twitter posts: _a task leveraging OpenAI to generate a LinkedIn post_
+**Задачи создания контента для соцсетей**
+- Сгенерировать посты для LinkedIn: _задача, использующая OpenAI для генерации твитов_
+- Сгенерировать посты для Twitter: _задача, использующая OpenAI для генерации поста в LinkedIn_
 
-Our users will be able to combine those tasks to build their custom workflows.
+Наши пользователи смогут комбинировать эти задачи для создания собственных рабочих процессов.
 
-### 1. Adding the tasks definition to the application
+### 1. Добавление определений задач в приложение
 
-After [installing and setup Inngest](/docs/getting-started/nextjs-quick-start?ref=docs-guide-user-defined-workflows) in our Next.js application, we will create the following [Workflow Actions definition](/docs/reference/workflow-kit/actions) file:
+После [установки и настройки Inngest](/docs/getting-started/nextjs-quick-start?ref=docs-guide-user-defined-workflows) в нашем приложении Next.js мы создадим следующий файл [определений Workflow Actions](/docs/reference/workflow-kit/actions):
 
 ```ts {{ title: "lib/inngest/workflowActions.ts" }}
 import { type PublicEngineAction } from "@inngest/workflow-kit";
@@ -98,38 +98,36 @@ export const actions: PublicEngineAction[] = [
 
 <CardGroup cols={1}>
 
-  <Card title="Learn more about Workflow Actions" href="/docs/reference/workflow-kit/actions">
-    Explore how Workflow actions get declared as `PublicEngineAction` and `EngineAction`.
+  <Card title="Подробнее о Workflow Actions" href="/docs/reference/workflow-kit/actions">
+    Узнайте, как Workflow Actions объявляются как `PublicEngineAction` и `EngineAction`.
   </Card>
 
 </CardGroup>
 
 
 
-### 2. Updating our database schema
+### 2. Обновление схемы базы данных
 
-To enable our users to configure the workflows, we will create the following `workflows` table.
+Чтобы пользователи могли настраивать рабочие процессы, мы создадим следующую таблицу `workflows`.
 
-The `workflows` tables stores the [Workflow instance object](/docs/reference/workflow-kit/workflow-instance) containing how the user ordered
-the different selected [Workflow actions](/docs/reference/workflow-kit/actions). Other columns are added to store extra properties specific to
-our application such as: the automation name and description, the event triggering the automation and its status (`enabled`).
+Таблица `workflows` хранит [объект экземпляра рабочего процесса](/docs/reference/workflow-kit/workflow-instance), содержащий информацию о том, как пользователь упорядочил различные выбранные [действия рабочего процесса](/docs/reference/workflow-kit/actions). Дополнительные столбцы добавлены для хранения свойств, специфичных для нашего приложения: названия и описания автоматизации, события, запускающего автоматизацию, и её статуса (`enabled`).
 
 
-|Colunm name|Column type|Description|
-|-----------|-----------|-----------|
+|Название столбца|Тип столбца|Описание|
+|----------------|-----------|--------|
 id| `bigint`|
-name | `text`| _The name of the automation_
-description | `text`| _A short description of the automation_
-workflow | `jsonb`| _A [Workflow instance object](/docs/reference/workflow-kit/workflow-instance)_
+name | `text`| _Название автоматизации_
+description | `text`| _Краткое описание автоматизации_
+workflow | `jsonb`| _[Объект экземпляра рабочего процесса](/docs/reference/workflow-kit/workflow-instance)_
 enabled | `boolean`|
-trigger | `text`| _The name of the [Inngest Event](/docs/features/events-triggers) triggering the workflow_
+trigger | `text`| _Название [события Inngest](/docs/features/events-triggers), запускающего рабочий процесс_
 created_at | `timestamp`|
 
-Once the `workflows` table created, we will add two [workflow instances](/docs/reference/workflow-kit/workflow-instance) records:
-- _"When a blog post is published"_: Getting a review from AI
-- _"When a blog post is moved to review"_: Actions performed to optimize the distribution of blog posts
+После создания таблицы `workflows` добавим две записи [экземпляров рабочего процесса](/docs/reference/workflow-kit/workflow-instance):
+- _«Когда запись блога публикуется»_: Получение проверки от AI
+- _«Когда запись блога переходит на проверку»_: Действия для оптимизации распространения записей блога
 
-using the following SQL insert statement:
+с помощью следующего SQL-запроса на вставку:
 
 ```sql
 INSERT INTO "public"."workflows" ("id", "created_at", "workflow", "enabled", "trigger", "description", "name") VALUES
@@ -139,16 +137,16 @@ INSERT INTO "public"."workflows" ("id", "created_at", "workflow", "enabled", "tr
 
 <Callout>
 
-You will find a ready-to-use database seed [in the repository](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/supabase/seed.sql).
+Готовые данные для заполнения базы данных можно найти [в репозитории](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/supabase/seed.sql).
 
 </Callout>
 
 
-### 3. Adding the Workflow Editor page
+### 3. Добавление страницы редактора рабочего процесса
 
-With our workflow actions definition and `workflows` table ready, we will create a new Next.js Page featuring the Workflow Editor.
+Имея готовые определения действий рабочего процесса и таблицу `workflows`, создадим новую страницу Next.js с редактором рабочего процесса.
 
-First, we will add a new [Next.js Page](https://nextjs.org/docs/app/building-your-application/routing/pages) to load the worklow and render the Editor:
+Сначала добавим новую [страницу Next.js](https://nextjs.org/docs/app/building-your-application/routing/pages) для загрузки рабочего процесса и отображения редактора:
 
 ```tsx {{ title: "app/automation/[id]/page.tsx" }}
 import { AutomationEditor } from "@/components/automation-editor";
@@ -177,10 +175,10 @@ export default async function Automation({
 
 ```
 
-The `<AutomationEditor>` component is then rendered with the following required properties:
-- `workflow={}`:  [workflow instance](/docs/reference/workflow-kit/workflow-instance) loaded from the database along side
-- `event={}`: the name of the event triggering the workflow
-- `availableActions={}`: [actions](/docs/reference/workflow-kit/actions#passing-actions-to-the-react-components-public-engine-action) that the user can select to build its automation
+Компонент `<AutomationEditor>` затем рендерится со следующими обязательными свойствами:
+- `workflow={}`: [экземпляр рабочего процесса](/docs/reference/workflow-kit/workflow-instance), загруженный из базы данных вместе с
+- `event={}`: имя события, запускающего рабочий процесс
+- `availableActions={}`: [действия](/docs/reference/workflow-kit/actions#passing-actions-to-the-react-components-public-engine-action), которые пользователь может выбрать для создания автоматизации
 
 
 ```tsx {{ title: "src/components/automation-editor.ts" }}
@@ -222,24 +220,23 @@ export const AutomationEditor = ({ workflow }: { workflow: Workflow }) => {
 };
 ```
 
-[`<Provider>`](/docs/reference/workflow-kit/components-api) is a [Controlled Component](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components), relying on the `workflow={}` object to update its UI.
+[`<Provider>`](/docs/reference/workflow-kit/components-api) является [управляемым компонентом (Controlled Component)](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components), использующим объект `workflow={}` для обновления своего UI.
 
-Every change performed by the user will trigger the `onChange={}` callback to be called. This callback should update the object passed to the
-`workflow={}` prop and can be used to also implement an auto save mechanism.
+Каждое изменение, выполненное пользователем, будет вызывать коллбэк `onChange={}`. Этот коллбэк должен обновлять объект, передаваемый в пропс `workflow={}`, и может использоваться также для реализации механизма автосохранения.
 
 <Callout>
 
-The complete version of the `<AutomationEditor>` is [available on GitHub](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/components/automation-editor.tsx).
+Полная версия `<AutomationEditor>` [доступна на GitHub](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/components/automation-editor.tsx).
 
 </Callout>
 
-Navigating to `/automation/1` renders tht following Workflow Editor UI using our workflow actions:
+При переходе на `/automation/1` отображается следующий UI редактора рабочего процесса с нашими действиями:
 
 ![workflow-kit-announcement-video-loop.gif](/assets/docs/reference/workflow-kit/workflow-demo.gif)
 
-### 4. Implementing the Workflow Actions handlers
+### 4. Реализация обработчиков действий рабочего процесса
 
-Let's now implement the logic our automation tasks by creating a new file in `lib/inngest` and starting with the "Add a Table of Contents" workflow action:
+Теперь реализуем логику наших задач автоматизации, создав новый файл в `lib/inngest` и начав с действия рабочего процесса «Добавить оглавление»:
 
 ```tsx {{ title: "lib/inngest/workflowActionHandlers.ts" }}
 import OpenAI from "openai";
@@ -254,7 +251,7 @@ import { actions } from "./workflowActions";
 
 export const actions: EngineAction[] = [
   {
-    // Add a Table of Contents
+    // Добавить оглавление
     ...actionsDefinition[0],
     handler: async ({ event, step, workflowAction }) => {
       const supabase = createClient();
@@ -310,25 +307,24 @@ export const actions: EngineAction[] = [
 ];
 ```
 
-This new file adds the `handler` property to the existing _"Add a Table of Contents"_ action.
+Этот новый файл добавляет свойство `handler` к существующему действию _«Добавить оглавление»_.
 
-A [workflow action `handler()`](/docs/reference/workflow-kit/actions#handler-function-argument-properties) has a similar signature to Inngest's function handlers, receiving two key arguments: `event` and [`step`](/docs/reference/functions/create#step).
+[`handler()`](/docs/reference/workflow-kit/actions#handler-function-argument-properties) действия рабочего процесса имеет сигнатуру, аналогичную обработчикам функций Inngest, получая два ключевых аргумента: `event` и [`step`](/docs/reference/functions/create#step).
 
-Our _"Add a Table of Contents"_ leverages Inngest's [step API](/docs/reference/functions/step-run) to create reliable and retriable steps generating and inserting a Table of Contents.
+Наше действие _«Добавить оглавление»_ использует [step API](/docs/reference/functions/step-run) от Inngest для создания надёжных и повторяемых шагов, генерирующих и вставляющих оглавление.
 
 
 <Callout>
 
-The complete implementation of all workflow actions are [available on GitHub](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/lib/inngest/workflowActionHandlers.ts).
+Полная реализация всех действий рабочего процесса [доступна на GitHub](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/lib/inngest/workflowActionHandlers.ts).
 
 </Callout>
 
 
 
-### 5. Creating an Inngest Function
+### 5. Создание функции Inngest
 
-With all the workflow action handlers of our automation tasks [implemented](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/lib/inngest/workflowActionHandlers.ts),
-we can create a [`Engine`](/docs/reference/workflow-kit/engine) instance and pass it to a dedicated [Inngest Function](/docs/features/inngest-functions) that will run the automation when the `"blog-post.updated"` and `"blog-post.published"` events will be triggered:
+После [реализации](https://github.com/inngest/workflow-kit/blob/main/examples/nextjs-blog-cms/lib/inngest/workflowActionHandlers.ts) всех обработчиков действий рабочего процесса мы можем создать экземпляр [`Engine`](/docs/reference/workflow-kit/engine) и передать его в выделенную [функцию Inngest](/docs/features/inngest-functions), которая будет запускать автоматизацию при срабатывании событий `"blog-post.updated"` и `"blog-post.published"`:
 
 ```tsx {{ title: "lib/inngest/workflow.ts" }}
 import { Engine } from "@inngest/workflow-kit";
@@ -345,26 +341,26 @@ const workflowEngine = new Engine({
 export default inngest.createFunction(
   {
     id: "blog-post-workflow",
-    // Triggers
-    // - When a blog post is set to "review"
-    // - When a blog post is published
+    // Триггеры
+    // - Когда запись блога переводится в статус «review»
+    // - Когда запись блога публикуется
     triggers: [{ event: "blog-post.updated" }, { event: "blog-post.published" }],
   },
   async ({ event, step }) => {
-    // When `run` is called, the loader function is called with access to the event
+    // При вызове `run` вызывается функция загрузчика с доступом к событию
     await workflowEngine.run({ event, step });
   }
 );
 
 ```
 
-### Going further
+### Дальнейшее развитие
 
-This guide demonstrated how quickly and easily user-defined workflows can be added to your product when using our [Workflow Kit](/docs/reference/workflow-kit).
+Это руководство продемонстрировало, насколько быстро и легко можно добавить пользовательские рабочие процессы в ваш продукт с помощью нашего [Workflow Kit](/docs/reference/workflow-kit).
 
 
 <CardGroup cols={1}>
-<Card href={'https://github.com/inngest/workflow-kit/tree/main/examples/nextjs-blog-cms#readme'} title={"Step-by-step tutorial of setting up this demo"} icon={<GithubIcon className="text-basis h-4 w-4" />}>
-  This use case is available a open-source Next.js demo on GitHub.
+<Card href={'https://github.com/inngest/workflow-kit/tree/main/examples/nextjs-blog-cms#readme'} title={"Пошаговый туториал по настройке этого демо"} icon={<GithubIcon className="text-basis h-4 w-4" />}>
+  Этот сценарий доступен как открытое демо-приложение Next.js на GitHub.
 </Card>
 </CardGroup>

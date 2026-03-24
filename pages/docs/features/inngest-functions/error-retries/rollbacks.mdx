@@ -1,12 +1,12 @@
 import { CardGroup, Card, Callout, LanguageSelector, LanguageSection } from "src/shared/Docs/mdx";
 
-# Rollbacks
+# Откаты
 
-Unlike an error being thrown in the main function's body, a failing step (one that has exhausted all retries) will throw a `StepError`. This allows you to handle failures for each step individually, where you can recover from the error gracefully.
+В отличие от ошибки, выброшенной в основном теле функции, завершившийся с ошибкой шаг (исчерпавший все повторные попытки) выбросит `StepError`. Это позволяет обрабатывать сбои каждого шага отдельно и корректно восстанавливаться после ошибки.
 
-If a step failure isn't handled, the error will bubble up to the function itself, which will then be marked as failed.
+Если сбой шага не обработан, ошибка будет передана в саму функцию, которая затем будет помечена как завершившаяся с ошибкой.
 
-Below is an attempt to use DALL-E to generate an image from a prompt, and to fall back to Midjourney if it fails. Remember that these calls are split over separate requests, making the code much more durable against timeouts, transient errors, and these dependencies on external APIs.
+Ниже представлена попытка использовать DALL-E для генерации изображения по промпту с переключением на Midjourney в случае сбоя. Обратите внимание, что эти вызовы разделены по отдельным запросам, что делает код значительно более устойчивым к таймаутам, временным ошибкам и зависимостям от внешних API.
 
 <LanguageSelector>
 
@@ -89,9 +89,9 @@ inngestgo.CreateFunction(
 
 </LanguageSection>
 
-### Simple rollbacks
+### Простые откаты
 
-With this pattern, it's possible to assign a small rollback for each step, making sure that every action is safe regardless of how many steps are being run.
+С этим паттерном можно назначить небольшой откат для каждого шага, обеспечивая безопасность каждого действия независимо от количества шагов.
 
 <LanguageSection show="typescript">
 

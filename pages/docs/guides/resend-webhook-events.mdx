@@ -1,120 +1,120 @@
 import { ImageTheme } from "src/shared/Docs/mdx";
 import ResendLogo from "src/public/assets/docs/guides/resend-webhook-events/featured-image.png";
 
-export const description = 'Set up Resend webhooks with Inngest and use Resend events within Inngest functions.'
+export const description = 'Настройте вебхуки Resend с помощью Inngest и используйте события Resend внутри функций Inngest.'
 
-# Integrate email events with Resend webhooks
+# Интеграция почтовых событий через вебхуки Resend
 
-<ImageTheme light={ResendLogo} alt="Resend Logo"/>
+<ImageTheme light={ResendLogo} alt="Логотип Resend"/>
 
-[Resend webhooks](https://resend.com/docs/dashboard/webhooks/introduction) can be used to build functionality into your application based on changes in the email status. In this guide, you will learn:
+[Вебхуки Resend](https://resend.com/docs/dashboard/webhooks/introduction) можно использовать для реализации функционала в приложении на основе изменений статуса электронных писем. В этом руководстве вы узнаете:
 
-- What webhook events are offered by Resend.
-- How to set up Inngest to receive Resend webhook events.
-- How to define Inngest functions in your application using Resend events.
-- How to build a dynamic drip marketing campaign which responds to a user's behavior.
+- Какие события вебхуков предлагает Resend.
+- Как настроить Inngest для получения событий вебхуков Resend.
+- Как определять функции Inngest в приложении, используя события Resend.
+- Как создать динамическую маркетинговую цепочку (drip campaign), реагирующую на поведение пользователя.
 
-To follow this guide, you need a [Resend](https://resend.com/) and [Inngest](/) accounts and have Inngest [set up](/docs/getting-started/nextjs-quick-start) in your codebase.
+Для прохождения этого руководства вам понадобятся аккаунты [Resend](https://resend.com/) и [Inngest](/), а также настроенный Inngest в вашей кодовой базе ([инструкция](/docs/getting-started/nextjs-quick-start)).
 
-## Resend webhooks
+## Вебхуки Resend
 
-Resend uses webhooks to push real-time notifications to your application about the emails you're sending. It offers the following event types:
+Resend использует вебхуки для отправки в ваше приложение уведомлений в реальном времени об отправляемых вами письмах. Доступны следующие типы событий:
 
-- `email.sent` - the API request was successful and Resend will attempt to deliver the message to the recipient's mail server.
-- `email.bounced` - the recipient's mail server permanently rejected the email.
-- `email.delivery_delayed` - the email couldn't be delivered to the recipient's mail server for example, because the recipient's inbox is full, or when the receiving email server experiences a transient issue.
-- `email.delivered` - Resend successfully delivered the email to the recipient's mail server.
-- `email.complained` - the recipient marked the delivered email as spam.
-- `email.opened` - the recipient's opened the email.
-- `email.clicked` - the recipient's clicked on an email link.
+- `email.sent` — API-запрос прошел успешно, и Resend попытается доставить сообщение на почтовый сервер получателя.
+- `email.bounced` — почтовый сервер получателя окончательно отклонил письмо.
+- `email.delivery_delayed` — письмо не удалось доставить сразу (например, если почтовый ящик получателя переполнен или на принимающем сервере возникла временная проблема).
+- `email.delivered` — Resend успешно доставил письмо на почтовый сервер получателя.
+- `email.complained` — получатель пометил доставленное письмо как спам.
+- `email.opened` — получатель открыл письмо.
+- `email.clicked` — получатель кликнул по ссылке в письме.
 
-These events can be used to build responsive behavior based on changes in the email status. For example, you could use these events in scenarios such as:
+Эти события позволяют реализовать ответную логику на основе изменения статуса письма. Например:
 
-- If an email bounced, remove the address from the mailing list or flag it in the database.
-- Create a dynamic marketing drip campaign based on the recipient behavior.
-- Build incident or retention report for your email campaigns.
+- Если письмо вернулось (bounced), удалить адрес из списка рассылки или пометить его в базе данных.
+- Создать динамическую цепочку писем на основе поведения получателя.
+- Создать отчеты об инцидентах или удержании (retention) для ваших кампаний.
 
-### Building with Resend webhooks
+### Работа с вебхуками Resend
 
-You can manage webhook events directly in your backend through an endpoint or you could use a tool like [Inngest](/docs) which ensures reliable execution of functions in your codebase. Inngest comes with functionalities such as:
+Вы можете обрабатывать события вебхуков напрямую в бэкенде через эндпоинт или использовать такой инструмент, как [Inngest](/docs), который гарантирует надежное выполнение функций. Inngest предоставляет такие возможности, как:
 
-- a built-in queue to execute longer-running functions reliably
-- [Controlling concurrency](/docs/guides/concurrency) to handle spikes without overwhelming your API or database.
-- Executing multiple functions from a single event ([fan-out jobs](/docs/guides/fan-out-jobs)).
-- Implementing [delayed code execution](/docs/guides/multi-step-functions) after a specified period.
-- [Debouncing events](/docs/reference/functions/debounce) to minimize duplicate processing.
+- Встроенная очередь для надежного выполнения длительных функций.
+- [Управление конкурентностью](/docs/guides/concurrency) для обработки всплесков нагрузки без перегрузки API или базы данных.
+- Запуск нескольких функций от одного события ([fan-out jobs](/docs/guides/fan-out-jobs)).
+- Реализация [отложенного выполнения кода](/docs/guides/multi-step-functions) через заданный период.
+- [Устранение дребезга событий (debouncing)](/docs/reference/functions/debounce) для минимизации дублирующей обработки.
 
-In short, using Inngest makes your application more resilient, scalable, and easier to recover from an incident.
+Проще говоря, использование Inngest делает ваше приложение более отказоустойчивым, масштабируемым и упрощает восстановление после инцидентов.
 
-## Receiving Resend webhook events in Inngest
+## Получение событий вебхуков Resend в Inngest
 
-Let's now connect Resend with Inngest.
+Давайте подключим Resend к Inngest.
 
-1. Set up the Inngest webhook. To do so, in Inngest Cloud, navigate to **[Manage → Webhooks](https://app.inngest.com/env/production/manage/webhooks)** page and click on **Create Webhook** button on the right.
+1. Настройте вебхук в Inngest. Для этого в Inngest Cloud перейдите на страницу **[Manage → Webhooks](https://app.inngest.com/env/production/manage/webhooks)** и нажмите кнопку **Create Webhook** справа.
 
-![Inngest Cloud website on an the empty Webhooks page.](/assets/docs/guides/resend-webhook-events/inngest-1-no-webhooks.png)
+![Сайт Inngest Cloud на пустой странице Webhooks.](/assets/docs/guides/resend-webhook-events/inngest-1-no-webhooks.png)
 
-1. In the modal window, specify the name of the webhook (for example, “Resend”):
+1. В модальном окне укажите имя вебхука (например, “Resend”):
 
-![Modal window with instruction: "Create a New Webhook". "Resend" is chosen as a name for the new webhook.](/assets/docs/guides/resend-webhook-events/inngest-2-new-webhook.png)
+![Модальное окно с заголовком: "Create a New Webhook". Выбрано имя "Resend" для нового вебхука.](/assets/docs/guides/resend-webhook-events/inngest-2-new-webhook.png)
 
-You will now see your webhook page with the webhook URL at the top:
+Теперь вы увидите страницу вашего вебхука с URL в верхней части:
 
-![A webhook page on Inngest Cloud.](/assets/docs/guides/resend-webhook-events/inngest-3-webhook-page.png)
+![Страница вебхука в Inngest Cloud.](/assets/docs/guides/resend-webhook-events/inngest-3-webhook-page.png)
 
-1. Paste the following [transform function](/docs/platform/webhooks#defining-a-transform-function) into the **Transform Event** area:
+1. Вставьте следующую [функцию трансформации](/docs/platform/webhooks#defining-a-transform-function) в область **Transform Event**:
 
 ```jsx
 function transform(evt, headers = {}, queryParams = {}) {
   return {
-    // Add a prefix to the name of the event
+    // Добавляем префикс к имени события
     name: `resend/${evt.type}`,
     data: evt.data,
    };
 };
 ```
 
-The transform function will translate the incoming data to be compatible with the Inngest event payload format, as well as prefix all events with `resend/`.
+Функция трансформации преобразует входящие данные в формат полезной нагрузки Inngest и добавит префикс `resend/` ко всем событиям.
 
-Next, click **Save Transformed Changes** button to save this function.
+Затем нажмите кнопку **Save Transformed Changes**, чтобы сохранить функцию.
 
-![A webhook page on Inngest Cloud featuring Transform Event view.](/assets/docs/guides/resend-webhook-events/inngest-4-transform-function.png)
+![Страница вебхука в Inngest Cloud с видом Transform Event.](/assets/docs/guides/resend-webhook-events/inngest-4-transform-function.png)
 
-Your Inngest webhook is set up!
+Ваш вебхук в Inngest настроен!
 
-1. Go back to the top of the page and copy your webhook URL.
+1. Вернитесь наверх и скопируйте URL вебхука.
 
-![Top of the webhook page on Inngest Cloud featuring the webhook URL](/assets/docs/guides/resend-webhook-events/inngest-4-screen-with-url.png)
+![Верхняя часть страницы вебхука в Inngest Cloud с URL-адресом вебхука.](/assets/docs/guides/resend-webhook-events/inngest-4-screen-with-url.png)
 
-1. Now navigate to the [webhooks](https://resend.com/webhooks) page in the Resend dashboard. Click on the **Add webhook** button:
+1. Теперь перейдите на страницу [вебхуков](https://resend.com/webhooks) в панели управления Resend. Нажмите кнопку **Add webhook**:
 
-![An empty webhook page on the Resend dashboard with a message: "You haven't configured any webhooks yet"](/assets/docs/guides/resend-webhook-events/resend-1-webhooks-empty-page.png)
+![Пустая страница вебхуков в панели Resend с сообщением: "You haven't configured any webhooks yet".](/assets/docs/guides/resend-webhook-events/resend-1-webhooks-empty-page.png)
 
-1. In the modal, paste the Inngest webhook URL and choose which events you want to listen to -- tick all of them for now.
+1. В модальном окне вставьте URL вебхука Inngest и выберите события, которые хотите отслеживать — на данный момент отметьте все.
 
-![A form in a modal window with a field to paste a webhook URL and a list of possible events to listen to.](/assets/docs/guides/resend-webhook-events/resend-2-webhooks-subscription.png)
+![Форма в модальном окне с полем для вставки URL вебхука и списком возможных событий.](/assets/docs/guides/resend-webhook-events/resend-2-webhooks-subscription.png)
 
-Your webhook will be created but there will be no webhook events yet.
+Вебхук будет создан, но событий в нем пока не будет.
 
-![The webhook page on the Resend dashboard now featuring one connected webhook. A message reads: "No webhook events yet"](/assets/docs/guides/resend-webhook-events/resend-3-no-webhook-events.png)
+![Страница вебхуков в панели Resend с одним подключенным вебхуком. Сообщение: "No webhook events yet".](/assets/docs/guides/resend-webhook-events/resend-3-no-webhook-events.png)
 
-1. To see your webhook in action, [send a test email](https://resend.com/emails) and see the webhook events recorded:
+1. Чтобы увидеть вебхук в действии, [отправьте тестовое письмо](https://resend.com/emails) и посмотрите на записанные события вебхука:
 
-![The webhook page on the Resend dashboard now featuring one connected webhook and two events.](/assets/docs/guides/resend-webhook-events/resend-5-webhook-details.png)
+![Страница вебхука в панели Resend с одним подключенным вебхуком и двумя событиями.](/assets/docs/guides/resend-webhook-events/resend-5-webhook-details.png)
 
-Your Resend webhook is set up 🥳
+Ваш вебхук Resend настроен 🥳
 
-1. Now check your Inngest dashboard to see the **[Events](https://app.inngest.com/env/production/events)** page in Inngest Cloud:
+1. Теперь проверьте страницу **[Events](https://app.inngest.com/env/production/events)** в Inngest Cloud:
 
-![Events tab in Inngest Cloud featuring two events from Resend](/assets/docs/guides/resend-webhook-events/inngest-5-event-screen.png)
+![Вкладка Events в Inngest Cloud с двумя событиями от Resend.](/assets/docs/guides/resend-webhook-events/inngest-5-event-screen.png)
 
-Congratulations! Now you have Resend events coming into Inngest. Next, you will use the Resend events you've received in Inngest to trigger functions in your application's codebase.
+Поздравляем! Теперь события Resend поступают в Inngest. Далее вы будете использовать эти события для запуска функций в коде вашего приложения.
 
-## Writing your first Inngest function
+## Написание вашей первой функции Inngest
 
-*Please note that this example assumes that you are using TypeScript and Next.js, and that you have already added Inngest to your project, but if you're using Inngest for the first time, you can follow the [Quickstart guide](/docs/getting-started/nextjs-quick-start) to get it set up.*
+*Обратите внимание: этот пример предполагает использование TypeScript и Next.js, и что Inngest уже добавлен в проект. Если вы используете Inngest впервые, следуйте [руководству по быстрому старту](/docs/getting-started/nextjs-quick-start).*
 
-With Inngest set up in your codebase, you can write a function that is triggered every time a specific event arrives. For example, if an email sent to an user bounces, you can mark the user's email invalid in your database:
+После настройки Inngest в коде вы можете написать функцию, которая запускается при каждом поступлении определенного события. Например, если отправленное пользователю письмо вернулось (bounce), вы можете пометить email пользователя как невалидный в базе данных:
 
 ```tsx
 import db from "./database";
@@ -132,13 +132,13 @@ const invalidateUserEmail = inngest.createFunction(
 )
 ```
 
-Now that you've seen how to handle Resend events in your application, let's look at a more advanced example.
+Теперь, когда вы увидели, как обрабатывать события Resend, давайте рассмотрим более сложный пример.
 
-## Creating a function to send email
+## Создание функции для отправки письма
 
-Suppose that you want want to send user a welcome email when they sign up to your application.
+Предположим, вы хотите отправлять пользователю приветственное письмо при регистрации в приложении.
 
-First, create a helper function called `sendEmail` by adapting the example from the [Resend Next.js Quickstart](https://resend.com/docs/send-with-nextjs):
+Сначала создайте вспомогательную функцию `sendEmail`, адаптировав пример из [Resend Next.js Quickstart](https://resend.com/docs/send-with-nextjs):
 
 ```tsx
 // resend.ts
@@ -168,9 +168,9 @@ export async function sendEmail(
 
 ```
 
-Now you're able to send emails! Let's put this new function to use.
+Теперь вы можете отправлять письма! Давайте применим эту функцию.
 
-The below example assumes that your application receives a `app/signup.completed` event when a new user signs up:
+Пример ниже предполагает, что приложение получает событие `app/signup.completed` при регистрации нового пользователя:
 
 ```tsx
 
@@ -182,43 +182,43 @@ const sendWelcomeEmail = inngest.createFunction(
 	  const { user } = event.data;
     await sendEmail(user.email, "Welcome to Acme", (
       <div>
-        <h1>Welcome to ACME, {user.firstName}</h1>
+        <h1>Добро пожаловать в ACME, {user.firstName}</h1>
       </div>
     ));
   }
 )
 ```
 
-Now that we've mastered the basics of sending email with Resend from an Inngest function, you can build even more complex functionality.
+Освоив основы отправки писем через Resend из функции Inngest, вы можете создавать еще более сложные сценарии.
 
-## Sending a delayed follow-up email
+## Отправка отложенного последующего письма
 
-Every Inngest function handler comes with an additional [`step` object](/docs/reference/functions/step-sleep-until) which provides tools to create more fine-grained functions. Using `step.run` allows you to encapsulate specific code that will be automatically retried ensuring that issues with one part of your function don't force the entire function to re-run. Additionally, [other tools like `step.sleep`](/docs/reference/functions/step-sleep) are available to extend your app's functionality.
+Каждый обработчик функции Inngest получает дополнительный [объект `step`](/docs/reference/functions/step-sleep-until), который предоставляет инструменты для создания детальных рабочих процессов. Использование `step.run` позволяет инкапсулировать определенный код, который будет автоматически перезапускаться при ошибках, гарантируя, что проблемы в одной части функции не заставят всю функцию выполняться заново. Также доступны [другие инструменты, такие как `step.sleep`](/docs/reference/functions/step-sleep).
 
-The code below sends a welcome email, then uses `step.sleep` to wait for three days before sending another email offering a free trial:
+Код ниже отправляет приветственное письмо, затем использует `step.sleep`, чтобы подождать три дня перед отправкой письма с предложением пробного периода:
 
 ```tsx
 const sendOnboardingEmails = inngest.createFunction(
   { id: 'onboarding-emails', triggers: { event: 'app/signup.completed' } },
-  async ({ event, step }) => { // ← step is available in the handler's arguments
+  async ({ event, step }) => { // ← step доступен в аргументах обработчика
     const { user } = event.data
 	  const { email, first_name } = user
 
     await step.run('welcome-email', async () => {
       await sendEmail(email, "Welcome to ACME", (
         <div>
-          <h1>Welcome to ACME, {firstName}</h1>
+          <h1>Добро пожаловать в ACME, {firstName}</h1>
         </div>
       ));
     })
 
-   // wait 3 days before second email
+   // ждем 3 дня перед вторым письмом
    await step.sleep('wait-3-days', '3 days')
 
    await step.run('trial-offer-email', async () => {
-     await sendEmail(email, "Free ACME Pro trial", (
+     await sendEmail(email, "Бесплатный пробный период ACME Pro", (
         <div>
-          <h1>Hello {firstName}, try our Pro features for 30 days for free</h1>
+          <h1>Привет, {firstName}, попробуйте наши Pro-функции бесплатно в течение 30 дней</h1>
         </div>
       ));
     })
@@ -226,15 +226,15 @@ const sendOnboardingEmails = inngest.createFunction(
 )
 ```
 
-This is handy, but we can do better. Since Resend sends you webhook events when emails are delivered, opened and clicked, you can build dynamic email campaigns tailored to each user's needs.
+Это удобно, но можно сделать еще лучше. Так как Resend отправляет события о доставке, открытии и кликах, вы можете создавать динамические кампании, адаптированные под каждого пользователя.
 
-## Creating a dynamic drip campaign
+## Создание динамической цепочки писем (drip campaign)
 
-Let's say you want to create the following campaign:
+Допустим, вы хотите создать следующую кампанию:
 
-- Send every user a welcome email when they join.
-- If a `resend/email.clicked` event is received (meaning the user has engaged with your email), wait a day and then follow-up with pro user tips meant for highly engaged users.
-- Otherwise, wait for up to 3 days and then send them the default trial offer, but only if the user hasn't already upgraded their plan in the meantime.
+- Отправить каждому пользователю приветственное письмо при регистрации.
+- Если получено событие `resend/email.clicked` (пользователь кликнул по ссылке в письме), подождать день и отправить советы для продвинутых пользователей.
+- В противном случае подождать до 3 дней и отправить стандартное предложение пробного периода, но только если пользователь еще не перешел на платный тариф.
 
 ```tsx
 const signupDripCampaign = inngest.createFunction(
@@ -249,46 +249,46 @@ const signupDripCampaign = inngest.createFunction(
         email,
         welcome,
         <div>
-          <h1>Welcome to ACME, {user.firstName}</h1>
+          <h1>Добро пожаловать в ACME, {user.firstName}</h1>
         </div>
       );
     });
 
-    // Wait up to 3 days for the user open the email and click any link in it
+    // Ждем до 3 дней, пока пользователь откроет письмо и кликнет по любой ссылке в нем
     const clickEvent = await step.waitForEvent("wait-for-engagement", {
       event: "resend/email.clicked",
 			if: `async.data.email_id == ${emailId}`,
       timeout: "3 days",
     });
 
-    // if the user clicked the email, send them power user tips
+    // если пользователь кликнул в письме, отправляем советы для продвинутых пользователей
     if (clickEvent) {
       await step.sleep("delay-power-tips-email", "1 day");
       await step.run("send-power-user-tips", async () => {
         await sendEmail(
           email,
-          "Supercharge your ACME experience",
+          "Раскройте все возможности ACME",
           <h1>
-            Hello {firstName}, here are tips to get the most out of ACME
+            Привет, {firstName}, вот советы, как получить максимум от ACME
           </h1>
         );
       });
 
-      // wait one more day before sending the trial offer
+      // ждем еще один день перед отправкой предложения пробного периода
       await step.sleep("delay-trial-email", "1 day");
     }
 
-    // check that the user is not already on the pro plan
+    // проверяем, не перешел ли пользователь уже на тариф pro
     const dbUser = db.users.byEmail(email);
 
     if (dbUser.plan !== "pro") {
-      // send them a free trial offer
+      // отправляем предложение пробного периода
       await step.run("trial-offer-email", async () => {
         await sendEmail(
           email,
-          "Free ACME Pro trial",
+          "Бесплатный пробный период ACME Pro",
           <h1>
-            Hello {firstName}, try our Pro features for 30 days for free
+            Привет, {firstName}, попробуйте наши Pro-функции бесплатно в течение 30 дней
           </h1>
         );
       });
@@ -297,30 +297,30 @@ const signupDripCampaign = inngest.createFunction(
 );
 ```
 
-Voilà! You've created a dynamic marketing drip campaign where subsequent emails are informed by your user's behavior.
+Вуаля! Вы создали динамическую маркетинговую кампанию, в которой последующие письма зависят от поведения пользователя.
 
-## Testing webhook events using the Inngest Dev Server
+## Тестирование событий вебхуков с помощью Inngest Dev Server
 
-During local development with Inngest, you can use the Inngest Dev Server to run and test your functions on your own machine. To start the server, in your project directory run the following command:
+При локальной разработке вы можете использовать Inngest Dev Server для запуска и тестирования функций на своей машине. Чтобы запустить сервер, выполните в директории проекта следующую команду:
 
 ```bash
 npx --ignore-scripts=false inngest-cli@latest dev
 ```
 
-In your browser open [http://localhost:8288](http://localhost:8288/) to see the development UI.
+Откройте в браузере [http://localhost:8288](http://localhost:8288/), чтобы увидеть интерфейс разработки.
 
-To forward and quickly test events from Inngest Cloud to your Dev Server, head over to [Inngest Cloud](https://app.inngest.com/env/production/events). Choose **Events** tab from the nav bar. Select any individual event, choose **Logs** from the sidebar, and then select the **Send to Dev Server**.
+Чтобы переслать и быстро протестировать события из Inngest Cloud на локальный Dev Server, перейдите в [Inngest Cloud](https://app.inngest.com/env/production/events). Выберите вкладку **Events**. Выберите любое событие, перейдите в **Logs** в боковой панели и выберите **Send to Dev Server**.
 
-![Events tab in Inngest Cloud. The code area includes a button: "Send to the Dev Server"](/assets/docs/guides/resend-webhook-events/inngest-6-cloud-dev-server.png)
+![Вкладка Events в Inngest Cloud. Область кода содержит кнопку: "Send to the Dev Server".](/assets/docs/guides/resend-webhook-events/inngest-6-cloud-dev-server.png)
 
-You'll now see the event in the Inngest Dev Server's **Stream** tab alongside any functions that it triggered.
+Теперь вы увидите событие во вкладке **Stream** локального Dev Server вместе с функциями, которые оно запустило.
 
-![Stream tab in Inngest Dev Server featuring an event](/assets/docs/guides/resend-webhook-events/inngest-7-event-stream-1.png)
+![Вкладка Stream в Inngest Dev Server с событием.](/assets/docs/guides/resend-webhook-events/inngest-7-event-stream-1.png)
 
-From here you can select the event, replay it to re-run any functions or edit and replay to edit the event payload to test different types of events.
+Здесь вы можете выбрать событие, повторить его для перезапуска функций или отредактировать и повторить, чтобы протестировать различные типы данных в событии.
 
-![Details of a Resend event](/assets/docs/guides/resend-webhook-events/inngest-8-event-details.png)
+![Детали события Resend.](/assets/docs/guides/resend-webhook-events/inngest-8-event-details.png)
 
-## Conclusion
+## Заключение
 
-Congratulations! You've now learned how to use Inngest to create functions that use Resend webhook events.
+Поздравляем! Вы научились использовать Inngest для создания функций, использующих события вебхуков Resend.

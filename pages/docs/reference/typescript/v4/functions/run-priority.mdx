@@ -1,11 +1,11 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-# Function run priority
+# Приоритет запуска функций
 
 
-You can prioritize specific function runs above other runs **within the same function**.
+Вы можете устанавливать приоритет для конкретных запусков функций выше других запусков **в пределах одной функции**.
 
-See the [Priority guide](/docs/guides/priority) for more information about how this feature works.
+Смотрите [руководство по приоритетам](/docs/guides/priority) для получения дополнительной информации о работе этой функции.
 
 ```ts
 export default inngest.createFunction(
@@ -13,42 +13,39 @@ export default inngest.createFunction(
     id: "ai-generate-summary",
     triggers: { event: "ai/summary.requested" },
     priority: {
-      // For enterprise accounts, a given function run will be prioritized
-      // ahead of functions that were enqueued up to 120 seconds ago.
-      // For all other accounts, the function will run with no priority.
+      // Для корпоративных аккаунтов данный запуск функции будет приоритетным
+      // по сравнению с функциями, поставленными в очередь до 120 секунд назад.
+      // Для всех остальных аккаунтов функция будет выполнена без приоритета.
       run: "event.data.account_type == 'enterprise' ? 120 : 0",
     },
   },
   async ({ event, step }) => {
-    // This function will be prioritized based on the account type
+    // Эта функция будет приоритизирована на основе типа аккаунта
   }
 );
 ```
 
-## Configuration
+## Конфигурация
 
 <Properties>
   <Property name="priority" type="object">
-    Options to configure how to prioritize functions
+    Параметры для настройки приоритета функций
 
     <Properties nested={true}>
       <Property name="run" type="string">
-        An expression which must return an integer between -600 and 600 (by default), with higher return
-        values resulting in a higher priority.
+        Выражение, возвращающее целое число от -600 до 600 (по умолчанию); большие значения означают более высокий приоритет.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL). Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions). Примеры:
 
-        * Return the priority within an event directly: `event.data.priority` (where
-   `event.data.priority` is an int within your account's range)
-        * Prioritize by a string field: `event.data.plan == 'enterprise' ? 180 : 0`
+        * Вернуть приоритет непосредственно из события: `event.data.priority` (где `event.data.priority` — целое число в допустимом диапазоне аккаунта)
+        * Приоритизация по строковому полю: `event.data.plan == 'enterprise' ? 180 : 0`
       </Property>
     </Properties>
   </Property>
 </Properties>
 
 <Callout>
-  Return values outside of your account's range (by default, -600 to 600) will automatically be clipped
-  to your max bounds.
+  Значения вне допустимого диапазона аккаунта (по умолчанию от -600 до 600) будут автоматически обрезаны до максимальных границ.
 
-  An invalid expression will evaluate to 0, as in "no priority".
+  Недопустимое выражение вычисляется как 0, то есть "без приоритета".
 </Callout>

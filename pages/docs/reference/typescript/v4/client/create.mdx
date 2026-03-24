@@ -1,9 +1,9 @@
 import { Info, Callout, Properties, Property, Row, Col, CodeGroup, VersionBadge } from "src/shared/Docs/mdx";
 
-# Create the Inngest Client
+# Создание клиента Inngest
 
 
-The `Inngest` client object is used to configure your application, enabling you to create functions and send events.
+Объект клиента `Inngest` используется для настройки вашего приложения, позволяя создавать функции и отправлять события.
 
 <CodeGroup>
 ```ts
@@ -18,40 +18,39 @@ const inngest = new Inngest({
 
 ---
 
-## Configuration
+## Конфигурация
 
 <Properties>
   <Property name="id" type="string" required>
-    A unique identifier for your application. We recommend a hyphenated slug.
+    Уникальный идентификатор вашего приложения. Рекомендуем использовать slug через дефис.
   </Property>
   <Property name="baseUrl" type="string">
-    Override the default (`https://inn.gs/`) base URL for sending events. See also the [`INNGEST_BASE_URL`](/docs/sdk/environment-variables#inngest-base-url) environment variable.
+    Переопределяет базовый URL по умолчанию (`https://inn.gs/`) для отправки событий. Смотрите также переменную окружения [`INNGEST_BASE_URL`](/docs/sdk/environment-variables#inngest-base-url).
   </Property>
     <Property name="env" type="string">
-    The environment name. Required only when using [Branch Environments](/docs/platform/environments).
+    Название среды. Требуется только при использовании [Branch Environments](/docs/platform/environments).
   </Property>
   <Property name="eventKey" type="string">
-    An Inngest [Event Key](/docs/events/creating-an-event-key). Alternatively, set the [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) environment variable.
+    [Ключ события](/docs/events/creating-an-event-key) Inngest. Альтернативно, установите переменную окружения [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key).
   </Property>
   <Property name="fetch" type="Fetch API compatible interface">
-    Override the default
-    [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-    implementation. Defaults to the runtime's native Fetch API.
+    Переопределяет стандартную реализацию
+    [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+    По умолчанию используется нативный Fetch API среды выполнения.
 
-    If you need to specify this, make sure that you preserve the function's [binding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind), either by using `.bind` or by wrapping it in an anonymous function.
+    Если нужно указать это, убедитесь, что вы сохраняете [привязку](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind) функции, используя `.bind` или обернув её в анонимную функцию.
   </Property>
   <Property name="signingKey" type="string">
-    The signing key used to authenticate with Inngest Cloud. We recommend setting this via the [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key) environment variable instead.
+    Ключ подписи для аутентификации в Inngest Cloud. Рекомендуем устанавливать через переменную окружения [`INNGEST_SIGNING_KEY`](/docs/sdk/environment-variables#inngest-signing-key).
   </Property>
   <Property name="signingKeyFallback" type="string">
-    A fallback signing key, useful during key rotation. We recommend setting this via the [`INNGEST_SIGNING_KEY_FALLBACK`](/docs/sdk/environment-variables#inngest-signing-key-fallback) environment variable instead.
+    Резервный ключ подписи, полезен при ротации ключей. Рекомендуем устанавливать через переменную окружения [`INNGEST_SIGNING_KEY_FALLBACK`](/docs/sdk/environment-variables#inngest-signing-key-fallback).
   </Property>
   <Property name="isDev" type="boolean">
-    Set to `true` to force Dev mode, setting default local URLs and turning off
-    signature verification, or force Cloud mode with `false`. Alternatively, set [`INNGEST_DEV`](/docs/sdk/environment-variables#inngest-dev).
+    Установите `true` для принудительного включения Dev-режима — будут использоваться локальные URL по умолчанию и отключена проверка подписей; `false` для принудительного включения Cloud-режима. Альтернативно, установите [`INNGEST_DEV`](/docs/sdk/environment-variables#inngest-dev).
   </Property>
   <Property name="logger" type="Logger">
-    A logger object that provides `.info()`, `.warn()`, `.error()`, and `.debug()` methods. The SDK uses Pino-style object-first logging. For string-first loggers like Winston, use `wrapStringFirstLogger`. Defaults to `new ConsoleLogger({ level: "info" })` if not provided. See the [logging reference](/docs/reference/typescript/v4/logging) for details.
+    Объект логгера с методами `.info()`, `.warn()`, `.error()` и `.debug()`. SDK использует логирование в стиле Pino (объект перед сообщением). Для логгеров, ставящих сообщение первым (например, Winston), используйте `wrapStringFirstLogger`. По умолчанию `new ConsoleLogger({ level: "info" })`. Подробнее в [справочнике по логированию](/docs/reference/typescript/v4/logging).
 
     ```ts
     import { ConsoleLogger, Inngest } from "inngest";
@@ -63,39 +62,39 @@ const inngest = new Inngest({
     ```
   </Property>
   <Property name="internalLogger" type="Logger">
-    A separate logger for SDK internal messages (registration, request handling, middleware errors). If not provided, falls back to `logger`. Use this to route SDK internals separately from your function logs. See the [logging reference](/docs/reference/typescript/v4/logging#internal-logger) for details.
+    Отдельный логгер для внутренних сообщений SDK (регистрация, обработка запросов, ошибки промежуточного ПО). Если не указан, используется `logger`. Позволяет направлять внутренние логи SDK отдельно от логов функций. Подробнее в [справочнике по логированию](/docs/reference/typescript/v4/logging#internal-logger).
   </Property>
   <Property name="middleware" type="array">
-    A stack of [middleware](/docs/features/middleware) to add to the client.
+    Стек [промежуточного ПО](/docs/features/middleware) для добавления к клиенту.
   </Property>
 </Properties>
 
 <Callout>
-We recommend setting the [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) as an environment variable over using the `eventKey` option. As with any secret, it's not a good practice to hard-code the event key in your codebase.
+Рекомендуем устанавливать [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) как переменную окружения, а не использовать опцию `eventKey`. Как и любой секрет, ключ события не стоит хранить в коде.
 </Callout>
 
-## Cloud Mode and Dev Mode
+## Cloud Mode и Dev Mode
 
-An SDK can run in two separate "modes:" **Cloud** or **Dev**.
+SDK может работать в двух режимах: **Cloud** или **Dev**.
 
 - **Cloud Mode**
-  - 🔒 Signature verification **ON**
-  - Defaults to communicating with Inngest Cloud (e.g. `https://api.inngest.com`)
+  - 🔒 Проверка подписей **ВКЛЮЧЕНА**
+  - По умолчанию взаимодействует с Inngest Cloud (например, `https://api.inngest.com`)
 - **Dev Mode**
-  - ❌ Signature verification **OFF**
-  - Defaults to communicating with an Inngest Dev Server (e.g. `http://localhost:8288`)
+  - ❌ Проверка подписей **ВЫКЛЮЧЕНА**
+  - По умолчанию взаимодействует с Inngest Dev Server (например, `http://localhost:8288`)
 
-You can force either Dev or Cloud Mode by setting
-[`INNGEST_DEV`](/docs/sdk/environment-variables#inngest-dev) or the
-[`isDev`](#configuration) option.
+Принудительно включить Dev или Cloud Mode можно через
+[`INNGEST_DEV`](/docs/sdk/environment-variables#inngest-dev) или опцию
+[`isDev`](#configuration).
 
-If no mode is explicitly set, the SDK will default to **cloud mode** to ensure that Inngest applications are more secure by default. You can use `INNGEST_DEV` or `isDev=true` to let the SDK know that you are intentionally using development mode.
+Если режим не задан явно, SDK по умолчанию использует **cloud mode** для большей безопасности. Используйте `INNGEST_DEV` или `isDev=true`, чтобы указать SDK, что вы намеренно используете режим разработки.
 
-## Best Practices
+## Лучшие практики
 
-### Share your client across your codebase
+### Используйте один клиент для всего кода
 
-Instantiating the `Inngest` client in a single file and sharing it across your codebase is ideal as you only need a single place to configure your client and define types which can be leveraged anywhere you send events or create functions.
+Создание клиента `Inngest` в одном файле и его использование во всей кодовой базе — оптимальный подход: единственное место для настройки клиента и определения типов, доступных везде, где отправляются события или создаются функции.
 
 <CodeGroup filename="./inngest/client.ts">
 ```ts
@@ -113,13 +112,13 @@ import { inngest } from "./client";
 export default inngest.createFunction(...);
 ```
 
-### Handling multiple environments with middleware
+### Работа с несколькими средами через промежуточное ПО
 
-If your client uses middleware, that middleware may import dependencies that are not supported across multiple environments such as "Edge" and "Serverless" (commonly with either access to WebAPIs or Node).
+Если ваш клиент использует промежуточное ПО, оно может импортировать зависимости, не поддерживаемые сразу в нескольких средах, таких как "Edge" и "Serverless" (с разным доступом к WebAPI или Node).
 
-In this case, we'd recommend creating a separate client for each environment, ensuring Node-compatible middleware is only used in Node-compatible environments and vice versa.
+В этом случае рекомендуем создавать отдельный клиент для каждой среды, гарантируя, что Node-совместимое промежуточное ПО используется только в Node-совместимых средах и наоборот.
 
-This need is common in places where function execution should declare more involved middleware, while sending events from the edge often requires much less.
+Это распространено в случаях, когда при выполнении функций нужно более сложное промежуточное ПО, а отправка событий из edge часто требует значительно меньшего.
 
 <CodeGroup filename="./inngest/client.ts">
 ```ts
@@ -143,4 +142,4 @@ export const inngest = new Inngest({
 
 </CodeGroup>
 
-Also see [Referencing functions](/docs/functions/references), which can help you invoke functions across these environments without pulling in any dependencies.
+Смотрите также [Ссылки на функции](/docs/functions/references), которые помогут вызывать функции в разных средах без лишних зависимостей.

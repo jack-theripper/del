@@ -1,14 +1,14 @@
 import { CodeGroup, Callout, Properties, Property } from "src/shared/Docs/mdx";
 
-# Managing concurrency
+# Управление параллелизмом
 
-Limit the number of concurrently running steps for your function with the [`concurrency`](/docs/reference/functions/create#configuration) configuration options. Setting an optional `key` parameter limits the concurrency for each unique value of the expression.
+Ограничьте количество одновременно выполняемых шагов для вашей функции с помощью параметров конфигурации [`concurrency`](/docs/reference/functions/create#configuration). Установка необязательного параметра `key` ограничивает параллелизм для каждого уникального значения выражения.
 
 <Callout>
-**Important:** Concurrency limits _step_ execution, not the total number of function runs. Functions that are sleeping, waiting for events, or paused between steps do **not** count against your concurrency limit. This means you may have many more function runs in progress than your concurrency limit. [Learn more about how concurrency works →](/docs/guides/concurrency#how-concurrency-works)
+**Важно:** Ограничения параллелизма распространяются на выполнение _шагов_, а не на общее количество запусков функции. Функции, находящиеся в состоянии ожидания (sleep), ожидающие событий или приостановленные между шагами, **не** учитываются в лимите параллелизма. Это означает, что одновременно может выполняться значительно больше запусков функции, чем позволяет ваш лимит параллелизма. [Подробнее о том, как работает параллелизм →](/docs/guides/concurrency#how-concurrency-works)
 </Callout>
 
-[Read our concurrency guide for more information on concurrency, including how it works and any limits](/docs/guides/concurrency).
+[Прочитайте руководство по параллелизму для получения дополнительной информации, включая принцип работы и ограничения](/docs/guides/concurrency).
 
 <CodeGroup>
 ```ts {{ title: "Simple" }}
@@ -28,20 +28,20 @@ inngest.createFunction(
     id: "unique-function-id",
     concurrency: [
       {
-         // Use an account-level concurrency limit for this function, using the
-         // "openai" key as a virtual queue.  Any other function which
-         // runs using the same "openai"` key counts towards this limit.
+         // Используем лимит параллелизма на уровне аккаунта для этой функции,
+         // используя ключ "openai" как виртуальную очередь. Любая другая функция,
+         // выполняемая с тем же ключом "openai", учитывается в этом лимите.
          scope: "account",
          key: `"openai"`,
-         // If there are 10 steps executing with the "openai" key, this function's
-         // runs will wait for capacity before executing.
+         // Если 10 шагов выполняются с ключом "openai", запуски этой функции
+         // будут ожидать освобождения ресурсов перед выполнением.
          limit: 10,
       },
       {
-         // Create another virtual concurrency queue for this function only.  This
-         // limits all accounts to a single executing step for this function, based off
-         // of the `event.data.account_id` field.
-         // "fn" is the default scope, so we could omit this field.
+         // Создаём ещё одну виртуальную очередь параллелизма только для этой функции.
+         // Это ограничивает все аккаунты одним одновременно выполняемым шагом
+         // для этой функции на основе поля event.data.account_id.
+         // "fn" — это область по умолчанию, поэтому это поле можно опустить.
          scope: "fn",
          key: "event.data.account_id",
          limit: 1,
@@ -55,51 +55,51 @@ inngest.createFunction(
 ```
 </CodeGroup>
 
-Setting `concurrency` limits are very useful for:
+Установка ограничений `concurrency` особенно полезна для:
 
-* Handling API rate limits - Limit concurrency to stay within the rate limit quotas that are allowed by a given third party API.
-* Limiting database operations or connections
-* Preventing one of your user's accounts from consuming too many resources (see `key`)
+* Соблюдения лимитов частоты запросов к API — ограничьте параллелизм, чтобы не превышать квоты, установленные сторонними API.
+* Ограничения операций с базой данных или количества подключений
+* Предотвращения чрезмерного потребления ресурсов одним аккаунтом пользователя (см. параметр `key`)
 
-Alternatively, if you want to limit the number of times that your function runs in a given period, [the `rateLimit` option](/docs/reference/functions/rate-limit) may be better for your use case.
+Если вы хотите ограничить количество запусков функции за определённый период, возможно, больше подойдёт [параметр `rateLimit`](/docs/reference/functions/rate-limit).
 
 
-## Configuration
+## Конфигурация
 
 <Properties>
   <Property name="concurrency" type="number | object | [object, object]">
-    Options to configure concurrency. Specifying a `number` is a shorthand to set the `limit` property.
+    Параметры настройки параллелизма. Указание числа (`number`) — это сокращённая запись для установки свойства `limit`.
 
     <Properties nested={true}>
       <Property name="limit" type="number" required>
-        The maximum number of concurrently running steps.
-        A value of `0` or `undefined` is the equivalent of not setting a limit.
-        The maximum value is dictated by your account's plan.
+        Максимальное количество одновременно выполняемых шагов.
+        Значение `0` или `undefined` равнозначно отсутствию ограничения.
+        Максимальное значение определяется тарифным планом вашего аккаунта.
       </Property>
       <Property name="scope" type="'account' | 'env' | 'fn'">
-        The scope for the concurrency limit, which impacts whether concurrency is managed on an individual function, across an environment, or across your entire account.
+        Область действия ограничения параллелизма, определяющая, управляется ли параллелизм для отдельной функции, в рамках среды или для всего аккаунта.
 
-        * `fn` (default):  only the runs of this function affects the concurrency limit
-        * `env`:  all runs within the same environment that share the same evaluated key value will affect the concurrency limit.  This requires setting a `key` which evaluates to a virtual queue name.
-        * `account`:  every run that shares the same evaluated key value will affect the concurrency limit, across every environment.  This requires setting a `key` which evaluates to a virtual queue name.
+        * `fn` (по умолчанию): только запуски данной функции влияют на лимит параллелизма
+        * `env`: все запуски в одной среде с одинаковым вычисленным значением ключа влияют на лимит параллелизма. Требует установки `key`, который вычисляется как имя виртуальной очереди.
+        * `account`: каждый запуск с одинаковым вычисленным значением ключа влияет на лимит параллелизма во всех средах. Требует установки `key`, который вычисляется как имя виртуальной очереди.
       </Property>
       <Property name="key" type="string">
-        An expression which evaluates to a string given the triggering event.  The string returned from the expression is used as the concurrency queue name.  A key is required when setting an `env` or `account` level scope.
+        Выражение, которое вычисляется в строку на основе запускающего события. Строка, возвращаемая выражением, используется как имя очереди параллелизма. Ключ обязателен при установке области `env` или `account`.
 
-        Expressions are defined using the Common Expression Language (CEL) with the original event accessible using dot-notation. Read [our guide to writing expressions](/docs/guides/writing-expressions) for more info. Examples:
+        Выражения определяются с использованием Common Expression Language (CEL), оригинальное событие доступно через точечную нотацию. Читайте [наше руководство по написанию выражений](/docs/guides/writing-expressions) для получения дополнительной информации. Примеры:
 
-        * Limit concurrency to `n` (via `limit`) per customer id: `'event.data.customer_id'`
-        * Limit concurrency to `n` per user, per import id: `'event.data.user_id + "-" + event.data.import_id'`
-        * Limit globally using a specific string: `'"global-quoted-key"'` (wrapped in quotes, as the expression is evaluated as a language)
+        * Ограничение параллелизма до `n` (через `limit`) для каждого ID клиента: `'event.data.customer_id'`
+        * Ограничение до `n` для каждого пользователя на каждый ID импорта: `'event.data.user_id + "-" + event.data.import_id'`
+        * Глобальное ограничение с использованием конкретной строки: `'"global-quoted-key"'` (обёрнуто в кавычки, так как выражение вычисляется как язык)
       </Property>
     </Properties>
   </Property>
 </Properties>
 
 <Callout>
-**Step-level concurrency:** The concurrency option controls the number of concurrent _steps_ that can be running at any one time, not the number of function runs.
+**Параллелизм на уровне шагов:** Параметр concurrency управляет количеством одновременно выполняемых _шагов_, а не количеством запусков функции.
 
-Because function runs frequently pause (for sleeps, waiting for events, or between steps), it's common to have many more function runs in progress than your concurrency limit. However, only the configured number of steps will ever be _actively executing_ at once.
+Поскольку функции часто приостанавливаются (во время ожидания, ожидания событий или между шагами), нередко одновременно выполняется значительно больше запусков, чем допускает лимит параллелизма. Однако в любой момент времени _активно выполняется_ не более заданного числа шагов.
 
-For example, with `concurrency: 10`, you might have 500 function runs in progress, but only 10 steps are executing code at any given moment.
+Например, при `concurrency: 10` может быть 500 активных запусков функции, но только 10 шагов выполняют код в каждый конкретный момент.
 </Callout>

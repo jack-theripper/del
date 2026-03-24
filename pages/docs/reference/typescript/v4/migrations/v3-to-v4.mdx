@@ -1,19 +1,19 @@
 import { Info, Tip, Warning } from "src/shared/Docs/mdx";
 
-# TypeScript SDK Migration Guide: v3 to v4
+# Руководство по миграции TypeScript SDK: с v3 на v4
 
-This guide helps you migrate your Inngest TypeScript SDK from v3 to v4.
+Это руководство поможет вам перейти с Inngest TypeScript SDK v3 на v4.
 
-## New features
+## Новые возможности
 
-- Middleware is more powerful and intuitive ([more info](/docs/reference/typescript/v4/middleware/lifecycle))
-- Trigger helpers ([more info](/docs/reference/typescript/v4/functions/triggers))
-- Separate internal and user-facing logs with the `internalLogger` option ([more info](/docs/reference/typescript/v4/logging#internal-logger))
-- Use a worker thread in Connect ([more info](/docs/reference/typescript/v4/migrations/v3-to-v4#connect-worker-thread))
+- Промежуточное ПО стало мощнее и интуитивнее ([подробнее](/docs/reference/typescript/v4/middleware/lifecycle))
+- Хелперы триггеров ([подробнее](/docs/reference/typescript/v4/functions/triggers))
+- Раздельные внутренние и пользовательские логи с опцией `internalLogger` ([подробнее](/docs/reference/typescript/v4/logging#internal-logger))
+- Использование воркер-потока в Connect ([подробнее](/docs/reference/typescript/v4/migrations/v3-to-v4#connect-worker-thread))
 
-## Upgrade prompt
+## Промпт для обновления
 
-You can use your coding agent of choice to upgrade to v4. Here's a suggested prompt:
+Вы можете использовать любой coding-агент для обновления до v4. Вот рекомендуемый промпт:
 
 ```plaintext
 Upgrade Inngest TypeScript SDK from v3 to v4
@@ -29,22 +29,22 @@ Read the migration guide at https://www.inngest.com/docs-markdown/reference/type
 Install the latest v4 package and verify TypeScript compilation passes afterward.
 ```
 
-## Breaking changes
+## Критические изменения
 
-### Middleware rewrite
+### Переработка промежуточного ПО
 
-The middleware system was completely rewritten. To see the new API, see the [middleware](/docs/reference/typescript/v4/middleware/lifecycle) documentation.
+Система промежуточного ПО была полностью переработана. Ознакомьтесь с документацией по [промежуточному ПО](/docs/reference/typescript/v4/middleware/lifecycle), чтобы узнать о новом API.
 
-This guide covers how to migrate between the v3 and the v4 version of the `inngest` package.
+Это руководство описывает миграцию между v3 и v4 версиями пакета `inngest`.
 
-### Default mode is now "cloud"
+### Режим по умолчанию теперь "cloud"
 
-The default mode is now `cloud` instead of `dev`. This prevents accidental production deployments in development mode and aligns with all other Inngest SDKs.
+Режим по умолчанию теперь `cloud` вместо `dev`. Это предотвращает случайные деплои в продакшен в режиме разработки и согласуется со всеми другими SDK Inngest.
 
-**What this means:**
+**Что это означает:**
 
-- In `cloud` mode, a signing key is required (via `INNGEST_SIGNING_KEY` or the `signingKey` option)
-- For local development, explicitly set `isDev: true` on your client or set `INNGEST_DEV=1`
+- В режиме `cloud` требуется signing key (через `INNGEST_SIGNING_KEY` или опцию `signingKey`)
+- Для локальной разработки явно установите `isDev: true` на клиенте или задайте `INNGEST_DEV=1`
 
 ```typescript
 // Local development
@@ -54,14 +54,14 @@ const inngest = new Inngest({ id: "my-app", isDev: true });
 const inngest = new Inngest({ id: "my-app" });
 ```
 
-or
+или
 
 ```sh
 INNGEST_DEV=1 pnpm run dev
 ```
 
 
-You have encountered this issue if your error looks something like:
+Вы столкнулись с этой проблемой, если ваша ошибка выглядит примерно так:
 
 ```
 Error: Inngest error: A signing key is required to run in Cloud mode, but no signing key was found.
@@ -73,11 +73,11 @@ To fix this, choose one of the following:
 Find your keys at https://app.inngest.com
 ```
 
-### Event trigger is now in options
+### Триггер события теперь в опциях
 
-In prior versions of the SDK, you specified triggers for events as the second argument of `createFunction`. We changed it because the triggers make more implicit sense as options, _and_ the case of specifying a function with no triggers required you to send an empty array which we did not love.
+В предыдущих версиях SDK триггеры для событий указывались вторым аргументом `createFunction`. Мы изменили это, потому что триггеры семантически логичнее как опции, _и_ случай задания функции без триггеров требовал передачи пустого массива, что нам не нравилось.
 
-For example, the old syntax:
+Например, старый синтаксис:
 
 ```ts
 // Old (v3)
@@ -98,7 +98,7 @@ inngest.createFunction(
 )
 ```
 
-Multiple triggers can be passed as an array, a la:
+Несколько триггеров передаются в виде массива:
 
 ```ts
 triggers: [
@@ -107,11 +107,11 @@ triggers: [
 ]
 ```
 
-A triggerless function is as simple as not providing a trigger.
+Функция без триггеров — это просто функция без указания триггеров.
 
-### Event schemas replaced with event types
+### Схемы событий заменены типами событий
 
-The centralized schemas option on the Inngest client (`EventSchemas` class) has been removed. Instead, use the `eventType()` function to define event types that are shared between sending events, waiting for events, and event triggers. See the [trigger helpers reference](/docs/reference/typescript/v4/functions/triggers) for full documentation on `eventType()`, `cron()`, `invoke()`, and `staticSchema()`.
+Централизованная опция схем на клиенте Inngest (класс `EventSchemas`) удалена. Вместо неё используйте функцию `eventType()` для определения типов событий, которые используются при отправке событий, ожидании событий и триггерах событий. Смотрите [справочник по хелперам триггеров](/docs/reference/typescript/v4/functions/triggers) для полной документации по `eventType()`, `cron()`, `invoke()` и `staticSchema()`.
 
 ```ts
 // Old (v3) - centralized type-only schemas on the client
@@ -142,7 +142,7 @@ inngest.createFunction(
 );
 ```
 
-Using a runtime schema library (e.g. Zod) will result in a runtime type check. If you don't want runtime type checking, use `staticSchema()` instead:
+Использование библиотеки схем времени выполнения (например, Zod) приведёт к проверке типов во время выполнения. Если проверка типов во время выполнения не нужна, используйте вместо этого `staticSchema()`:
 
 ```ts
   type UserCreatedPayload = { userId: string; email: string };
@@ -152,7 +152,7 @@ Using a runtime schema library (e.g. Zod) will result in a runtime type check. I
   });
 ```
 
-Event types can also be used with `step.waitForEvent` and `inngest.send`:
+Типы событий также можно использовать с `step.waitForEvent` и `inngest.send`:
 
 ```ts
 // Return value is inferred and validated using `userCreated`'s schema
@@ -166,27 +166,27 @@ await inngest.send(userCreated.create({ userId: "1", email: "a@b.com" }));
 ```
 
 <Tip>
-  Please note: `staticSchema` expects a `type`, not an `interface`. You may need to convert existing interfaces to types.
+  Обратите внимание: `staticSchema` ожидает `type`, а не `interface`. Возможно, потребуется преобразовать существующие интерфейсы в типы.
 </Tip>
 
-### Rename `serveHost` to `serveOrigin`
+### Переименование `serveHost` в `serveOrigin`
 
-Rename the `serveHost` option to `serveOrigin` to better reflect its purpose. Using "host" was actually a misnomer because the scheme and port can be specified, while a "host" is only the domain or IP.
+Переименуйте опцию `serveHost` в `serveOrigin`, чтобы лучше отражать её назначение. Использование "host" было фактически неверным, поскольку можно указать схему и порт, тогда как "host" — это только домен или IP.
 
-The `INNGEST_SERVE_HOST` environment variable is still supported for backward compatibility but will log a deprecation warning. Please migrate to `INNGEST_SERVE_ORIGIN`.
+Переменная окружения `INNGEST_SERVE_HOST` по-прежнему поддерживается для обратной совместимости, но выдаст предупреждение об устаревании. Пожалуйста, перейдите на `INNGEST_SERVE_ORIGIN`.
 
-### Serve options moved to client
+### Опции serve перенесены на клиент
 
-Many of the options previously passed to the `serve` function were moved up to the `client` level. These properties make more sense at this level and, because it only involves potentially reorganizing where you're setting values, should be a very straightforward migration.
+Многие опции, ранее передававшиеся функции `serve`, были перемещены на уровень `client`. Эти свойства логичнее на этом уровне, и поскольку это связано только с потенциальной реорганизацией места указания значений, миграция должна быть очень простой.
 
-The options that you may need to reorganize are:
+Опции, которые может потребоваться реорганизовать:
 
 - **baseUrl**
 - **fetch**
 - **signingKey**
 - **signingKeyFallback**
 
-If you are passing any of these values to the `serve` function, or the `createServer` function, you will need to modify your code so that they are instead provided to the client.
+Если вы передаёте любое из этих значений функции `serve` или функции `createServer`, вам нужно изменить код так, чтобы они предоставлялись клиенту.
 
 ```typescript
 // Old (v3)
@@ -212,13 +212,13 @@ const inngest = new Inngest({
 app.use("/api/inngest", serve({ client: inngest, functions }));
 ```
 
-If you were relying on environment variables (e.g., `INNGEST_SIGNING_KEY`) rather than passing these options explicitly, no changes are required—the client will automatically read from the environment.
+Если вы использовали переменные окружения (например, `INNGEST_SIGNING_KEY`) вместо явной передачи этих опций, изменений не требуется — клиент автоматически читает из окружения.
 
-### Remove `logLevel` option
+### Удаление опции `logLevel`
 
-Log level is now purely the responsibility of the logger object passed to the client's `logger` option.
+Уровень логирования теперь является исключительной ответственностью объекта логгера, передаваемого в опцию `logger` клиента.
 
-The default logger level is `info`. If you'd like to change that, you can manually pass our default logger:
+Уровень логгера по умолчанию — `info`. Чтобы изменить его, можно вручную передать наш логгер по умолчанию:
 
 ```ts
 import { ConsoleLogger, Inngest } from "inngest";
@@ -229,13 +229,13 @@ export const inngest = new Inngest({
 });
 ```
 
-### Simplify `streaming` option
+### Упрощение опции `streaming`
 
-The `streaming` option in `serve()` has been simplified from `"allow" | "force" | false` to `true | false`.
+Опция `streaming` в `serve()` упрощена с `"allow" | "force" | false` до `true | false`.
 
-- `"force"` → `true` (enable streaming; throws error if handler doesn't support it)
-- `"allow"` → removed (use `true` instead)
-- `false` → `false` (unchanged)
+- `"force"` → `true` (включить стриминг; выбрасывает ошибку, если обработчик его не поддерживает)
+- `"allow"` → удалено (используйте `true`)
+- `false` → `false` (без изменений)
 
 ```typescript
 // Old (v3)
@@ -245,13 +245,13 @@ serve({ client, functions, streaming: "force" });
 serve({ client, functions, streaming: true });
 ```
 
-If the `serve` function does not support streaming then it throws an error. Previously, it silently ignored the option.
+Если функция `serve` не поддерживает стриминг, она выбрасывает ошибку. Ранее опция игнорировалась молча.
 
-### Optimized parallelism enabled by default
+### Оптимизированный параллелизм включён по умолчанию
 
-"Optimized parallelism" significantly reduces the number of requests necessary to run parallel steps (steps in `Promise.all`, `Promise.allSettled`, etc.). This decrease in requests can dramatically improve CPU usage, memory usage, and function run duration.
+"Оптимизированный параллелизм" значительно уменьшает количество запросов, необходимых для выполнения параллельных шагов (шаги в `Promise.all`, `Promise.allSettled` и т.д.). Это снижение запросов может значительно улучшить использование CPU, памяти и длительность запуска функций.
 
-The primary downside is the change in `Promise.race` behavior. `Promise.race` will wait for *all* promises to settle before resolving. The correct "winner" is returned, but the `Promise.race` will *not* immediately resolve on the first winner. If you were relying on the early resolution behavior, use the new `group.parallel()` helper. This will disable optimized parallelism for groups of steps:
+Основным недостатком является изменение поведения `Promise.race`. `Promise.race` будет ждать завершения *всех* промисов перед разрешением. Возвращается правильный "победитель", но `Promise.race` *не* разрешится немедленно на первом победителе. Если вы полагались на поведение раннего разрешения, используйте новый хелпер `group.parallel()`. Это отключит оптимизированный параллелизм для групп шагов:
 
 ```typescript
 // Old behavior (no longer works as expected with optimized parallelism)
@@ -269,13 +269,13 @@ const winner = await group.parallel(async () => {
 });
 ```
 
-If you'd like to disable optimized parallelism altogether at either the client or function level, set `optimizeParallelism: false`.
+Чтобы полностью отключить оптимизированный параллелизм на уровне клиента или функции, установите `optimizeParallelism: false`.
 
-### Checkpointing enabled by default
+### Чекпоинтинг включён по умолчанию
 
-[Checkpointing](/docs/setup/checkpointing) is now enabled by default for all functions. This means multiple steps can execute within a single request, resulting in dramatically lower latency and bandwidth usage.
+[Чекпоинтинг](/docs/setup/checkpointing) теперь включён по умолчанию для всех функций. Это означает, что несколько шагов могут выполняться в рамках одного запроса, что значительно снижает задержку и использование полосы пропускания.
 
-If your functions run on serverless platforms, like Vercel, you should configure the `maxRuntime` option to slightly below your function's maximum duration:
+Если ваши функции работают на serverless-платформах, таких как Vercel, следует настроить опцию `maxRuntime` немного ниже максимальной продолжительности функции:
 
 ```ts
 const inngest = new Inngest({
@@ -287,9 +287,9 @@ const inngest = new Inngest({
 ```
 
 <Warning>
-  Many platforms, like Vercel, allow you to configure the maximum duration per function, e.g. on your `/api/inngest` endpoint. We recommend setting the `maxRuntime` to 60-80% of your maximum duration.
+  Многие платформы, например Vercel, позволяют настроить максимальную продолжительность для каждой функции, например для эндпоинта `/api/inngest`. Рекомендуем устанавливать `maxRuntime` на 60-80% от максимальной продолжительности.
 
-  For Vercel applications, you should explicitly set your `maxDuration` ([docs](https://vercel.com/docs/functions/configuring-functions/duration)) on the `/api/inngest`. For example:
+  Для приложений Vercel следует явно задать `maxDuration` ([документация](https://vercel.com/docs/functions/configuring-functions/duration)) для `/api/inngest`. Например:
   ```ts app/api/inngest/route.ts
   import { serve } from 'inngest/next';
   import { inngest, functions } from '../../inngest';
@@ -300,10 +300,10 @@ const inngest = new Inngest({
   export default serve({ client: inngest, functions });
   ```
 
-  Learn more about configuring Vercel [here]().
+  Узнайте больше о настройке Vercel [здесь]().
 </Warning>
 
-To disable checkpointing, set `checkpointing: false` on your client or on individual functions:
+Чтобы отключить чекпоинтинг, установите `checkpointing: false` на клиенте или отдельных функциях:
 
 ```typescript
 // Disable for all functions
@@ -318,9 +318,9 @@ inngest.createFunction(
 );
 ```
 
-### Connect: `rewriteGatewayEndpoint` replaced with `gatewayUrl`
+### Connect: `rewriteGatewayEndpoint` заменён на `gatewayUrl`
 
-The `rewriteGatewayEndpoint` callback option has been removed from `connect()`. Use the `gatewayUrl` string option or the `INNGEST_CONNECT_GATEWAY_URL` environment variable instead.
+Опция обратного вызова `rewriteGatewayEndpoint` удалена из `connect()`. Используйте строковую опцию `gatewayUrl` или переменную окружения `INNGEST_CONNECT_GATEWAY_URL`.
 
 ```typescript
 // Old (v3)
@@ -340,19 +340,19 @@ const connection = await connect({
 });
 ```
 
-### Connect worker thread
+### Воркер-поток Connect
 
-Connect internals (e.g. the WebSocket connection) are now in a worker thread. This solves an issue where event loop starvation (e.g. CPU heavy work) blocked heartbeats, tricking the Inngest server into thinking the worker died.
+Внутренние компоненты Connect (например, WebSocket-соединение) теперь находятся в воркер-потоке. Это решает проблему, когда голодание цикла событий (например, CPU-интенсивная работа) блокировало heartbeat'ы, заставляя сервер Inngest думать, что воркер завис.
 
-This change _shouldn't_ break any user facing behavior, but it's good to be aware of. If you do notice an issue with Connect, you can move the WebSocket connection back to the main thread by setting `isolateExecution: false` in your `connect()` options or by setting the `INNGEST_CONNECT_ISOLATE_EXECUTION` environment variable to `false`.
+Это изменение _не должно_ нарушать пользовательское поведение, но его полезно знать. Если вы заметите проблему с Connect, можно переместить WebSocket-соединение обратно в главный поток, установив `isolateExecution: false` в опциях `connect()` или задав переменную окружения `INNGEST_CONNECT_ISOLATE_EXECUTION` в `false`.
 
-### Edge environment improvements
+### Улучшения для edge-окружений
 
-Fetch and configuration are now resolved lazily at first use rather than eagerly at client construction. This means you no longer need to manually bind `globalThis.fetch` before creating an Inngest client in edge environments (Cloudflare Workers, Vercel Edge, Deno, etc.).
+Fetch и конфигурация теперь разрешаются лениво при первом использовании, а не при создании клиента. Это означает, что больше не нужно вручную привязывать `globalThis.fetch` перед созданием клиента Inngest в edge-окружениях (Cloudflare Workers, Vercel Edge, Deno и т.д.).
 
-### Remove support for string function IDs in `step.invoke()`
+### Удалена поддержка строковых ID функций в `step.invoke()`
 
-Passing a raw string to `step.invoke()` is no longer supported. Use `referenceFunction()` or pass an imported function instance instead.
+Передача строки напрямую в `step.invoke()` больше не поддерживается. Используйте `referenceFunction()` или передайте импортированный экземпляр функции.
 
 ```typescript
 // Old (v3) - No longer works
@@ -374,4 +374,4 @@ await step.invoke("my-step", {
 });
 ```
 
-The `referenceFunction()` helper provides type safety and avoids the footgun of manually constructing the `appId-functionId` string.
+Хелпер `referenceFunction()` обеспечивает типобезопасность и избавляет от ошибок ручного формирования строки `appId-functionId`.

@@ -1,50 +1,50 @@
 import { Callout } from "src/shared/Docs/mdx";
 
-# Creating an Event Key
+# Создание ключа события
 
-“Event Keys” are unique keys that allow applications to send (aka publish) events to Inngest. When using Event Keys with the [Inngest SDK](/docs/events), you can configure the `Inngest` client in 2 ways:
+«Ключи событий» — это уникальные ключи, позволяющие приложениям отправлять (публиковать) события в Inngest. При использовании ключей событий с [Inngest SDK](/docs/events) вы можете настроить клиент `Inngest` двумя способами:
 
-1. Setting the key as an [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) environment variable in your application*
-2. Passing the key as an argument
+1. Установив ключ как переменную окружения [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) в вашем приложении*
+2. Передав ключ в качестве аргумента
 
 ```jsx
-// Recommended: Set an INNGEST_EVENT_KEY environment variable for automatic configuration:
+// Рекомендуется: установите переменную окружения INNGEST_EVENT_KEY для автоматической настройки:
 const inngest = new Inngest({ name: "Your app name" });
 
-// Or you can pass the eventKey explicitly to the constructor:
+// Или передайте eventKey явно в конструктор:
 const inngest = new Inngest({ name: "Your app name", eventKey: "xyz..." });
 
-// With the Event Key, you're now ready to send data:
+// С ключом события вы готовы отправлять данные:
 await inngest.send({ ... })
 ```
 
-\* Our [Vercel integration](/docs/deploy/vercel) automatically sets the [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) as an environment variable for you
+\* Наша [интеграция с Vercel](/docs/deploy/vercel) автоматически устанавливает [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key) как переменную окружения
 
 <Callout>
-  🙋 Event Keys should be unique to a given <strong>environment</strong> (e.g. production, branch environments) and a specific <strong>application</strong> (your API, your mobile app, etc.). Keeping keys separated by application makes it easier to manage keys and rotate them when necessary.
+  🙋 Ключи событий должны быть уникальны для конкретной <strong>среды</strong> (например, production, среды веток) и конкретного <strong>приложения</strong> (ваш API, ваше мобильное приложение и т.д.). Разделение ключей по приложениям упрощает управление ключами и их ротацию при необходимости.
 </Callout>
 
 <Callout>
-  🔐 **Securing Event Keys** - As Event Keys are used to send data to your Inngest environment, you should take precautions to secure your keys. Avoid storing them in source code and store the keys as secrets in your chosen platform when possible.
+  🔐 **Защита ключей событий** — Поскольку ключи событий используются для отправки данных в вашу среду Inngest, необходимо принять меры по их защите. Не храните их в исходном коде и по возможности сохраняйте ключи как секреты на вашей платформе.
 </Callout>
 
-## Creating a new Event Key
+## Создание нового ключа события
 
-From the Inngest Cloud dashboard, Event Keys are listed in the "Manage" tab:
+В панели управления Inngest Cloud ключи событий перечислены на вкладке «Manage»:
 
-1. Click on "Manage" ([direct link](https://app.inngest.com/env/production/manage/keys))
-2. Click the "+ Create Event Key" button at the top right
-3. Update the Event Key's name to something descriptive and click "Save changes"
-4. Copy the newly created key using the “Copy” button:
+1. Нажмите «Manage» ([прямая ссылка](https://app.inngest.com/env/production/manage/keys))
+2. Нажмите кнопку «+ Create Event Key» в правом верхнем углу
+3. Укажите понятное название для ключа события и нажмите «Save changes»
+4. Скопируйте созданный ключ с помощью кнопки «Copy»:
 
-![A newly created Event Key in the Inngest Cloud dashboard](/assets/docs/creating-an-event-key/new-event-key-2023.png)
+![Только что созданный ключ события в панели управления Inngest Cloud](/assets/docs/creating-an-event-key/new-event-key-2023.png)
 
-🎉 You can now use this event key with the Inngest SDK to send events directly from any codebase. You can also:
+🎉 Теперь вы можете использовать этот ключ события с Inngest SDK для отправки событий из любой кодовой базы. Вы также можете:
 
-- Rename your event key at any time using the “Name” field so you and your team can identify it later
-- Delete the event key when your key is no longer needed
-- Filter events by name or IP addresses for increased control and security
+- Переименовать ключ события в любое время с помощью поля «Name», чтобы вы и ваша команда могли его идентифицировать
+- Удалить ключ события, когда он больше не нужен
+- Фильтровать события по имени или IP-адресам для расширенного контроля и безопасности
 
 <Callout variant="warning">
-  <span className="text-yellow-300">⚠️</span> While it is _possible_ to use Event Keys to send events from the browser, this practice presents risks as anyone inspecting your client side code will be able to read your key and send events to your Inngest environment. If you'd like to send events from the client, we recommend creating an API endpoint or edge function to proxy the sending of events.
+  <span className="text-yellow-300">⚠️</span> Хотя технически _возможно_ использовать ключи событий для отправки событий из браузера, такая практика несёт риски: любой, кто изучит ваш клиентский код, сможет прочитать ваш ключ и отправлять события в вашу среду Inngest. Если вы хотите отправлять события со стороны клиента, рекомендуем создать конечную точку API или edge-функцию для проксирования отправки событий.
 </Callout>

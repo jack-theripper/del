@@ -1,12 +1,12 @@
 import { Callout } from "src/shared/Docs/mdx";
 
-# Middleware examples
+# Примеры промежуточного ПО
 
-Real-world examples using the v4 class-based middleware API. See [Lifecycle](/docs/reference/typescript/v4/middleware/lifecycle) for the full hook reference.
+Практические примеры использования API промежуточного ПО на основе классов v4. Смотрите [Жизненный цикл](/docs/reference/typescript/v4/middleware/lifecycle) для полного справочника хуков.
 
-## Dependency injection
+## Внедрение зависимостей
 
-Inject a [Prisma](https://www.prisma.io/) client into all functions via `transformFunctionInput`. Types are automatically inferred, so your functions see a typed `prisma` property.
+Внедрение клиента [Prisma](https://www.prisma.io/) во все функции через `transformFunctionInput`. Типы автоматически выводятся, поэтому функции видят типизированное свойство `prisma`.
 
 ```ts
 import { Middleware } from "inngest";
@@ -33,7 +33,7 @@ const inngest = new Inngest({
 ```
 
 ```ts
-// prisma is typed and available in every function
+// prisma типизирован и доступен в каждой функции
 inngest.createFunction(
   { id: "create-audit-log", triggers: { event: "app/user.loggedin" } },
   async ({ prisma, event }) => {
@@ -44,9 +44,9 @@ inngest.createFunction(
 );
 ```
 
-## Request headers to context
+## Заголовки запроса в контекст
 
-Use `wrapRequest` to capture incoming HTTP headers, then `transformFunctionInput` to expose them in function context.
+Используйте `wrapRequest` для захвата входящих HTTP-заголовков, затем `transformFunctionInput` для их предоставления в контексте функции.
 
 ```ts
 import { Middleware } from "inngest";
@@ -71,9 +71,9 @@ class HeadersMiddleware extends Middleware.BaseMiddleware {
 }
 ```
 
-## Observability
+## Наблюдаемость
 
-Log function and step lifecycle events for monitoring and metrics.
+Логирование событий жизненного цикла функций и шагов для мониторинга и метрик.
 
 ```ts
 import { Middleware } from "inngest";
@@ -90,7 +90,7 @@ class ObservabilityMiddleware extends Middleware.BaseMiddleware {
   onRunError({ functionInfo, error, isFinalAttempt }: Middleware.OnRunErrorArgs) {
     console.error(`[run:error] ${functionInfo.id}`, error);
     if (isFinalAttempt) {
-      // Send to error tracking service
+      // Отправить в сервис отслеживания ошибок
     }
   }
 
@@ -104,9 +104,9 @@ class ObservabilityMiddleware extends Middleware.BaseMiddleware {
 }
 ```
 
-## Error handling
+## Обработка ошибок
 
-Use `wrapStepHandler` to catch step errors and convert them to `NonRetriableError`.
+Используйте `wrapStepHandler` для перехвата ошибок шагов и преобразования их в `NonRetriableError`.
 
 ```ts
 import { Middleware, NonRetriableError } from "inngest";
@@ -116,7 +116,7 @@ class ErrorHandlingMiddleware extends Middleware.BaseMiddleware {
     try {
       return await next();
     } catch (err) {
-      // Convert specific errors to non-retriable
+      // Преобразовать конкретные ошибки в не-повторяемые
       if (err instanceof ValidationError) {
         throw new NonRetriableError(err.message, { cause: err });
       }
@@ -126,33 +126,33 @@ class ErrorHandlingMiddleware extends Middleware.BaseMiddleware {
 }
 ```
 
-`wrapStepHandler` is used here instead of `wrapStep` because it runs on every errored attempt, while `wrapStep` only runs after the step has exhausted all retries.
+Здесь используется `wrapStepHandler` вместо `wrapStep`, потому что он выполняется при каждой неудавшейся попытке, тогда как `wrapStep` выполняется только после исчерпания всех повторных попыток шага.
 
-## Custom serialization
+## Кастомная сериализация
 
-Inngest serializes and deserializes data as JSON. This means that non-JSON types like `Date`, `Map`, or `Set` are lost. However, you can preserve them using serializer middleware.
+Inngest сериализует и десериализует данные как JSON. Это означает, что не-JSON типы, такие как `Date`, `Map` или `Set`, теряются. Однако их можно сохранить с помощью промежуточного ПО сериализатора.
 
-Serializer middleware creates JSON-valid representations of non-JSON types, allowing for seamless preservation across step boundaries, event sends, and function invocations. See the [Custom serialization](/docs/reference/typescript/v4/middleware/serialization) guide for a full walkthrough.
+Промежуточное ПО сериализатора создаёт JSON-совместимые представления не-JSON типов, обеспечивая их сохранение между границами шагов, отправкой событий и вызовами функций. Смотрите руководство по [кастомной сериализации](/docs/reference/typescript/v4/middleware/serialization) для полного описания.
 
-## Inserting steps
+## Вставка шагов
 
-Use `wrapFunctionHandler` to run steps before or after the function handler. Because wrapping hooks have access to `ctx`, you can call `step.run()` directly.
+Используйте `wrapFunctionHandler` для выполнения шагов до или после обработчика функции. Поскольку оборачивающие хуки имеют доступ к `ctx`, можно вызывать `step.run()` напрямую.
 
 ```ts
 import { Middleware } from "inngest";
 
 class InsertStepsMiddleware extends Middleware.BaseMiddleware {
   async wrapFunctionHandler({ ctx, next }: Middleware.WrapFunctionHandlerArgs) {
-    // Run a step before the function handler
+    // Выполнить шаг перед обработчиком функции
     await ctx.step.run("setup", async () => {
-      // e.g. initialize resources
+      // например, инициализировать ресурсы
     });
 
     const functionOutput = await next();
 
-    // Run a step after the function handler
+    // Выполнить шаг после обработчика функции
     await ctx.step.run("cleanup", async () => {
-      // e.g. send a notification, update a status record
+      // например, отправить уведомление, обновить запись статуса
     });
 
     return functionOutput;
@@ -160,7 +160,7 @@ class InsertStepsMiddleware extends Middleware.BaseMiddleware {
 }
 ```
 
-The same pattern works with `wrapStep` to insert steps around individual step executions.
+Тот же паттерн работает с `wrapStep` для вставки шагов вокруг отдельных выполнений шагов.
 
 ```ts
 import { Middleware } from "inngest";
@@ -170,7 +170,7 @@ class StepAuditMiddleware extends Middleware.BaseMiddleware {
     try {
       return await next();
     } catch (err) {
-      // Record the failure in a durable step
+      // Записать сбой в надёжный шаг
       await ctx.step.run(`audit-failure-${stepInfo.hashedId}`, async () => {
         await auditLog.write({ step: stepInfo.hashedId, error: err });
       });
@@ -182,5 +182,5 @@ class StepAuditMiddleware extends Middleware.BaseMiddleware {
 ```
 
 <Callout>
-Steps inserted by a middleware's `wrapStep` will not trigger that same middleware's `wrapStep` again. The SDK prevents this to avoid infinite loops.
+Шаги, вставленные `wrapStep` промежуточного ПО, не будут снова вызывать `wrapStep` того же промежуточного ПО. SDK предотвращает это во избежание бесконечных циклов.
 </Callout>

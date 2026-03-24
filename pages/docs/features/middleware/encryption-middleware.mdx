@@ -13,10 +13,10 @@ import {
   VersionBadge,
 } from "src/shared/Docs/mdx";
 
-# Encryption Middleware
+# Промежуточное ПО шифрования
 
 
-Encryption middleware provides end-to-end encryption for events, step output, and function output. **Only encrypted data is sent to Inngest servers**: encryption and decryption happen within your infrastructure.
+Промежуточное ПО шифрования обеспечивает сквозное шифрование событий, вывода шагов и вывода функций. **На серверы Inngest отправляются только зашифрованные данные**: шифрование и расшифрование происходят внутри вашей инфраструктуры.
 
 
 
@@ -25,16 +25,16 @@ Encryption middleware provides end-to-end encryption for events, step output, an
   <LanguageSection show="go">
 
     <Callout>
-      Support for Middleware in the Go SDK in planned.
+      Поддержка промежуточного ПО в Go SDK планируется.
     </Callout>
 
   </LanguageSection>
 
   <LanguageSection show="python">
 
-    ## Installation
+    ## Установка
 
-    The `EncryptionMiddleware` is available as part of the `inngest_encryption` package:
+    `EncryptionMiddleware` доступен как часть пакета `inngest_encryption`:
 
     ```py
     import inngest
@@ -46,18 +46,18 @@ Encryption middleware provides end-to-end encryption for events, step output, an
     )
     ```
 
-    The following data is encrypted by default:
-    - The `encrypted` field in `event.data`.
-    - `step.run` return values.
-    - Function return values.
+    По умолчанию шифруются следующие данные:
+    - Поле `encrypted` в `event.data`.
+    - Возвращаемые значения `step.run`.
+    - Возвращаемые значения функций.
 
   </LanguageSection>
 
   <LanguageSection show="typescript">
 
-    ## Installation
+    ## Установка
 
-    Install the [`@inngest/middleware-encryption` package](https://www.npmjs.com/package/@inngest/middleware-encryption) ([GitHub](https://github.com/inngest/inngest-js/tree/main/packages/middleware-encryption#readme)) and configure it as follows:
+    Установите [пакет `@inngest/middleware-encryption`](https://www.npmjs.com/package/@inngest/middleware-encryption) ([GitHub](https://github.com/inngest/inngest-js/tree/main/packages/middleware-encryption#readme)) и настройте его следующим образом:
 
     ```ts
     import { encryptionMiddleware } from "@inngest/middleware-encryption";
@@ -75,56 +75,56 @@ Encryption middleware provides end-to-end encryption for events, step output, an
     });
     ```
 
-   By default, the following will be encrypted:
-    - All step data
-    - All function output
-    - Event data placed inside `data.encrypted`
+   По умолчанию шифруются следующие данные:
+    - Все данные шагов
+    - Весь вывод функций
+    - Данные событий, помещённые внутрь `data.encrypted`
 
   </LanguageSection>
 
-
-  
-
-  <LanguageSection show="python">
-    ## Changing the encrypted `event.data` field
-
-    By default, `event.data.encrypted` is encrypted. All other fields are sent in plaintext. To encrypt a different field, set the `event_encryption_field` parameter.
-  </LanguageSection>
-
-  <LanguageSection show="typescript">
-    ## Changing the encrypted `event.data` field
-
-    Only select pieces of event data are encrypted. By default, only the data.encrypted field.
-
-    This can be customized using the `eventEncryptionField: string` setting.
-  </LanguageSection>
 
 
 
   <LanguageSection show="python">
-    ## Decrypt only mode
+    ## Изменение зашифрованного поля `event.data`
 
-    To disable encryption but continue decrypting, set `decrypt_only=True`. This is useful when you want to migrate away from encryption but still need to process older events.
+    По умолчанию `event.data.encrypted` зашифровано. Все остальные поля передаются в открытом виде. Для шифрования другого поля укажите параметр `event_encryption_field`.
   </LanguageSection>
 
   <LanguageSection show="typescript">
-    ## Decrypt only mode
+    ## Изменение зашифрованного поля `event.data`
 
-    To disable encryption but continue decrypting, set `decryptOnly: true`. This is useful when you want to migrate away from encryption but still need to process older events.
+    Шифруются только отдельные части данных события. По умолчанию — только поле `data.encrypted`.
+
+    Это можно настроить с помощью параметра `eventEncryptionField: string`.
   </LanguageSection>
 
-  
+
 
   <LanguageSection show="python">
-    ## Fallback decryption keys
+    ## Режим только расшифрования
 
-    To attempt decryption with multiple keys, set the `fallback_decryption_keys` parameter. This is useful when rotating keys, since older events may have been encrypted with a different key.
+    Для отключения шифрования при сохранении возможности расшифрования установите `decrypt_only=True`. Это полезно при переходе от шифрования с сохранением возможности обработки старых событий.
   </LanguageSection>
 
   <LanguageSection show="typescript">
-    ## Fallback decryption keys
+    ## Режим только расшифрования
 
-    To attempt decryption with multiple keys, set the `fallbackDecryptionKeys` parameter. This is useful when rotating keys, since older events may have been encrypted with a different key:
+    Для отключения шифрования при сохранении возможности расшифрования установите `decryptOnly: true`. Это полезно при переходе от шифрования с сохранением возможности обработки старых событий.
+  </LanguageSection>
+
+
+
+  <LanguageSection show="python">
+    ## Резервные ключи расшифрования
+
+    Для попытки расшифрования с несколькими ключами установите параметр `fallback_decryption_keys`. Это полезно при ротации ключей, поскольку старые события могут быть зашифрованы другим ключом.
+  </LanguageSection>
+
+  <LanguageSection show="typescript">
+    ## Резервные ключи расшифрования
+
+    Для попытки расшифрования с несколькими ключами установите параметр `fallbackDecryptionKeys`. Это полезно при ротации ключей, поскольку старые события могут быть зашифрованы другим ключом:
 
     ```ts
     // start out with the current key
@@ -151,9 +151,9 @@ Encryption middleware provides end-to-end encryption for events, step output, an
     ```
   </LanguageSection>
 
-  ## Cross-language support
+  ## Кросс-языковая поддержка
 
-  This middleware is compatible with our encryption middleware in our TypeScript SDK. Encrypted events can be sent from Python and decrypted in TypeScript, and vice versa.
+  Это промежуточное ПО совместимо с нашим промежуточным ПО шифрования в TypeScript SDK. Зашифрованные события можно отправлять из Python и расшифровывать в TypeScript, и наоборот.
 
 
 </LanguageSelector>
