@@ -46,8 +46,6 @@ export default function RootLayout({
   return (
     <html className="scroll-smooth">
       <head>
-        <link rel="preconnect" href="https://fonts-cdn.inngest.com/" />
-        <link rel="stylesheet" href="https://fonts-cdn.inngest.com/fonts.css" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github-dark.min.css"
