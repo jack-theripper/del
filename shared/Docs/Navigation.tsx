@@ -74,17 +74,17 @@ export function ActiveSectionProvider({
   const getInitialSection = useCallback(() => {
     // Check if current path matches Reference section
     const referenceTab = sidebarMenuTabs.find(
-      (tab) => tab.title === "Reference"
+      (tab) => tab.title === "Справочник"
     );
     if (referenceTab?.matcher && !!referenceTab.matcher(pathname)) {
-      return "Reference";
+      return "Справочник";
     }
     // Check if current path matches Examples section
-    const examplesTab = topLevelNav.find((tab) => tab.title === "Examples");
+    const examplesTab = topLevelNav.find((tab) => tab.title === "Примеры");
     if (examplesTab?.matcher && !!examplesTab.matcher(pathname)) {
-      return "Examples";
+      return "Примеры";
     }
-    return "Learn";
+    return "Изучение";
   }, [pathname]);
 
   const [activeSection, setActiveSection] = useState(getInitialSection);
