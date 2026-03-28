@@ -19,12 +19,15 @@ import {
 
 import type { PageProps } from "@/shared/types";
 import AnnouncementBanner from "src/components/AnnouncementBanner";
+import { SectionProvider } from "@/shared/Docs/SectionProvider";
 
 function DefaultLayout({ children }) {
   return (
     <>
-      <AnnouncementBanner />
-      {children}
+      <SectionProvider sections={[]}>
+        <AnnouncementBanner />
+        {children}
+      </SectionProvider>
     </>
   );
 }
