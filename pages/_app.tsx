@@ -2,15 +2,11 @@ import React, { useEffect } from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import Script from "next/script";
-import GoogleTagManager from "@/components/GoogleTagManager";
 
 import { trackPageView } from "../utils/tracking";
 import { getOpenGraphImageURL } from "../utils/social";
 import { useAnonymousID } from "../shared/trackingHooks";
 import "../styles/globals.css";
-import * as fullstory from "@fullstory/browser";
-import Analytics from "@/components/Analytics";
 
 import {
   Layout as DocsLayout,
@@ -49,8 +45,6 @@ function MyApp({ Component, pageProps }: AppProps<DefaultProps>) {
     : DefaultLayout;
 
   useEffect(() => {
-    fullstory.init({ orgId: "o-1CVB8R-na1" });
-
     const htmlEl = document.getElementsByTagName("html")[0];
     if (pageProps.htmlClassName) {
       htmlEl.className = pageProps.htmlClassName;
@@ -154,37 +148,6 @@ function MyApp({ Component, pageProps }: AppProps<DefaultProps>) {
       <Layout {...pageProps}>
         <Component {...pageProps} />
       </Layout>
-
-      <Script
-        id="js-inngest-sdk-script"
-        strategy="afterInteractive"
-        // @ts-ignore this should inherit base html props
-        src="/inngest-sdk.js"
-        onLoad={() => {
-          window.Inngest.init(process.env.NEXT_PUBLIC_INNGEST_KEY);
-          window.Inngest.identify({ anonymous_id: anonymousID });
-          // The hook should tell us if the anon id is an existing one, or it's just been set
-          const firstTouch = !existing;
-          // See tracking for next/link based transitions in tracking.ts
-          window.Inngest.event({
-            name: "website/page.viewed",
-            data: {
-              first_touch: firstTouch,
-            },
-            v: "2022-12-27.1",
-          });
-          if (typeof window !== "undefined" && window._inngestQueue.length) {
-            window._inngestQueue.forEach((p) => {
-              // Prevent the double tracking of page views b/c routeChangeComplete
-              // is unpredictable.
-              if (p.name === "website/page.viewed") return;
-              window.Inngest.event(p);
-            });
-          }
-        }}
-      />
-      <GoogleTagManager />
-      <Analytics />
     </>
   );
 }

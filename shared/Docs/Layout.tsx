@@ -119,12 +119,6 @@ export function Layout({
           <meta name="docsearch:sdkLanguage" content={sdkLanguage} />
           <meta name="docsearch:sdkVersion" content={sdkVersion} />
 
-          <link rel="preconnect" href="https://fonts-cdn.inngest.com/" />
-          <link
-            rel="stylesheet"
-            href="https://fonts-cdn.inngest.com/fonts.css"
-          />
-
           <script dangerouslySetInnerHTML={{ __html: modeScript }} />
           <script dangerouslySetInnerHTML={{ __html: `
             window.editPageURL = "${editPageURL}";

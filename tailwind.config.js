@@ -304,13 +304,13 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: 'CircularXX, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+      sans: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
       heading:
-        'CircularXX, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-      mono: 'CircularXXMono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+      mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       // We can use these temporary classes while we transition to the new fonts
       circular:
-        'CircularXX, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
       whyte:
         'Whyte, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       whyteInktrap:

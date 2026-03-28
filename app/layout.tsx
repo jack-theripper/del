@@ -1,15 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-
-import { HeaderInit, PageViews } from "@/components/InngestClientSDK";
-import GoogleTagManger from "@/components/GoogleTagManager";
+import { HeaderInit } from "@/components/InngestClientSDK";
 import { getFullURL } from "src/utils/social";
 
 import "./globals.css";
 import AnnouncementBanner from "src/components/AnnouncementBanner";
 import Header from "src/components/RedesignedLanding/Header/Header";
 import Footer from "src/components/RedesignedLanding/Footer";
-import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
   title: {
@@ -57,16 +54,8 @@ export default function RootLayout({
       <body className="dark font-sans">
         <AnnouncementBanner />
         <Header />
-
         <main className="text-basis">{children}</main>
-
         <Footer />
-
-        <Suspense>
-          <PageViews />
-          <GoogleTagManger />
-          <Analytics />
-        </Suspense>
       </body>
     </html>
   );

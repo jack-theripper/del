@@ -25,15 +25,6 @@ async function loadGoogleFont(font: string, text: string) {
   throw new Error("failed to load font data");
 }
 
-async function loadInngestCDNFont(fontPath: string) {
-  const url = `https://fonts-cdn.inngest.com/${fontPath}`;
-  const response = await fetch(url);
-  if (response.status == 200) {
-    return await response.arrayBuffer();
-  }
-  throw new Error("failed to load font data");
-}
-
 export default async function handler(req: NextApiRequest) {
   try {
     const { searchParams } = new URL(req.url || "");
@@ -45,9 +36,7 @@ export default async function handler(req: NextApiRequest) {
       : "Inngest";
     const isLongTitle = (title || "").length > 40;
     const backgroundImageURL = `${process.env.NEXT_PUBLIC_HOST}/assets/open-graph/og-background-2025.png`;
-
-    const fontData = await loadInngestCDNFont("Whyte/ABCWhyte-Light.otf");
-
+    
     return new ImageResponse(
       (
         <div
@@ -85,14 +74,6 @@ export default async function handler(req: NextApiRequest) {
       {
         width: 1200,
         height: 630,
-        fonts: [
-          {
-            name: "Whyte",
-            data: fontData,
-            style: "normal",
-            weight: 300,
-          },
-        ],
       }
     );
   } catch (e: any) {
