@@ -1,21 +1,21 @@
 import { CodeGroup } from "src/shared/Docs/mdx";
 
-# Cloudflare Workers environment variables and context
+# Переменные окружения и контекст Cloudflare Workers
 
-Cloudflare Workers does not set environment variables a global object like Node.js does with `process.env`. Workers [binds environment variables](https://developers.cloudflare.com/workers/configuration/environment-variables/) to the worker's special `fetch` event handler thought a specific `env` argument.
+Cloudflare Workers не устанавливает переменные окружения в глобальный объект, как Node.js с `process.env`. Workers [привязывает переменные окружения](https://developers.cloudflare.com/workers/configuration/environment-variables/) к специальному обработчику события `fetch` воркера через конкретный аргумент `env`.
 
-This means accessing environment variables within Inngest function handlers isn't possible without explicitly passing them through from the worker event handler to the Inngest function handler.
+Это означает, что доступ к переменным окружения внутри обработчиков функций Inngest невозможен без их явной передачи из обработчика события воркера в обработчик функции Inngest.
 
-We can accomplish this by use the [middleware](/docs/features/middleware) feature for Workers or when using [Hono](/docs/learn/serving-inngest-functions#framework-hono).
+Это можно реализовать с помощью функции [middleware](/docs/features/middleware) для Workers или при использовании [Hono](/docs/learn/serving-inngest-functions#framework-hono).
 
-## Creating middleware
+## Создание middleware
 
-You can create middleware which extracts the `env` argument from the Workers `fetch` event handler arguments for either Workers or Hono:
+Вы можете создать middleware, которое извлекает аргумент `env` из аргументов обработчика события `fetch` Workers для Workers или Hono:
 
-1. Use `wrapRequest` to capture the raw request arguments via `requestArgs` and store them as instance state.
-2. Return the `env` object via `transformFunctionInput` to inject it into the function handler's context.
+1. Используйте `wrapRequest` для захвата необработанных аргументов запроса через `requestArgs` и сохраните их как состояние экземпляра.
+2. Возвратите объект `env` через `transformFunctionInput` для его внедрения в контекст обработчика функции.
 
-The `requestArgs` property in `wrapRequest` provides the raw arguments passed to the serve handler. For Workers, these are `[request, env, ctx]`. For Hono, this is `[honoContext]`.
+Свойство `requestArgs` в `wrapRequest` предоставляет необработанные аргументы, переданные в serve-обработчик. Для Workers это `[request, env, ctx]`. Для Hono — `[honoContext]`.
 
 <CodeGroup>
 
@@ -93,7 +93,7 @@ export const inngest = new Inngest({
 
 </CodeGroup>
 
-Within your functions, you can now access the environment variables via the `env` object argument that you returned in `transformFunctionInput` above. Here's an example function:
+Внутри ваших функций теперь можно получить доступ к переменным окружения через аргумент объекта `env`, возвращённый в `transformFunctionInput` выше. Пример функции:
 
 ```ts
 const myFn = inngest.createFunction(

@@ -1,46 +1,46 @@
 import { Callout, ImageTheme } from "src/shared/Docs/mdx";
 
-export const description = "How Inngest features are released";
+export const description = "Как выпускаются функции Inngest";
 
 
-# Release Phases for Inngest
+# Фазы выпуска Inngest
 
-This pages outlines how Inngest features and products are released through 3 distinct phases of development maturity and availability to users.
+На этой странице описано, как функции и продукты Inngest выпускаются через 3 отдельных фазы зрелости разработки и доступности для пользователей.
 
-The release flow varies depending on the security or scalability requirements of the newly available feature or product:
+Процесс выпуска варьируется в зависимости от требований безопасности или масштабируемости новой функции или продукта:
 
 <ImageTheme
   dark={'/assets/docs/release_phases-dark.webp'}
   light={'/assets/docs/release_phases-light.webp'}
   className="my-0"
-  alt={'Inngest Release Phases'}
+  alt={'Фазы выпуска Inngest'}
 />
 
-Releases can follow a non-linear flow to GA, the above graphic is not strict, but an idea of how features may flow from internal development to GA.
-Additionally (_not pictured_), small features might go from internal development directly to GA for a launch.
+Выпуски могут следовать нелинейному пути к GA — приведённая схема не является жёсткой, а лишь отражает то, как функции могут переходить от внутренней разработки к GA.
+Кроме того (_не показано на схеме_), небольшие функции могут переходить от внутренней разработки сразу к GA при запуске.
 
-You will find below the details of each release phase.
-
-
-## Release Phases
+Ниже вы найдёте подробное описание каждой фазы выпуска.
 
 
-### Developer Preview
+## Фазы выпуска
 
-Products or features released as a Developer Preview are still under development, made available to early users for feedback.
-This implies that the new APIs or methods made available via our APIs or SDKs are flagged as experimental and might change without strict version control or notice.
 
-Developer preview features or products cheat sheet:
+### Developer Preview (Предварительный просмотр для разработчиков)
 
-| Aspect | Details |
+Продукты или функции, выпущенные как Developer Preview, всё ещё находятся в разработке и предоставляются ранним пользователям для сбора обратной связи.
+Это означает, что новые API или методы, доступные через наши API или SDK, помечены как экспериментальные и могут изменяться без строгого управления версиями или предварительного уведомления.
+
+Краткая характеристика функций или продуктов в предварительном просмотре для разработчиков:
+
+| Аспект | Подробности |
 |--------|---------|
-| APIs | **Exposes non-final APIs that might change without strict version control or notice** |
-| Documentation | Provides limited documentation that will evolve with users' feedback |
-| Production Use | **Not recommended for production use and not covered by the Service Level Agreement applicable to the Enterprise plan** |
-| Limitations | May come with limitations specific to the feature, such as plan-based or usage-based restrictions |
-| Pricing | Limited free availability during preview phase |
+| API | **Предоставляет нефинальные API, которые могут изменяться без строгого управления версиями или уведомления** |
+| Документация | Предоставляет ограниченную документацию, которая будет развиваться с учётом обратной связи пользователей |
+| Использование в продакшене | **Не рекомендуется для использования в продакшене и не охватывается соглашением об уровне обслуживания (SLA) для корпоративного плана** |
+| Ограничения | Могут иметь ограничения, специфичные для функции, например, ограничения на основе плана или использования |
+| Цена | Ограниченная бесплатная доступность в фазе предварительного просмотра |
 
-Features or products currently in developer preview:
+Функции или продукты, находящиеся в предварительном просмотре для разработчиков:
 
 - [Realtime](/docs/features/realtime)
 - [Connect](/docs/setup/connect)
@@ -48,66 +48,66 @@ Features or products currently in developer preview:
 
 
 
-### Private/Public Beta
+### Закрытая/открытая бета-версия
 
-Product or features in private or public beta are nearing GA, but still require some work to meet our desired quality standards (ex, reliability improvements, scalability stress tests).  In this phase, most products or features will be almost complete and should handle workloads correctly, but may exhibit issues we were unaware of during early access.
+Продукты или функции в закрытой или открытой бета-версии приближаются к GA, но всё ещё требуют некоторой работы для соответствия желаемым стандартам качества (например, улучшение надёжности, нагрузочное тестирование масштабируемости). На этом этапе большинство продуктов или функций почти завершены и должны корректно обрабатывать рабочие нагрузки, но могут демонстрировать проблемы, о которых мы не знали во время раннего доступа.
 
-Beta features or products cheat sheet:
+Краткая характеристика функций или продуктов в бета-версии:
 
-| Aspect | Details |
+| Аспект | Подробности |
 |--------|---------|
-| APIs | Provide almost final APIs that may change following strict version control and communications |
-| Documentation | Provide extended documentation covering a getting-started guide, references, and an edge cases FAQ |
-| Production Use | **Not recommended for production use and are not covered by the Service Level Agreement applicable to the Enterprise plan** |
-| Support | Grants access to a channel to share feedback (_in case of private beta_) |
-| Limitations | May come with limitations specific to the feature, such as plan-based or usage-based restrictions |
-| Pricing | Limited free availability during preview phase |
+| API | Предоставляет почти финальные API, которые могут изменяться в соответствии со строгим управлением версиями и коммуникациями |
+| Документация | Предоставляет расширенную документацию, включающую руководство по началу работы, справочные материалы и FAQ по граничным случаям |
+| Использование в продакшене | **Не рекомендуется для использования в продакшене и не охватывается соглашением об уровне обслуживания (SLA) для корпоративного плана** |
+| Поддержка | Предоставляет доступ к каналу для обратной связи (_в случае закрытой бета-версии_) |
+| Ограничения | Могут иметь ограничения, специфичные для функции, например, ограничения на основе плана или использования |
+| Цена | Ограниченная бесплатная доступность в фазе предварительного просмотра |
 
 <Callout variant="info" skipSearchCrawler>
-**Private beta vs. public beta**
+**Закрытая бета-версия vs. открытая бета-версия**
 
-Features or products that require scalability stress tests, security considerations, or early customer feedback are good candidates for a private beta, ensuring a positive experience for all participants.
-Other features might be a good fit for public beta (ex, SDKs features, Inngest Dev Server improvements)
+Функции или продукты, требующие нагрузочного тестирования масштабируемости, соображений безопасности или ранней обратной связи от клиентов, являются хорошими кандидатами для закрытой бета-версии, обеспечивая положительный опыт для всех участников.
+Другие функции могут подходить для открытой бета-версии (например, функции SDK, улучшения Dev Server Inngest).
 
 </Callout>
 
-### General Availability
+### Общая доступность (General Availability)
 
-A product or feature in general availability is considered secure, scalable, and stable, and is ready for use by users and customers across all plans.
+Продукт или функция в общей доступности считается безопасной, масштабируемой и стабильной, готовой для использования пользователями и клиентами на всех планах.
 
-General availability features or products cheat sheet:
+Краткая характеристика функций или продуктов в общей доступности:
 
-| Aspect | Details |
+| Аспект | Подробности |
 |--------|---------|
-| APIs | **Exposes final APIs that may evolve following strict version control and an associated changelog** |
-| Documentation | Provide complete documentation from quickstarts, examples, and demos |
-| Production Use | **Ready to be used in production by users and customers across all plans and are covered by the Service Level Agreement applicable to the Enterprise plan** |
-| Limitations | Limitations are properly documented (_if any_) |
-| Pricing | Pricing is moved into an entitlement |
+| API | **Предоставляет финальные API, которые могут развиваться в соответствии со строгим управлением версиями и журналом изменений** |
+| Документация | Предоставляет полную документацию: быстрые старты, примеры и демонстрации |
+| Использование в продакшене | **Готова к использованию в продакшене пользователями и клиентами на всех планах и охватывается соглашением об уровне обслуживания (SLA) для корпоративного плана** |
+| Ограничения | Ограничения должным образом задокументированы (_если есть_) |
+| Цена | Цена переходит в права использования (entitlement) |
 
-### Deprecated
+### Устаревание (Deprecated)
 
-The deprecation of features or products follows the following agenda over multiple months:
+Устаревание функций или продуктов следует следующему плану на протяжении нескольких месяцев:
 
-1. Addition of deprecated mentions in the relevant documentation pages
-    1. Publishing of migration guides (if applicable)
-2. Communication with users and customers over emails, Discord, and private support Slack channels
-3. Update of SDKs to highlight the deprecated APIs (if applicable)
-4. Targeted email reminders weeks before the target sunset date
-
-
-
-## FAQ
-
-### How feedback are collected during the developer preview phase?
-
-During the Developer Preview and Public beta phases, we collect feedback from users and customers over our Discord channel.
-
-Feedback from GA and private beta phases are collected over our private support Slack channel, our Discord channel and our [support portal](https://app.inngest.com/support).
+1. Добавление упоминаний об устаревании на соответствующих страницах документации
+    1. Публикация руководств по миграции (при необходимости)
+2. Уведомление пользователей и клиентов по электронной почте, в Discord и в приватных каналах поддержки Slack
+3. Обновление SDK для выделения устаревших API (при необходимости)
+4. Целевые напоминания по электронной почте за несколько недель до целевой даты завершения поддержки
 
 
-### How can I stay updated on the release of new features and products?
 
-You can follow us on [Twitter](https://x.com/inngest) or [Discord](https://discord.gg/inngest) to get notified when new features and products are released.
+## Часто задаваемые вопросы
 
-You can also subscribe to our [newsletter](https://inngest.com/newsletter) to get notified when new features and products are released.
+### Как собирается обратная связь в фазе предварительного просмотра для разработчиков?
+
+В фазах Developer Preview и открытой бета-версии мы собираем обратную связь от пользователей и клиентов через наш канал Discord.
+
+Обратная связь в фазах GA и закрытой бета-версии собирается через наш приватный канал поддержки Slack, канал Discord и наш [портал поддержки](https://app.inngest.com/support).
+
+
+### Как быть в курсе выпуска новых функций и продуктов?
+
+Вы можете следить за нами в [Twitter](https://x.com/inngest) или [Discord](https://discord.gg/inngest), чтобы получать уведомления о выпуске новых функций и продуктов.
+
+Вы также можете подписаться на нашу [рассылку](https://inngest.com/newsletter), чтобы получать уведомления о выпуске новых функций и продуктов.

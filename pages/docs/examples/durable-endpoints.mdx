@@ -3,30 +3,30 @@ import { CodeGroup, CardGroup, Card } from "src/shared/Docs/mdx";
 import { RiNextjsFill } from "@remixicon/react";
 import { CodeBracketIcon } from "@heroicons/react/24/outline";
 
-export const description = "Learn how to use Inngest Durable Endpoints to make any HTTP handler durable with automatic retries and step orchestration."
+export const description = "Узнайте, как использовать Inngest Durable Endpoints для создания устойчивых HTTP-обработчиков с автоматическими повторными попытками и оркестрацией шагов."
 
-# Durable Endpoints
+# Устойчивые эндпоинты (Durable Endpoints)
 
-[Durable Endpoints](/docs/learn/durable-endpoints) let you add durability to regular HTTP handlers without separate function definitions or event triggers. You wrap your existing API route with `inngest.endpoint()` and use `step.run()` inline to get automatic retries and memoization for each step.
+[Устойчивые эндпоинты](/docs/learn/durable-endpoints) позволяют добавить устойчивость к обычным HTTP-обработчикам без отдельных определений функций или триггеров событий. Вы оборачиваете существующий маршрут API с помощью `inngest.endpoint()` и используете `step.run()` внутри для получения автоматических повторных попыток и мемоизации для каждого шага.
 
-This is useful when you want your endpoint to orchestrate multiple operations (like booking a flight, processing a payment, and sending a confirmation) and guarantee that each step completes exactly once, even if the handler crashes or restarts partway through.
+Это полезно, когда вы хотите, чтобы ваш эндпоинт оркестрировал несколько операций (например, бронирование рейса, обработку платежа и отправку подтверждения) и гарантировал, что каждый шаг выполнится ровно один раз, даже если обработчик аварийно завершится или перезапустится в процессе.
 
 
-## How it differs from traditional Inngest
+## Отличие от традиционного подхода Inngest
 
-With the traditional approach, you define separate functions triggered by events. Durable Endpoints flip this: you keep your HTTP handlers and make them durable inline.
+При традиционном подходе вы определяете отдельные функции, запускаемые событиями. Устойчивые эндпоинты меняют это: вы сохраняете HTTP-обработчики и делаете их устойчивыми изнутри.
 
-| Traditional Inngest              | Durable Endpoints           |
-| -------------------------------- | --------------------------- |
-| Define separate functions        | Inline in HTTP handlers     |
-| Trigger via events               | Direct HTTP calls           |
-| `inngest.createFunction()`       | `inngest.endpoint()`        |
-| `{ event, step }` from context   | Import `step` directly      |
-| Separate `/api/inngest` endpoint | No separate endpoint needed |
+| Традиционный Inngest              | Устойчивые эндпоинты        |
+| --------------------------------- | --------------------------- |
+| Отдельные функции                 | Внутри HTTP-обработчиков    |
+| Запуск через события              | Прямые HTTP-вызовы          |
+| `inngest.createFunction()`        | `inngest.endpoint()`        |
+| `{ event, step }` из контекста    | Прямой импорт `step`        |
+| Отдельный эндпоинт `/api/inngest` | Отдельный эндпоинт не нужен |
 
-## Setting up the client
+## Настройка клиента
 
-First, configure your Inngest client with the endpoint adapter for your framework:
+Сначала настройте клиент Inngest с адаптером эндпоинта для вашего фреймворка:
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -49,11 +49,11 @@ const inngest = new Inngest({
 ```
 </CodeGroup>
 
-The `endpointAdapter` tells Inngest how to interact with your framework's request/response model. Import it from `"inngest/next"` for Next.js or `"inngest/edge"` for Bun. This is the only configuration needed, no separate `/api/inngest` serve endpoint required.
+`endpointAdapter` сообщает Inngest, как взаимодействовать с моделью запрос/ответ вашего фреймворка. Импортируйте из `"inngest/next"` для Next.js или `"inngest/edge"` для Bun. Это единственная необходимая настройка — отдельный serve-эндпоинт `/api/inngest` не нужен.
 
-## A simple durable endpoint
+## Простой устойчивый эндпоинт
 
-With the client set up, you can turn any route handler into a durable endpoint. Each `step.run()` call is memoized: if the handler is re-executed (due to a retry or crash recovery), completed steps are skipped and their previous results are reused.
+После настройки клиента вы можете превратить любой обработчик маршрута в устойчивый эндпоинт. Каждый вызов `step.run()` мемоизируется: если обработчик выполняется повторно (из-за повторной попытки или восстановления после сбоя), завершённые шаги пропускаются и их предыдущие результаты используются повторно.
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -118,13 +118,13 @@ Bun.serve({
 ```
 </CodeGroup>
 
-If the handler crashes after "enrich-data" completes but before "process" finishes, Inngest re-invokes the handler. The first step returns its cached result instantly, and execution picks up at the second step. No duplicate work, no lost progress.
+Если обработчик аварийно завершается после выполнения "enrich-data", но до завершения "process", Inngest повторно вызывает обработчик. Первый шаг мгновенно возвращает кешированный результат, и выполнение продолжается со второго шага. Без дублирования работы, без потери прогресса.
 
-## Multi-step orchestration with retries
+## Оркестрация нескольких шагов с повторными попытками
 
-Real-world workflows often involve multiple external systems that can fail independently. Durable Endpoints handle this naturally since each step retries on its own without re-running previous steps.
+Реальные рабочие процессы часто включают несколько внешних систем, которые могут отказывать независимо. Устойчивые эндпоинты справляются с этим естественным образом, поскольку каждый шаг повторяется самостоятельно без повторного выполнения предыдущих шагов.
 
-Let's take the following trip booking demo that searches for flights, reserves a seat, processes payment, and confirms the booking:
+Рассмотрим следующий демо-пример бронирования поездки, который ищет рейсы, резервирует место, обрабатывает платёж и подтверждает бронирование:
 
 <img
   src="/assets/docs/examples/durable-endpoints/trip-planner-demo.png"
@@ -134,7 +134,7 @@ Let's take the following trip booking demo that searches for flights, reserves a
 />
 
 
-The Durable Endpoint implementation will look as follows:
+Реализация устойчивого эндпоинта будет выглядеть следующим образом:
 
 
 <CodeGroup>
@@ -234,14 +234,14 @@ Bun.serve({
 ```
 </CodeGroup>
 
-Each step in this workflow is independently durable:
-- If the seat reservation fails with a timeout, only that step retries. The flight search results are preserved.
-- If the payment step fails, the reservation is still held and the payment retries without re-reserving.
-- If the entire server crashes after payment succeeds, the handler resumes at the confirmation step.
+Каждый шаг в этом рабочем процессе независимо устойчив:
+- Если резервирование места завершается с таймаутом, повторяется только этот шаг. Результаты поиска рейсов сохраняются.
+- Если шаг оплаты завершается с ошибкой, бронирование остаётся активным и оплата повторяется без повторного резервирования.
+- Если весь сервер аварийно завершается после успешной оплаты, обработчик возобновляется на шаге подтверждения.
 
-## Running steps in parallel
+## Параллельное выполнение шагов
 
-When steps don't depend on each other, you can run them in parallel using `Promise.all()`. Each parallel step is still independently durable and retried.
+Если шаги не зависят друг от друга, их можно запускать параллельно с помощью `Promise.all()`. Каждый параллельный шаг по-прежнему независимо устойчив и повторяется при необходимости.
 
 <CodeGroup>
 ```typescript {{ title: "Next.js" }}
@@ -326,29 +326,29 @@ Bun.serve({
 ```
 </CodeGroup>
 
-If the hotel booking fails, it retries independently while the flight and car rental results are preserved. Once all three succeed, the confirmation step runs.
+Если бронирование отеля завершается с ошибкой, оно повторяется независимо, пока результаты бронирования рейса и аренды автомобиля сохраняются. Как только все три завершатся успешно, выполняется шаг подтверждения.
 
-## Try it out
+## Попробуйте сами
 
-The Trip Booker example is a complete Next.js app that demonstrates all of these patterns with a real UI, progress tracking, and intentional failures to show retry behavior in action.
+Пример Trip Booker — это полноценное приложение Next.js, демонстрирующее все эти паттерны с реальным UI, отслеживанием прогресса и намеренными сбоями для наглядной демонстрации поведения повторных попыток.
 
 <CardGroup cols={2}>
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/durable-endpoints-trip-booker#readme"
-    title={"Explore the full Trip Booker example"}
+    title={"Изучить полный пример Trip Booker"}
     icon={<RiNextjsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this example locally to run it and explore the full source code.
+   Клонируйте этот пример локально для запуска и изучения полного исходного кода.
   </Card>
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/durable-endpoints-deepresearch#readme"
-    title={"Explore the full DeepResearch demo"}
+    title={"Изучить полное демо DeepResearch"}
     icon={<RiNextjsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Explore a more advanced example with a DeepResearch interface entirely built with Durable Endpoints.
+   Изучите более сложный пример с интерфейсом DeepResearch, полностью построенным на Durable Endpoints.
   </Card>
 
 </CardGroup>

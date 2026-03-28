@@ -2,17 +2,17 @@ import { ResourceGrid, Resource } from 'src/shared/Docs/Resources';
 
 import { RiBracesFill, RiErrorWarningFill } from "@remixicon/react";
 
-export const description = "Create a function that executes after a function run has been cancelled via event, REST API, or bulk cancellation.";
+export const description = "Создайте функцию, которая выполняется после отмены запуска функции через событие, REST API или массовую отмену.";
 
-# Cleanup after function cancellation
+# Очистка после отмены функции
 
-When function runs are cancelled, you may want to perform some sort of post-cancellation code. This example will use the [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled) system event.
+При отмене запусков функций может потребоваться выполнить некоторый код после отмены. В этом примере используется системное событие [`inngest/function.cancelled`](/docs/reference/system-events/inngest-function-cancelled).
 
-Whether your function run is cancelled via [`cancelOn` event](/docs/features/inngest-functions/cancellation/cancel-on-events), [REST API](/docs/guides/cancel-running-functions) or [bulk cancellation](/docs/platform/manage/bulk-cancellation), this method will work the same.
+Независимо от того, отменяется ли ваш запуск функции через [событие `cancelOn`](/docs/features/inngest-functions/cancellation/cancel-on-events), [REST API](/docs/guides/cancel-running-functions) или [массовую отмену](/docs/platform/manage/bulk-cancellation), этот метод работает одинаково.
 
-## Quick snippet
+## Быстрый пример
 
-Here is an Inngest function and a corresponding function that will be run whenever the original function is cancelled. This uses the function trigger's `if` parameter to filter the `inngest/function.cancelled` event to only be triggered for the original function.
+Здесь показана функция Inngest и соответствующая функция, которая будет запускаться при каждой отмене исходной функции. Используется параметр `if` триггера функции для фильтрации события `inngest/function.cancelled`, чтобы оно срабатывало только для исходной функции.
 
 ```ts
 const inngest = new Inngest({ id: "newsletter-app" });
@@ -89,25 +89,25 @@ An example cancellation event payload:
 }
 ```
 
-## More context
+## Дополнительный контекст
 
-Check the resources below to learn more about building email sequences with Inngest.
+Ознакомьтесь с материалами ниже, чтобы узнать больше об отмене функций в Inngest.
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
   href: "/docs/reference/system-events/inngest-function-cancelled",
-  name: "Reference: inngest/function.cancelled system event",
+  name: "Справочник: системное событие inngest/function.cancelled",
   icon: RiBracesFill,
-  description: "Learn more about the system event.",
+  description: "Узнайте больше о системном событии.",
   pattern: 1,
 }}/>
 
 <Resource resource={{
   href: "/docs/features/inngest-functions/cancellation",
-  name: "Guide: Function cancellation",
+  name: "Руководство: Отмена функции",
   icon: RiBracesFill,
-  description: "Learn about the different ways to cancel a function run.",
+  description: "Узнайте о различных способах отмены запуска функции.",
   pattern: 2,
 }}/>
 

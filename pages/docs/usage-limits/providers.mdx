@@ -1,21 +1,20 @@
-# Providers' Usage Limits
+# Лимиты использования провайдеров
 
-As your functions' code runs on the hosting provider of your choice, you will be subject to provider or billing plan
-limits separate from [Inngest's own limits](/docs/usage-limits/inngest).
+Поскольку код ваших функций выполняется у выбранного вами хостинг-провайдера, на вас распространяются ограничения провайдера или тарифного плана, отдельные от [собственных лимитов Inngest](/docs/usage-limits/inngest).
 
-Here are the known usage limits for each provider we support based on their documentation.
+Ниже приведены известные лимиты использования для каждого поддерживаемого провайдера согласно их документации.
 
-|                                         | Payload size  | Concurrency         | Timeout                    |
-|-----------------------------------------|:--------------|---------------------|----------------------------|
-| [AWS Lambda][aws-quota]                 | 6MB - 20MB    | 1000                | 15m                        |
-| [Google Cloud Functions][gcp-quota]     | 512KB - 32MB  | 3000 (1st gen only) | 10m - 60m                  |
-| [Cloudflare Workers][cf-workers-limits] | 100MB - 500MB | 100 - 500           | [N/A][cf-workers-duration] |
-| [Vercel][vercel-limits]                 | 4MB - 4.5MB   | 1000                | 10s - 900s, N/A (Edge Fn)  |
-| [Netlify][netlify-limits]               | 256KB - 6MB   | Undocumented        | 10s - 15m                  |
-| [DigitalOcean][digitalocean-limits]     | 1MB           | 120                 | 15m                        |
-| Fly.io                                  | Undocumented  | [User configured][flyio-limits]  | Undocumented   |
+|                                         | Размер полезной нагрузки | Конкурентность      | Таймаут                    |
+|-----------------------------------------|:------------------------|---------------------|----------------------------|
+| [AWS Lambda][aws-quota]                 | 6 МБ - 20 МБ           | 1000                | 15 мин                     |
+| [Google Cloud Functions][gcp-quota]     | 512 КБ - 32 МБ         | 3000 (только 1-е поколение) | 10 мин - 60 мин    |
+| [Cloudflare Workers][cf-workers-limits] | 100 МБ - 500 МБ        | 100 - 500           | [Н/Д][cf-workers-duration] |
+| [Vercel][vercel-limits]                 | 4 МБ - 4,5 МБ          | 1000                | 10 с - 900 с, Н/Д (Edge Fn) |
+| [Netlify][netlify-limits]               | 256 КБ - 6 МБ          | Не задокументировано | 10 с - 15 мин              |
+| [DigitalOcean][digitalocean-limits]     | 1 МБ                    | 120                 | 15 мин                     |
+| Fly.io                                  | Не задокументировано    | [Настраивается пользователем][flyio-limits] | Не задокументировано |
 
-For more details tailored to your plan, please check each provider's website.
+Для получения подробной информации применительно к вашему плану посетите сайт каждого провайдера.
 
 
 [aws-quota]: https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html

@@ -1,98 +1,98 @@
 import { Callout, CodeGroup } from "src/shared/Docs/mdx";
 import { Tag } from "src/shared/Docs/Tag";
 
-# Usage Limits
+# Лимиты использования
 
-We have put some limits on the service to make sure we provide you a good default to start with, while also keeping it a good experience for all other users using Inngest.
+Мы установили ряд ограничений на сервис, чтобы обеспечить хорошие настройки по умолчанию для начала работы, а также приятный опыт для всех пользователей Inngest.
 
-Some of these limits are customizable, so if you need more than what the current limits provide, please [contact us][contact] and we can update the limits for you.
+Некоторые из этих ограничений можно изменить — если вам нужно больше, чем предусмотрено текущими лимитами, пожалуйста, [свяжитесь с нами][contact], и мы обновим их для вас.
 
-## Functions
+## Функции
 
-The following applies to `step` usage.
+Следующее применяется к использованию `step`.
 
-### Sleep duration
+### Длительность сна
 
-Sleep (with `step.sleep()` and `step.sleepUntil()`) up to a year, and for free plan up to seven days. Check the [pricing page](/pricing) for more information.
+Режим сна (с `step.sleep()` и `step.sleepUntil()`) поддерживается до одного года, а для бесплатного плана — до семи дней. Подробнее на [странице тарифов](/pricing).
 
-### Timeout
+### Таймаут
 
-Each step has a timeout depending on the hosting provider of your choice ([see more info][provider-docs]), but Inngest supports up to `2 hours` at the maximum.
+Каждый шаг имеет таймаут, зависящий от выбранного вами хостинг-провайдера ([подробнее][provider-docs]), однако Inngest поддерживает максимум `2 часа`.
 
-### Concurrency <Tag>Upgradable</Tag>
+### Конкурентность <Tag>Upgradable</Tag>
 
-Check your concurrency limits on the [billing page](https://app.inngest.com/billing). See the [pricing page](https://www.inngest.com/pricing) for more info about the concurrency limits in all plans.
+Проверьте свои лимиты конкурентности на [странице биллинга](https://app.inngest.com/billing). Подробнее о лимитах конкурентности для всех планов на [странице тарифов](https://www.inngest.com/pricing).
 
-### Payload Size
+### Размер полезной нагрузки
 
-The limit for data returned by a step is `4MB`.
+Лимит данных, возвращаемых шагом, составляет `4 МБ`.
 
-### Function run state size
+### Размер состояния запуска функции
 
-Function run state cannot exceed `32MB`. Its state includes:
-- Event data (multiple events if using batching)
-- Step-returned data
-- Function-returned data
-- Internal metadata (_small - around a few bytes_)
+Состояние запуска функции не может превышать `32 МБ`. Состояние включает:
+- Данные событий (несколько событий при использовании батчинга)
+- Данные, возвращённые шагами
+- Данные, возвращённые функцией
+- Внутренние метаданные (_небольшой размер — несколько байт_)
 
-### Number of Steps per Function
+### Количество шагов на функцию
 
-The maximum number of steps allowed per function is `1000`.
+Максимальное количество шагов для одной функции — `1000`.
 
 <Callout>
   ⚠️
-  This limit is easily reached if you're using `step` on each item in a loop.
-  Instead we recommend one or both of the following:
-  - Process the loop within a `step` and return that data
-  - Utilize the [fan out][fanout-guide] feature to process each item in a separate function
+  Этот лимит легко достигается, если вы используете `step` для каждого элемента в цикле.
+  Вместо этого мы рекомендуем одно или оба из следующих решений:
+  - Обрабатывайте цикл внутри одного `step` и возвращайте его данные
+  - Используйте функцию [fan out][fanout-guide] для обработки каждого элемента в отдельной функции
 </Callout>
 
-## Events
+## События
 
-### Name length
+### Длина имени
 
-The maximum length allowed for an event name is `256` characters.
+Максимальная длина имени события — `256` символов.
 
-### Request Body Size <Tag>Upgradable</Tag>
+### Размер тела запроса <Tag>Upgradable</Tag>
 
-The maximum event payload size is dependent on your billing plan. The default on the Free Tier is `256KB` and is upgradable to `3MB`. See [the pricing page](/pricing?ref=docs-usage-limits) for additional detail.
+Максимальный размер полезной нагрузки события зависит от вашего тарифного плана. По умолчанию для бесплатного тарифа — `256 КБ`, с возможностью увеличения до `3 МБ`. Подробнее на [странице тарифов](/pricing?ref=docs-usage-limits).
 
-### Number of events per request <Tag>Customizable</Tag>
+### Количество событий в одном запросе <Tag>Customizable</Tag>
 
-Maximum number of events you can send in one request is `5000`.
-If you're doing fan out, you'll need to be aware of this limitation when you run `step.sendEvent(events)`.
+Максимальное количество событий в одном запросе — `5000`.
+При использовании fan out необходимо учитывать это ограничение при вызове `step.sendEvent(events)`.
 
 <CodeGroup>
 ```ts {{ title: "TypeScript" }}
-// this `events` list will need to be <= 5000
+// этот список `events` должен содержать <= 5000 элементов
 const events = [{name: "<event-name>", data: {}}, ...];
 
 await step.sendEvent("send-example-events", events);
-// or
+// или
 await inngest.send(events);
 ```
 
 ```go {{ title: "Go" }}
-// this `events` list will need to be <= 5000
+// этот список `events` должен содержать <= 5000 элементов
 events := []inngestgo.Event{{Name: "<event-name>", Data: {}}}
 
 ids, err := client.SendMany(ctx, events)
 ```
 
 ```python {{ title: "Python" }}
-# this `events` list will need to be <= 5000
+# этот список `events` должен содержать <= 5000 элементов
 events = [{'name': '<event-name>', 'data': {}}, ...]
 
 await step.send_event('send-example-events', events)
-# or
+# или
 await inngest.send(events)
 ```
 </CodeGroup>
 
-### Batch size
+### Размер батча
 
-The hard limit of a batch size is 10 MiB regardless of the `timeout` or `maxSize` limit.
-Meaning the batch will be started if that limit is crossed even if the batch is not full or has not reached the timeout duration configured.
+Жёсткий лимит размера батча составляет 10 МиБ независимо от ограничений `timeout` или `maxSize`.
+Это означает, что батч будет запущен при превышении этого лимита, даже если батч не заполнен или не достигнут настроенный таймаут.
 
 [provider-docs]: /docs/usage-limits/providers
 [fanout-guide]: /docs/guides/fan-out-jobs

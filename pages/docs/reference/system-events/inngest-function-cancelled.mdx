@@ -2,50 +2,50 @@ import { Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge } from
 
 # `inngest/function.cancelled` {{ className: "not-prose" }}
 
-The `inngest/function.cancelled` event is sent whenever any single function is cancelled in your [Inngest environment](/docs/platform/environments). The event will be sent if the event is cancelled via [`cancelOn` event](/docs/features/inngest-functions/cancellation/cancel-on-events), [function timeouts](/docs/features/inngest-functions/cancellation/cancel-on-timeouts),  [REST API](/docs/guides/cancel-running-functions) or [bulk cancellation](/docs/platform/manage/bulk-cancellation).
+Событие `inngest/function.cancelled` отправляется каждый раз, когда отменяется отдельная функция в вашем [окружении Inngest](/docs/platform/environments). Событие будет отправлено, если функция отменена через [событие `cancelOn`](/docs/features/inngest-functions/cancellation/cancel-on-events), [таймауты функции](/docs/features/inngest-functions/cancellation/cancel-on-timeouts), [REST API](/docs/guides/cancel-running-functions) или [массовую отмену](/docs/platform/manage/bulk-cancellation).
 
-This event can be used to handle cleanup or similar for a single function or handle some sort of tracking function cancellations in some external system like Datadog.
+Это событие можно использовать для выполнения очистки или аналогичных действий для конкретной функции, а также для отслеживания отмен функций во внешних системах, таких как Datadog.
 
 <Callout>
-  You can write a function that uses the `"inngest/function.cancelled"` event with the optional `if` parameter to filter to specifically handle a single function by `function_id`.
+  Вы можете написать функцию, которая использует событие `"inngest/function.cancelled"` с необязательным параметром `if` для фильтрации и обработки конкретной функции по `function_id`.
 </Callout>
 
-## The event payload
+## Полезная нагрузка события
 
 <Row>
 <Col>
 
 <Properties>
   <Property name="name" type={`string: "inngest/function.cancelled"`} attribute>
-    The `inngest/` event prefix is reserved for system events in each environment.
+    Префикс события `inngest/` зарезервирован для системных событий в каждом окружении.
   </Property>
   <Property name="data" type="object" attribute>
-    The event payload data.
+    Данные полезной нагрузки события.
     <Properties nested>
       <Property name="error" type="object" attribute>
-        Data about the error payload as returned from the cancelled function.
+        Данные об ошибке, возвращённой отменённой функцией.
         <Properties nested>
           <Property name="message" type="string" attribute>
-            The cancellation error, always `"function cancelled"`
+            Ошибка отмены, всегда `"function cancelled"`
           </Property>
           <Property name="name" type="string" attribute>
-            The name of the error, defaulting to `"Error"`.
+            Название ошибки, по умолчанию `"Error"`.
           </Property>
         </Properties>
       </Property>
       <Property name="event" type="string" attribute>
-        The cancelled function's original event payload.
+        Исходная полезная нагрузка события отменённой функции.
       </Property>
       <Property name="function_id" type="string" attribute>
-        The cancelled function's [`id`](/docs/reference/functions/create#configuration).
+        [`id`](/docs/reference/functions/create#configuration) отменённой функции.
       </Property>
       <Property name="run_id" type="string" attribute>
-        The cancelled function's [run ID](/docs/reference/functions/create#run-id).
+        [ID запуска](/docs/reference/functions/create#run-id) отменённой функции.
       </Property>
     </Properties>
   </Property>
   <Property name="ts" type="number" attribute>
-    The timestamp integer in milliseconds at which the cancellation occurred.
+    Целое число временной метки в миллисекундах, в момент которой произошла отмена.
   </Property>
 </Properties>
 
@@ -96,6 +96,6 @@ This event can be used to handle cleanup or similar for a single function or han
 </Col>
 </Row>
 
-## Related resources
+## Связанные ресурсы
 
-* [Example: Cleanup after function cancellation](/docs/examples/cleanup-after-function-cancellation)
+* [Пример: Очистка после отмены функции](/docs/examples/cleanup-after-function-cancellation)

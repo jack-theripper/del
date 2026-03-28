@@ -1,17 +1,17 @@
 import { CodeGroup, CardGroup, Card, VersionBadge, Callout } from "src/shared/Docs/mdx";
 
 
-export const description = "Make durable HTTP requests within an Inngest function.";
+export const description = "Выполняйте устойчивые HTTP-запросы внутри функции Inngest.";
 
-# Fetch: performing API requests or fetching data <VersionBadge version="TypeScript only" />
+# Fetch: выполнение API-запросов и получение данных <VersionBadge version="TypeScript only" />
 
-The Inngest TypeScript SDK provides a `step.fetch()` API and a `fetch()` utility, enabling you to make requests to third-party APIs or fetch data in a durable way by offloading them to the Inngest Platform.
+TypeScript SDK Inngest предоставляет API `step.fetch()` и утилиту `fetch()`, позволяя выполнять запросы к сторонним API или получать данные устойчивым способом, передавая их на платформу Inngest.
 
-For more information on how Fetch works, see the [Fetch documentation](/docs/features/inngest-functions/steps-workflows/fetch).
+Для получения дополнительной информации о работе Fetch смотрите [документацию по Fetch](/docs/features/inngest-functions/steps-workflows/fetch).
 
-## Getting started with `step.fetch()`
+## Начало работы с `step.fetch()`
 
-The `step.fetch()` API enables you to make durable HTTP requests while offloading them to the Inngest Platform, saving you compute and improving reliability:
+API `step.fetch()` позволяет выполнять устойчивые HTTP-запросы, передавая их на платформу Inngest, что экономит вычислительные ресурсы и повышает надёжность:
 
 ```ts {{ title: "src/inngest/functions.ts" }}
 import { inngest } from "./client";
@@ -34,24 +34,24 @@ export const retrieveTextFile = inngest.createFunction(
 );
 ```
 
-`step.fetch()` takes the same arguments as the [native `fetch` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
+`step.fetch()` принимает те же аргументы, что и [нативный API `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).
 
 <CardGroup cols={1}>
 
   <Card
     href={"https://github.com/inngest/inngest-js/tree/main/examples/node-step-fetch/"}
-    title={"Clone this example on GitHub"}
+    title={"Клонировать этот пример на GitHub"}
     iconPlacement="top"
   >
-    Check out this complete `step.fetch()` example on GitHub.
+    Посмотрите полный пример `step.fetch()` на GitHub.
   </Card>
 
 </CardGroup>
 
 
-## Parallelize HTTP requests with `step.fetch()`
+## Параллельные HTTP-запросы с `step.fetch()`
 
-`step.fetch()` shares all the benefits of `step.run()`, including the ability to parallelize requests using `Promise.all()`:
+`step.fetch()` разделяет все преимущества `step.run()`, включая возможность параллельного выполнения запросов с помощью `Promise.all()`:
 
 ```typescript
 const processFiles = inngest.createFunction(
@@ -70,18 +70,18 @@ const processFiles = inngest.createFunction(
   }
 )
 ```
-Note that `step.fetch()`, like all other `step` APIs, matches your function's configuration such as [concurrency](/docs/guides/concurrency) or [throttling](/docs/guides/throttling).
+Обратите внимание, что `step.fetch()`, как и все другие API `step`, соответствует конфигурации вашей функции, например [конкурентности](/docs/guides/concurrency) или [троттлингу](/docs/guides/throttling).
 
-## Make 3rd party library HTTP requests durable with the `fetch()` utility
+## Устойчивые HTTP-запросы сторонних библиотек с утилитой `fetch()`
 
-Inngest's `fetch()` utility can be passed as a custom fetch handler to make all the requests made by a 3rd party library durable.
+Утилита `fetch()` Inngest может быть передана как пользовательский обработчик fetch, чтобы сделать все запросы сторонней библиотеки устойчивыми.
 
-For example, you can pass the `fetch()` utility to the AI SDK or the OpenAI libraries:
+Например, можно передать утилиту `fetch()` в AI SDK или библиотеки OpenAI:
 
 <Callout variant="warning">
-  When using the `fetch()` utility with the AI SDK, you need to disable the AI SDK's built-in retry mechanism and let Inngest handle retries instead.
+  При использовании утилиты `fetch()` с AI SDK необходимо отключить встроенный механизм повторных попыток AI SDK и позволить Inngest обрабатывать повторные попытки.
 
-  Below you can see we are using the `fetch()` utility with the AI SDK and disabling the AI SDK's built-in retry mechanism by setting `maxRetries: 0`.
+  Ниже показано использование утилиты `fetch()` с AI SDK с отключением встроенного механизма повторных попыток AI SDK через `maxRetries: 0`.
 </Callout>
 
 <CodeGroup>

@@ -9,22 +9,22 @@ import TypeScriptIcon from 'src/shared/Icons/TypeScript';
 import PythonIcon from 'src/shared/Icons/Python';
 import GoIcon from 'src/shared/Icons/Go';
 
-# Local development
+# Локальная разработка
 
-Inngest's tooling makes it easy to develop your functions locally with any framework using the Inngest Dev Server.
+Инструменты Inngest позволяют легко разрабатывать функции локально с любым фреймворком с помощью Inngest Dev Server.
 
-The Inngest Dev Server is a fully-featured and [open-source](https://github.com/inngest/inngest) local version of the [Inngest Platform](/docs/platform/deployment) enabling a seamless transition from your local development to feature, staging and production environments.
+Inngest Dev Server — это полнофункциональная [open-source](https://github.com/inngest/inngest) локальная версия [платформы Inngest](/docs/platform/deployment), обеспечивающая плавный переход от локальной разработки к preview-, staging- и production-окружениям.
 
-![Dev Server Demo](/assets/docs/local-development/dev-server-demo-2025-01-15.gif)
+![Демонстрация Dev Server](/assets/docs/local-development/dev-server-demo-2025-01-15.gif)
 
-## Getting started
+## Начало работы
 
-You can start the dev server with a single command. The dev server will attempt to find an Inngest `serve` API endpoint by scanning ports and endpoints that are commonly used for this purpose (See "[Auto-discovery](#auto-discovery)"). Alternatively, you can specify the URL of the `serve` endpoint:
+Вы можете запустить dev server одной командой. Dev server попытается найти эндпоинт Inngest `serve` API, сканируя порты и эндпоинты, которые обычно используются для этой цели (смотрите раздел «[Авто-обнаружение](#auto-discovery)»). Либо вы можете указать URL эндпоинта `serve` вручную:
 
 <CodeGroup>
 ```shell {{ title: "npx (npm)" }}
 npx --ignore-scripts=false inngest-cli@latest dev
-# You can specify the URL of your development `serve` API endpoint
+# Вы можете указать URL вашего эндпоинта `serve` API для разработки
 npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest
 ```
 ```shell {{ title: "Docker" }}
@@ -33,27 +33,27 @@ docker run -p 8288:8288 -p 8289:8289 inngest/inngest \
 ```
 </CodeGroup>
 
-You can now open the dev server's browser interface on [`http://localhost:8288`](http://localhost:8288).
+Теперь вы можете открыть браузерный интерфейс dev server по адресу [`http://localhost:8288`](http://localhost:8288).
 
-## Connecting apps to the Dev Server
+## Подключение приложений к Dev Server
 
-There are two ways to connect apps to the Dev Server:
+Существует два способа подключить приложения к Dev Server:
 
-1. **Automatically**: The Dev Server will attempt to "auto-discover" apps running on common ports and endpoints (See "[Auto-discovery](#auto-discovery)").
-2. **Manually**: You scan explicitly add the URL of the app to the Dev Server using one of the following options:
-    - Using the CLI `-u` param (ex. `npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest`)
-    - Adding the URL in the Dev Server Apps page. You can edit the URL or delete a manually added app at any point in time
-    - Using the `inngest.json` (or similar) configuration file (See "[Configuration file](#configuration-file)")
+1. **Автоматически**: Dev Server попытается «автоматически обнаружить» приложения, работающие на распространённых портах и эндпоинтах (смотрите раздел «[Авто-обнаружение](#auto-discovery)»).
+2. **Вручную**: Вы можете явно добавить URL приложения в Dev Server одним из следующих способов:
+    - С помощью параметра `-u` CLI (например, `npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest`)
+    - Добавив URL на странице Apps в Dev Server. Вы можете редактировать URL или удалить вручную добавленное приложение в любое время
+    - Используя файл конфигурации `inngest.json` (или аналогичный) (смотрите раздел «[Файл конфигурации](#configuration-file)»)
 
-![Dev Server demo manually syncing an app](/assets/docs/local-development/dev-server-apps-demo-2025-01-15.gif)
+![Демонстрация ручной синхронизации приложения в Dev Server](/assets/docs/local-development/dev-server-apps-demo-2025-01-15.gif)
 
 <Tip>
-  The dev server does "auto-discovery" which scans popular ports and endpoints like `/api/inngest` and `/.netlify/functions/inngest`. **If you would like to disable auto-discovery, pass the `--no-discovery` flag to the `dev` command**. Learn more about [this below](#auto-discovery)
+  Dev server выполняет «авто-обнаружение», сканируя популярные порты и эндпоинты, такие как `/api/inngest` и `/.netlify/functions/inngest`. **Если вы хотите отключить авто-обнаружение, передайте флаг `--no-discovery` команде `dev`**. Подробнее об этом [ниже](#auto-discovery).
 </Tip>
 
-### How functions are loaded by the Dev Server
+### Как Dev Server загружает функции
 
-The dev server polls your app locally for any new or changed functions. Then as events are sent, the dev server calls your functions directly, just as Inngest would do in production over the public internet.
+Dev server опрашивает ваше приложение локально на наличие новых или изменённых функций. Затем при отправке событий dev server вызывает ваши функции напрямую, точно так же, как Inngest делает это в продакшене через публичный интернет.
 
 <img
   src="/assets/docs/local-development/dev-server-diagram-v2.png"
@@ -62,11 +62,11 @@ The dev server polls your app locally for any new or changed functions. Then as 
   quality="95"
 />
 
-## Testing functions
+## Тестирование функций
 
-### Invoke via UI
+### Вызов через UI
 
-From the Functions tab, you can quickly test any function by click the "Invoke" button and providing the data for your payload in the modal that pops up there. This is the easiest way to directly call a specific function:
+На вкладке Functions вы можете быстро протестировать любую функцию, нажав кнопку «Invoke» и введя данные полезной нагрузки в появившемся модальном окне. Это самый простой способ напрямую вызвать определённую функцию:
 
 <img
   src="/assets/docs/local-development/dev-server-functions-2025-01-15.png"
@@ -77,17 +77,17 @@ From the Functions tab, you can quickly test any function by click the "Invoke" 
 />
 
 
-### Sending events to the Dev Server
+### Отправка событий в Dev Server
 
-There are different ways that you can send events to the dev server when testing locally:
+При локальном тестировании события можно отправлять в dev server разными способами:
 
-1. Using the Inngest SDK
-2. Using the "Test Event" button in the Dev Server's interface
-3. Via HTTP request (e.g. curl)
+1. С помощью Inngest SDK
+2. С помощью кнопки «Test Event» в интерфейсе Dev Server
+3. Через HTTP-запрос (например, curl)
 
-#### Using the Inngest SDK
+#### С помощью Inngest SDK
 
-When using the Inngest SDK locally, it tries to detect if the dev server is running on your machine. If it's running, the event will be sent there.
+При локальном использовании Inngest SDK он пытается определить, запущен ли dev server на вашей машине. Если да — событие будет отправлено туда.
 
 <CodeGroup>
 ```ts {{ title: "Node.js" }}
@@ -114,11 +114,11 @@ await inngest_client.send(
 !snippet:path=snippets/go/docs/examples/devserver/main.go
 ```
 </CodeGroup>
-**Note** - During local development, you can use a dummy value for your [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key?ref=local-development) environment variable. The dev server does not validate keys locally.
+**Примечание** — В процессе локальной разработки для переменной окружения [`INNGEST_EVENT_KEY`](/docs/sdk/environment-variables#inngest-event-key?ref=local-development) можно использовать любое значение-заглушку. Dev server не валидирует ключи локально.
 
-#### Using the "Test Event" button
+#### С помощью кнопки «Test Event»
 
-The dev server's interface also has a "Test Event" button on the top right that enables you to enter any JSON event payload and send it manually. This is useful for testing out different variants of event payloads with your functions.
+Интерфейс dev server также имеет кнопку «Test Event» в правом верхнем углу, которая позволяет ввести любую JSON-нагрузку события и отправить её вручную. Это удобно для тестирования различных вариантов полезных нагрузок с вашими функциями.
 
 <img
   src="/assets/docs/local-development/dev-server-send-event-modal-2025-01-15.png"
@@ -128,9 +128,9 @@ The dev server's interface also has a "Test Event" button on the top right that 
   quality="95"
 />
 
-#### Via HTTP request
+#### Через HTTP-запрос
 
-All events are sent to Inngest using a simple HTTP API with a JSON body. Here is an example of a curl request to the local dev server's `/e/<EVENT_KEY>` endpoint running on the default port of `8228` using a dummy event key of `123`:
+Все события отправляются в Inngest через простое HTTP API с JSON-телом. Вот пример curl-запроса к эндпоинту `/e/<EVENT_KEY>` локального dev server, запущенного на порту `8288` по умолчанию, с заглушкой ключа события `123`:
 
 ```shell
 curl -X POST -v "http://localhost:8288/e/123" \
@@ -141,12 +141,12 @@ curl -X POST -v "http://localhost:8288/e/123" \
 ```
 
 <Callout>
-  💡 Since you can send events via HTTP, this means you can send events with any programming language or from your favorite testing tools like Postman.
+  💡 Поскольку события можно отправлять через HTTP, это означает, что вы можете отправлять события с использованием любого языка программирования или из любимых инструментов тестирования, например Postman.
 </Callout>
 
-## Configuration file
+## Файл конфигурации
 
-When using lots of configuration options or specifying multiple `-u` flags for a project, you can choose to configure the CLI via `inngest.json` configuration file. The `dev` command will start in your current directory and walk up directories until it finds a file. `yaml`, `yml`, `toml`, or `properties` file formats and extensions are also supported. You can list all options with `dev --help`. Here is an example file specifying two app urls and the `no-discovery` option:
+При использовании множества параметров конфигурации или указании нескольких флагов `-u` для проекта вы можете настроить CLI через файл конфигурации `inngest.json`. Команда `dev` начинает поиск с текущего каталога и поднимается по дереву директорий, пока не найдёт файл. Также поддерживаются форматы и расширения `yaml`, `yml`, `toml` и `properties`. Все параметры можно посмотреть с помощью `dev --help`. Пример файла с двумя URL приложений и параметром `no-discovery`:
 
 <CodeGroup>
 ```json {{ title: "inngest.json" }}
@@ -167,11 +167,11 @@ no-discovery: true
 </CodeGroup>
 
 
-## Inngest SDK debug endpoint
+## Отладочный эндпоинт Inngest SDK
 
-The [SDK's `serve` API endpoint](/docs/learn/serving-inngest-functions) will return some diagnostic information for your server configuration when sending a `GET` request. You can do this via `curl` command or by opening the URL in the browser.
+[Эндпоинт `serve` API SDK](/docs/learn/serving-inngest-functions) возвращает диагностическую информацию о конфигурации вашего сервера при GET-запросе. Это можно сделать через команду `curl` или открыв URL в браузере.
 
-Here is an example of a curl request to an Inngest app running at `http://localhost:3000/api/inngest`:
+Пример curl-запроса к приложению Inngest, запущенному на `http://localhost:3000/api/inngest`:
 
 ```sh
 $ curl -s http://localhost:3000/api/inngest | jq
@@ -183,23 +183,23 @@ $ curl -s http://localhost:3000/api/inngest | jq
 }
 ```
 
-## Auto-discovery
+## Авто-обнаружение
 
-The dev server will automatically detect and connect to apps running on common ports and endpoints. You can disable auto-discovery by passing the `--no-discovery` flag to the `dev` command:
+Dev server автоматически обнаруживает и подключается к приложениям, работающим на распространённых портах и эндпоинтах. Вы можете отключить авто-обнаружение, передав флаг `--no-discovery` команде `dev`:
 
 ```sh
 npx --ignore-scripts=false inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest
 ```
 
 <CodeGroup>
-```plaintext {{ title: "Common endpoints" }}
+```plaintext {{ title: "Распространённые эндпоинты" }}
 /api/inngest
 /x/inngest
 /.netlify/functions/inngest
 /.redwood/functions/inngest
 ```
 
-```plaintext {{ title: "Common ports" }}
+```plaintext {{ title: "Распространённые порты" }}
 80, 443,
 // Rails, Express & Next/Nuxt/Nest routes
 3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010,
@@ -216,42 +216,42 @@ npx --ignore-scripts=false inngest-cli@latest dev --no-discovery -u http://local
 ```
 </CodeGroup>
 
-## CLI flags
+## Флаги CLI
 
-`inngest-cli dev` command supports the following flags:
+Команда `inngest-cli dev` поддерживает следующие флаги:
 
-| **Long form**  | **Short form** | **Type** | **Default value**                 | **Description**                       |
-|:--------------:|:--------------:|:--------:|:---------------------------------:|:-------------------------------------:|
-| --config       | -              | string   | -                                 | Path to an Inngest configuration file |
-| --help         | -h             | -        | -                                 | Output the help information           |
-| --host         | -              | string   | http://localhost                  | Inngest server host                   |
-| --no-discovery | -              | boolean  | false                             | Disable app auto-discovery            |
-| --no-poll      | -              | boolean  | false                             | Disable polling of apps for updates   |
-| --port         | -p             | int      | 8288                              | Inngest server port                   |
-| --sdk-url      | -u             | strings  | http://localhost:3000/api/inngest | App serve URLs to sync                |
+| **Полная форма** | **Краткая форма** | **Тип** | **Значение по умолчанию**         | **Описание**                                   |
+|:---------------:|:-----------------:|:-------:|:---------------------------------:|:----------------------------------------------:|
+| --config        | -                 | string  | -                                 | Путь к файлу конфигурации Inngest              |
+| --help          | -h                | -       | -                                 | Вывести справочную информацию                  |
+| --host          | -                 | string  | http://localhost                  | Хост сервера Inngest                           |
+| --no-discovery  | -                 | boolean | false                             | Отключить авто-обнаружение приложений          |
+| --no-poll       | -                 | boolean | false                             | Отключить опрос приложений на наличие обновлений |
+| --port          | -p                | int     | 8288                              | Порт сервера Inngest                           |
+| --sdk-url       | -u                | strings | http://localhost:3000/api/inngest | URL serve-эндпоинтов приложений для синхронизации |
 
-## Development with Docker
+## Разработка с Docker
 
-Inngest provides a Docker image that you can use to run the Inngest Dev Server within a container. This is useful when running Inngest locally or in a CI/CD environment.
+Inngest предоставляет Docker-образ для запуска Inngest Dev Server в контейнере. Это удобно при локальном запуске Inngest или в CI/CD-окружении.
 
-### Docker image
+### Docker-образ
 
-The [`inngest/inngest`](https://hub.docker.com/r/inngest/inngest) image is available on Docker Hub. Regular updates are made to this image, so we recommend pulling the latest version. You can find the latest version release on [our Github repo](https://github.com/inngest/inngest/releases).
+Образ [`inngest/inngest`](https://hub.docker.com/r/inngest/inngest) доступен на Docker Hub. Образ регулярно обновляется, поэтому мы рекомендуем загружать последнюю версию. Последний релиз можно найти в [нашем репозитории Github](https://github.com/inngest/inngest/releases).
 
 ```bash
 docker pull inngest/inngest
 ```
 
-### Standalone Docker container
+### Отдельный Docker-контейнер
 
-Docker can be useful for running the Inngest Dev Server in a standalone container. This is useful if you do not want to use the `npx --ignore-scripts=false inngest-cli@latest` method to run the Dev Server.
+Docker удобен для запуска Inngest Dev Server в отдельном контейнере. Это полезно, если вы не хотите использовать метод `npx --ignore-scripts=false inngest-cli@latest` для запуска Dev Server.
 
-To run the Inngest container, you'll need to:
+Для запуска контейнера Inngest вам нужно:
 
-1. Expose the Dev Server ports (`8288`, `8289`).
-2. Use the `inngest dev` command with the `-u` flag to specify the URL where Inngest can find your app.
+1. Открыть порты Dev Server (`8288`, `8289`).
+2. Использовать команду `inngest dev` с флагом `-u`, чтобы указать URL, по которому Inngest сможет найти ваше приложение.
 
-In this example command, our app is running on the host machine on port `3000`. We use the `host.docker.internal` hostname to connect to the host machine from within the Docker container. For ease of reading, the command is broken up into multiple lines.
+В этом примере приложение работает на хост-машине на порту `3000`. Мы используем хостнейм `host.docker.internal` для подключения к хост-машине изнутри Docker-контейнера. Для удобства чтения команда разбита на несколько строк.
 
 ```bash
 docker run -p 8288:8288 -p 8289:8289 \
@@ -259,15 +259,15 @@ docker run -p 8288:8288 -p 8289:8289 \
   inngest dev -u http://host.docker.internal:3000/api/inngest
 ```
 
-You will then be able to access the Inngest Dev Server on your host machine at `http://localhost:8288` or whatever hostname you have configured. You may need to adjust the hostname for your app if you are using a different Docker network setup.
+После этого вы сможете получить доступ к Inngest Dev Server на хост-машине по адресу `http://localhost:8288` или любому другому сконфигурированному вами хостнейму. При использовании другой настройки Docker-сети может потребоваться скорректировать хостнейм приложения.
 
 <Callout>
-  If you decide to run the Dev Server on another port, you will need to set the `INNGEST_BASE_URL` environment variable in your app to point to the correct port. This value defaults to `http://localhost:8288`.
+  Если вы решите запустить Dev Server на другом порту, вам нужно будет установить переменную окружения `INNGEST_BASE_URL` в вашем приложении, указав правильный порт. По умолчанию это значение равно `http://localhost:8288`.
 </Callout>
 
 ### Docker Compose
 
-If you're using [Docker Compose](https://docs.docker.com/compose/) to run your services locally, you can easily add Inngest to your local environment. Here's an example `docker-compose.yml` file that includes Inngest:
+Если вы используете [Docker Compose](https://docs.docker.com/compose/) для локального запуска сервисов, вы можете легко добавить Inngest в своё локальное окружение. Пример файла `docker-compose.yml` с включённым Inngest:
 
 ```yaml {{ filename: "docker-compose.yaml" }}
 services:
@@ -279,90 +279,90 @@ services:
     ports:
       - '3000:3000'
   inngest:
-    image: inngest/inngest:v1.17.2 # Update to the latest version
+    image: inngest/inngest:v1.17.2 # Обновите до последней версии
     command: 'inngest dev -u http://app:3000/api/inngest'
     ports:
       - '8288:8288'
-      - '8289:8289' # Used for connect()
+      - '8289:8289' # Используется для connect()
 ```
 
-In this example, we have two services: `app` and `inngest`. The `app` service is your application, and the `inngest` service is the Inngest Dev Server. There are a few key configurations to note:
+В этом примере есть два сервиса: `app` и `inngest`. Сервис `app` — это ваше приложение, а сервис `inngest` — Inngest Dev Server. Несколько ключевых настроек:
 
-* The `INNGEST_DEV=1` environment variable tells the Inngest SDK it should connect to the Dev Server*.
-* The `INNGEST_BASE_URL=http://inngest:8288` environment variable tells the Inngest SDK where the Dev Server is running. In our example, the `inngest` service is running on port `8288` (the default Dev Server port).
-* The `command: 'inngest dev -u http://app:3000/api/inngest'` command tells the Dev Server where to find your app within the Docker network. In this example, the `app` service is running on port `3000`.
-* The `ports` configuration exposes the Dev Server on port `8288` so you can view this on your host machine in the browser. It also exposes `8289` which is used for [`connect()`](/docs/setup/connect).
+* Переменная окружения `INNGEST_DEV=1` сообщает Inngest SDK, что нужно подключиться к Dev Server*.
+* Переменная окружения `INNGEST_BASE_URL=http://inngest:8288` сообщает Inngest SDK, где запущен Dev Server. В нашем примере сервис `inngest` работает на порту `8288` (порт Dev Server по умолчанию).
+* Команда `command: 'inngest dev -u http://app:3000/api/inngest'` указывает Dev Server, где найти ваше приложение в Docker-сети. В этом примере сервис `app` работает на порту `3000`.
+* Конфигурация `ports` открывает Dev Server на порту `8288`, чтобы вы могли просматривать его в браузере на хост-машине. Также открывается порт `8289`, который используется для [`connect()`](/docs/setup/connect).
 
-\* - The TypeScript SDK defaults to cloud mode. Setting `INNGEST_DEV=1` explicitly enables dev mode, which connects to the Dev Server and disables signature verification.
+\* — TypeScript SDK по умолчанию работает в облачном режиме. Установка `INNGEST_DEV=1` явно включает dev-режим, который подключается к Dev Server и отключает верификацию подписи.
 
-## Development flow
+## Процесс разработки
 
-Developing with Inngest looks as it follows:
+Разработка с Inngest выглядит следующим образом:
 
-1. Configure the Inngest SDK in your application
-2. [Connecting the Inngest Dev Server to your local application](#connecting-apps-to-the-dev-server)
-3. Develop your Inngest Functions with [Steps](/docs/learn/inngest-steps), [Flow Control](/docs/guides/flow-control) and [more](/docs/learn/inngest-functions)
-5. _(Optional) - Configure Preview environments with [our Vercel Integration](/docs/deploy/vercel)_
+1. Настройте Inngest SDK в вашем приложении
+2. [Подключите Inngest Dev Server к вашему локальному приложению](#connecting-apps-to-the-dev-server)
+3. Разрабатывайте ваши Inngest-функции с помощью [Steps](/docs/learn/inngest-steps), [Flow Control](/docs/guides/flow-control) и [других возможностей](/docs/learn/inngest-functions)
+5. _(Необязательно) — Настройте Preview-окружения с помощью [интеграции с Vercel](/docs/deploy/vercel)_
 
 <ImageTheme
   dark={'/assets/docs/features/local-development/Durable-Execution-Engine-local-dev-dark.jpg'}
   light={'/assets/docs/features/local-development/Durable-Execution-Engine-local-dev-light.jpg'}
   className="my-0"
-  alt={'The Inngest Dev Server runs locally on your machine and communicates with your local application.'}
+  alt={'Inngest Dev Server работает локально на вашей машине и взаимодействует с вашим локальным приложением.'}
 />
 
-**Moving to production environments (preview envs, staging or production)**
+**Переход в продакшен-окружения (preview, staging или production)**
 
-Deploying your application to preview, staging and production environments does not require any code change:
+Развёртывание приложения в preview-, staging- и production-окружения не требует изменений кода:
 
-6. [Create an Inngest App](/docs/apps) on the Inngest Platform and [configure its Event and Signing Keys on your Cloud](/docs/platform/deployment).
-7. Leverage the Inngest Platform to manage and monitor Events and Function Runs
+6. [Создайте приложение Inngest](/docs/apps) на платформе Inngest и [настройте его Event и Signing Keys в облаке](/docs/platform/deployment).
+7. Используйте платформу Inngest для управления и мониторинга событий и запусков функций
 
 <ImageTheme
   dark={'/assets/docs/features/local-development/Durable-Execution-Engine-staging-prod-dark.jpg'}
   light={'/assets/docs/features/local-development/Durable-Execution-Engine-staging-prod-light.jpg'}
   className="my-0"
-  alt={'When deployed, your application communicates with the Inngest Platform.'}
+  alt={'После развёртывания ваше приложение взаимодействует с платформой Inngest.'}
 />
 
 
-## SDKs
+## SDK
 
 <CardGroup cols={1}>
   <Card title="TypeScript SDK" icon={<TypeScriptIcon className="text-basis"/>} href={'/docs/reference/typescript'}>
-    Setup the Inngest SDK in your TypeScript application.
+    Настройте Inngest SDK в вашем TypeScript-приложении.
   </Card>
   <Card title="Python SDK" icon={<PythonIcon className="text-basis"/>} href={'/docs/reference/python'}>
-    Setup the Inngest SDK in your Python application.
+    Настройте Inngest SDK в вашем Python-приложении.
   </Card>
   <Card title="Go SDK" icon={<GoIcon className="text-basis"/>} href={'https://pkg.go.dev/github.com/inngest/inngestgo'}>
-    Setup the Inngest SDK in your Go application.
+    Настройте Inngest SDK в вашем Go-приложении.
   </Card>
 </CardGroup>
 
 
-## FAQs
+## Часто задаваемые вопросы
 
 <CardGroup cols={1}>
-  <Card title="Can I run the Inngest Dev Server in production?" icon={<RiQuestionLine />}>
-    The Inngest Dev Server is not designed to be run in production, but you can run it anywhere that you want including testing environments or CI/CD pipelines.
+  <Card title="Можно ли запускать Inngest Dev Server в продакшене?" icon={<RiQuestionLine />}>
+    Inngest Dev Server не предназначен для запуска в продакшене, но вы можете запускать его где угодно, включая тестовые окружения или CI/CD-пайплайны.
   </Card>
-  <Card title="How do I test webhooks locally?" icon={<RiQuestionLine />}>
-    Webhooks configured on the Platform [can be sent to the Dev Server](/docs/platform/webhooks#local-development).
+  <Card title="Как тестировать вебхуки локально?" icon={<RiQuestionLine />}>
+    Вебхуки, настроенные на платформе, [можно отправлять на Dev Server](/docs/platform/webhooks#local-development).
   </Card>
-  <Card title="How do I work with Stripe or Clerk webhooks locally?" icon={<RiQuestionLine />}>
-    External webhooks from Stripe and Clerk must go through a tunnel solution (such as [ngrok](https://ngrok.com/) or [localtunnel](https://theboroer.github.io/localtunnel-www/)) to reach the Dev Server.
+  <Card title="Как работать с вебхуками Stripe или Clerk локально?" icon={<RiQuestionLine />}>
+    Внешние вебхуки от Stripe и Clerk должны проходить через туннельное решение (например, [ngrok](https://ngrok.com/) или [localtunnel](https://theboroer.github.io/localtunnel-www/)) для доступа к Dev Server.
   </Card>
-  <Card title="Are Crons supported locally?" icon={<RiQuestionLine />}>
-    Yes. You can also trigger a function at any time by using the "Invoke" button from the Dev Server Functions list view.
+  <Card title="Поддерживаются ли Cron-задачи локально?" icon={<RiQuestionLine />}>
+    Да. Вы также можете запустить функцию в любое время, используя кнопку «Invoke» в списке функций Dev Server.
   </Card>
 </CardGroup>
 
-Find more answers in our [Discord community](/discord).
+Найдите больше ответов в нашем [сообществе Discord](/discord).
 
-## Further reference
+## Дополнительные ссылки
 
-* [Dev Server source code on GitHub](https://github.com/inngest/inngest)
-* [`inngest/inngest` Docker image on Docker Hub](https://hub.docker.com/r/inngest/inngest)
-* [TypeScript SDK Environment variable reference](/docs/sdk/environment-variables)
-* [Python SDK Environment variable reference](/docs/reference/python/overview/env-vars)
+* [Исходный код Dev Server на GitHub](https://github.com/inngest/inngest)
+* [Docker-образ `inngest/inngest` на Docker Hub](https://hub.docker.com/r/inngest/inngest)
+* [Справочник переменных окружения TypeScript SDK](/docs/sdk/environment-variables)
+* [Справочник переменных окружения Python SDK](/docs/reference/python/overview/env-vars)

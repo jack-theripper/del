@@ -3,19 +3,19 @@ import { Example } from 'src/shared/Docs/Examples';
 
 import { BookOpenIcon, VideoCameraIcon, MicrophoneIcon } from "@heroicons/react/24/outline";
 
-export const description = "Learn how to use Inngest for AI automated workflows, AI agents, and RAG."
+export const description = "Узнайте, как использовать Inngest для автоматизированных AI-рабочих процессов, AI-агентов и RAG."
 
-# AI Agents and RAG
+# AI-агенты и RAG
 
-Inngest offers tools to support the development of AI-powered applications. Whether you're building AI agents, automating tasks, or orchestrating and managing AI workflows, Inngest provides features that accommodate various needs and requirements, such as concurrency, debouncing, or throttling (see ["Related Concepts"](#related-concepts)).
+Inngest предлагает инструменты для поддержки разработки AI-приложений. Независимо от того, создаёте ли вы AI-агентов, автоматизируете задачи или оркестрируете AI-рабочие процессы, Inngest предоставляет возможности для различных нужд и требований, такие как конкурентность, debouncing или троттлинг (смотрите раздел [«Связанные концепции»](#related-concepts)).
 
-## Quick Snippet
+## Быстрый пример
 
-Below is an example of a RAG workflow (from this [example app](https://github.com/inngest/inngest-demo-app/)). This asynchronous Inngest function summarizes content via GPT-4 by following these steps:
-- Query a vector database for relevant content.
-- Retrieve a transcript from an S3 file.
-- Combine the transcript and queried content to generate a summary using GPT-4.
-- Save the summary to a database and sends a notification to the client.
+Ниже приведён пример RAG-рабочего процесса (из этого [примера приложения](https://github.com/inngest/inngest-demo-app/)). Эта асинхронная функция Inngest суммаризирует контент через GPT-4, выполняя следующие шаги:
+- Запрос к векторной базе данных для получения релевантного контента.
+- Получение транскрипта из файла S3.
+- Объединение транскрипта и запрошенного контента для генерации краткого содержания с помощью GPT-4.
+- Сохранение краткого содержания в базу данных и отправка уведомления клиенту.
 
 The function uses [Inngest steps](/docs/learn/inngest-steps) to guarantee automatic retries on failure.
 
@@ -88,8 +88,8 @@ export const summarizeContent = inngest.createFunction(
 );
 ```
 
-## App examples
-Here are apps that use Inngest to power AI workflows:
+## Примеры приложений
+Вот приложения, использующие Inngest для AI-рабочих процессов:
 
 <ResourceGrid cols={2}>
 
@@ -116,8 +116,8 @@ image: "/assets/docs/examples/ai-agents/pcxi-starter.png",
 
 </ResourceGrid>
 
-## Resources
-Check the resources below to learn more about working with AI using Inngest:
+## Ресурсы
+Ознакомьтесь с материалами ниже, чтобы узнать больше о работе с AI в Inngest:
 
 <ResourceGrid cols={2}>
 
@@ -164,11 +164,11 @@ pattern: 1,
 
 </ResourceGrid>
 
-## Related concepts
+## Связанные концепции
 
-- [Concurrency](/docs/guides/concurrency): control the number of steps executing code at any one time.
-- [Debouncing](/docs/guides/debounce): delay function execution until a series of events are no longer received.
-- [Prioritization](/docs/guides/priority): dynamically execute some runs ahead or behind others based on any data.
-- [Rate limiting](/docs/guides/rate-limiting): limit on how many function runs can start within a time period.
-- [Steps](/docs/reference/functions/step-run): individual tasks within a function that can be executed independently with a guaranteed retrial.
-- [Throttling](/docs/guides/throttling): specify how many function runs can start within a time period.
+- [Конкурентность](/docs/guides/concurrency): управление количеством шагов, выполняющих код одновременно.
+- [Debouncing](/docs/guides/debounce): задержка выполнения функции до прекращения серии событий.
+- [Приоритизация](/docs/guides/priority): динамическое выполнение одних запусков раньше или позже других на основе любых данных.
+- [Ограничение частоты запросов](/docs/guides/rate-limiting): ограничение количества запусков функций за период времени.
+- [Шаги](/docs/reference/functions/step-run): отдельные задачи внутри функции, которые могут выполняться независимо с гарантированными повторными попытками.
+- [Троттлинг](/docs/guides/throttling): указание количества запусков функций за период времени.

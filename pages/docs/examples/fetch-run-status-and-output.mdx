@@ -1,20 +1,20 @@
 import { ResourceGrid, Resource } from 'src/shared/Docs/Resources';
 import { RiBracesFill } from "@remixicon/react";
 
-export const description = "See how to fetch the run status and output of a function in Inngest."
+export const description = "Посмотрите, как получить статус и результат выполнения функции в Inngest."
 
-# Fetch run status and output
+# Получение статуса и результата запуска
 
-Inngest provides a way to fetch the status and output of a function run using [the REST API](https://api-docs.inngest.com/docs/inngest-api/1j9i5603g5768-introduction). This is useful when:
+Inngest предоставляет способ получить статус и результат запуска функции с помощью [REST API](https://api-docs.inngest.com/docs/inngest-api/1j9i5603g5768-introduction). Это полезно когда:
 
-* You want to check the status or output of a given run.
-* You want to display the status of a function run in your application, for example, in a user dashboard.
+* Вы хотите проверить статус или результат конкретного запуска.
+* Вы хотите отобразить статус запуска функции в своём приложении, например, в пользовательском дашборде.
 
-This page provides a quick example of how to fetch the status and output of a function run using the Inngest API.
+На этой странице приведён быстрый пример того, как получить статус и результат запуска функции с помощью Inngest API.
 
-## Quick Snippet
+## Быстрый пример
 
-Here is a basic function that processes a CSV file and returns the number of items processed:
+Вот базовая функция, которая обрабатывает CSV-файл и возвращает количество обработанных элементов:
 
 ```typescript
 const processCSV = inngest.createFunction(
@@ -30,9 +30,9 @@ const processCSV = inngest.createFunction(
 );
 ```
 
-### Triggering the function
+### Запуск функции
 
-To trigger this function, you will send an event `"imports/csv.uploaded"` using `inngest.send()` with whatever payload data you need. The `inngest.send()` function returns an array of Event IDs that you will use to fetch the status and output of the function run.
+Для запуска этой функции отправьте событие `"imports/csv.uploaded"` с помощью `inngest.send()` с необходимыми данными полезной нагрузки. Функция `inngest.send()` возвращает массив ID событий, которые вы будете использовать для получения статуса и результата запуска функции.
 
 ```typescript
 const { ids } = await inngest.send({
@@ -45,15 +45,15 @@ const { ids } = await inngest.send({
 // ids = ["01HWAVEB858VPPX47Z65GR6P6R"]
 ```
 
-### Fetching triggered function status and output
+### Получение статуса и результата запущенной функции
 
-Using the REST API, we can use the Event ID to fetch all runs triggered by that event using the [event's runs endpoint](https://api-docs.inngest.com/docs/inngest-api/yoyeen3mu7wj0-list-event-function-runs):
+С помощью REST API можно использовать ID события для получения всех запусков, инициированных этим событием, через [эндпоинт запусков события](https://api-docs.inngest.com/docs/inngest-api/yoyeen3mu7wj0-list-event-function-runs):
 
 ```bash
 https://api.inngest.com/v1/events/01HWAVEB858VPPX47Z65GR6P6R/runs
 ```
 
-To query this, we can use a simple `fetch` request using our signing key to authenticate with the API. Here, we'll wrap this in a re-usable function:
+Для запроса можно использовать простой `fetch`-запрос с ключом подписи для аутентификации в API. Обернём это в многократно используемую функцию:
 
 ```typescript
 async function getRuns(eventId) {
@@ -67,7 +67,7 @@ async function getRuns(eventId) {
 }
 ```
 
-We can now use the Event ID to fetch the status and output of the function run. The `getRuns` function will return an array of runs as events can trigger multiple runs via [fan-out](/docs/guides/fan-out-jobs). We'll consider that this event only triggers a single function:
+Теперь можно использовать ID события для получения статуса и результата запуска функции. Функция `getRuns` вернёт массив запусков, так как события могут инициировать несколько запусков через [fan-out](/docs/guides/fan-out-jobs). Будем считать, что это событие запускает только одну функцию:
 
 ```typescript
 const runs = await getRuns("01HWAVEB858VPPX47Z65GR6P6R");
@@ -91,7 +91,7 @@ console.log(runs[0]);
 */
 ```
 
-If we want to trigger the function then immediately await it's output in the same code, we can wrap our `getRuns` to poll until the status is `Completed`:
+Если нужно запустить функцию и сразу дождаться её результата в том же коде, можно обернуть `getRuns` для опроса до достижения статуса `Completed`:
 
 ```typescript
 async function getRunOutput(eventId) {
@@ -107,9 +107,9 @@ async function getRunOutput(eventId) {
 }
 ```
 
-### Putting it all together
+### Всё вместе
 
-Brining this all together, we can now trigger the function and await the output:
+Объединяя всё это, мы можем запустить функцию и дождаться её результата:
 
 ```typescript
 const { ids } = await inngest.send({
@@ -131,23 +131,23 @@ console.log(run.output);
 */
 ```
 
-## More context
+## Дополнительный контекст
 
-Check the resources below to learn more about working with the Inngest REST API.
+Ознакомьтесь с материалами ниже, чтобы узнать больше о работе с Inngest REST API.
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
   href: "https://api-docs.inngest.com/docs/inngest-api/yoyeen3mu7wj0-list-event-function-runs",
-  name: "Reference: REST API: List event function runs",
+  name: "Справочник: REST API: Список запусков функций по событию",
   icon: RiBracesFill,
-  description: "Return all runs triggered by an event.",
+  description: "Возвращает все запуски, инициированные событием.",
   pattern: 1,
 }}/>
 
 </ResourceGrid>
 
-## Related concepts
+## Связанные концепции
 
-- [Fan-out jobs](/docs/guides/fan-out-jobs)
+- [Fan-out задачи](/docs/guides/fan-out-jobs)
 

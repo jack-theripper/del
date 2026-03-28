@@ -1,27 +1,27 @@
 import { VersionBadge } from "src/shared/Docs/mdx";
 
-export const description = `Learn the Inngest SDK's type safe features with TypeScript`
+export const description = `Узнайте о типобезопасных возможностях Inngest SDK с TypeScript`
 
 # TypeScript
 
-The Inngest SDK leverages the full power of TypeScript, providing you with some awesome benefits when handling events:
+Inngest SDK использует всю мощь TypeScript, предоставляя вам отличные преимущества при работе с событиями:
 
-- 📑 **Autocomplete**<br/>
-  <kbd className="dark:bg-slate-800 dark:text-white shadow-none border border-slate-600">Tab ↹</kbd> your way to victory with inferred types for every event.
-- **Instant feedback**<br/>
-  Understand exactly where your code might <span className="error-text">error</span> before you even save the file.
+- 📑 **Автодополнение**<br/>
+  Нажимайте <kbd className="dark:bg-slate-800 dark:text-white shadow-none border border-slate-600">Tab ↹</kbd> и получайте выведенные типы для каждого события.
+- **Мгновенная обратная связь**<br/>
+  Понимайте точно, где ваш код может <span className="error-text">вызвать ошибку</span>, ещё до сохранения файла.
 
-All of this comes together to provide some awesome type inference based on your actual production data.
+Всё это вместе обеспечивает великолепный вывод типов на основе ваших реальных производственных данных.
 
-## Using types
+## Использование типов
 
-Once your types are generated, there are a few ways we can use them to ensure our functions are protected.
+После генерации типов есть несколько способов использовать их для защиты ваших функций.
 
-### `new Inngest()` client
+### Клиент `new Inngest()`
 
-We can use these when creating a new Inngest client via `new Inngest()`.
+Мы можем использовать их при создании нового клиента Inngest через `new Inngest()`.
 
-This comes with powerful inference; we autocomplete your event names when selecting what to react to, without you having to dig for the name and data.
+Это даёт мощный вывод типов: автодополнение имён событий при выборе того, на что реагировать, без необходимости самостоятельно искать имя и данные.
 
 ```ts {{ filename: "inngest/client.ts" }}
 import { eventType, Inngest, staticSchema } from "inngest";
@@ -49,19 +49,19 @@ import { inngest, userNewSignup } from "./client";
 export default inngest.createFunction(
   { id: "send-welcome-email", triggers: [userNewSignup] },
   async ({ event }) => {
-    // "event" is fully typed to provide typesafety within this function
+    // "event" полностью типизирован для обеспечения типобезопасности внутри этой функции
     return await email.send("welcome", event.data.email);
   }
 );
 ```
 
-### Sending events
+### Отправка событий
 
-TypeScript will also enforce your custom events being the right shape - see [Event Format](/docs/reference/events/send) for more details.
+TypeScript также будет проверять правильность формата ваших пользовательских событий — подробнее см. [Формат событий](/docs/reference/events/send).
 
-We recommend putting your `new Inngest()` client and types in a single file, i.e. `/inngest/client.ts` so you can use it anywhere that you send an event.
+Рекомендуем хранить клиент `new Inngest()` и типы в одном файле, например `/inngest/client.ts`, чтобы использовать его везде, где отправляете события.
 
-Here's an example of sending an event within a Next.js API handler:
+Вот пример отправки события в обработчике Next.js API:
 
 ```ts {{ filename: "pages/api/signup.ts" }}
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -70,8 +70,8 @@ import { inngest } from "../../inngest/client";
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = createNewUser(req.body.email, req.body.password, req.body.name);
 
-  // TypeScript will now warn you if types do not match for the event payload
-  // and the user object's properties:
+  // TypeScript предупредит, если типы не совпадают для полезной нагрузки события
+  // и свойств объекта пользователя:
   await inngest.send({
     name: "user/new.signup",
     data: {
@@ -83,9 +83,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 ```
 
-### Using with `waitForEvent`
+### Использование с `waitForEvent`
 
-When writing step functions, you can use `waitForEvent` to pause the current function until another event is received or the timeout expires - whichever happens first. When you declare your types using the `Inngest` constructor, `waitForEvent` leverages any types that you have:
+При написании пошаговых функций вы можете использовать `waitForEvent`, чтобы приостановить текущую функцию до получения другого события или истечения таймаута — в зависимости от того, что произойдёт раньше. При объявлении типов через конструктор `Inngest`, `waitForEvent` использует все заданные вами типы:
 
 ```ts {{ filename: "inngest/client.ts" }}
 import { eventType, Inngest, staticSchema } from "inngest";
@@ -122,7 +122,7 @@ export default inngest.createFunction(
   { id: "onboarding-drip-campaign", triggers: [userNewSignup] },
   async ({ event, step }) => {
     await step.run("send-welcome-email", async () => {
-      // "event" will be fully typed provide typesafety within this function
+      // "event" будет полностью типизирован для обеспечения типобезопасности внутри этой функции
       return await email.send("welcome", event.data.email);
     });
 
@@ -132,8 +132,8 @@ export default inngest.createFunction(
       {
         event: "user/account.setup.completed",
         timeout: "2d",
-        // ⬇️ This matches both events using the same property
-        // Since both events types are registered above, this is match is typesafe
+        // ⬇️ Сопоставляет оба события по одному свойству
+        // Поскольку оба типа событий зарегистрированы выше, это сопоставление типобезопасно
         match: "data.user_id",
       }
     );
@@ -147,15 +147,15 @@ export default inngest.createFunction(
 );
 ```
 
-## Helpers
+## Вспомогательные типы
 
-The TS SDK exports some helper types to allow you to access the type of particular Inngest internals outside of an Inngest function.
+TypeScript SDK экспортирует ряд вспомогательных типов, позволяющих обращаться к внутренним типам Inngest за пределами функций Inngest.
 
 ### GetEvents <VersionBadge version="v2.0.0+" />
 
-Get a record of all available events given an Inngest client.
+Получите запись всех доступных событий для заданного клиента Inngest.
 
-It's recommended to use this instead of directly reusing your own event types, as Inngest will add extra properties and internal events such as `ts` and `inngest/function.failed`.
+Рекомендуется использовать этот тип вместо прямого переиспользования собственных типов событий, так как Inngest добавляет дополнительные свойства и внутренние события, такие как `ts` и `inngest/function.failed`.
 
 ```ts
 import { type GetEvents } from "inngest";
@@ -164,11 +164,11 @@ import { inngest } from "@/inngest";
 type Events = GetEvents<typeof inngest>;
 ```
 
-By default, the returned events do not include internal events prefixed with
-`inngest/`, such as `inngest/function.finished`.
+По умолчанию возвращаемые события не включают внутренние события с префиксом
+`inngest/`, например `inngest/function.finished`.
 
-To include these events in
-<VersionBadge version="v3.13.1+" />, pass a second `true` generic:
+Чтобы включить эти события
+<VersionBadge version="v3.13.1+" />, передайте второй дженерик `true`:
 
 ```ts
 type Events = GetEvents<typeof inngest, true>;
@@ -176,9 +176,9 @@ type Events = GetEvents<typeof inngest, true>;
 
 ### GetFunctionInput <VersionBadge version="v3.3.0+" />
 
-Get the argument passed to Inngest functions given an Inngest client and, optionally, an event trigger.
+Получите аргумент, передаваемый в функции Inngest, для заданного клиента Inngest и, опционально, триггера события.
 
-Useful for building function factories or other such abstractions.
+Полезно для построения фабрик функций и подобных абстракций.
 
 ```ts
 import { type GetFunctionInput } from "inngest";
@@ -190,9 +190,9 @@ type InputArgWithTrigger = GetFunctionInput<typeof inngest, "app/user.created">;
 
 ### GetStepTools <VersionBadge version="v3.3.0+" />
 
-Get the `step` object passed to an Inngest function given an Inngest client and, optionally, an event trigger.
+Получите объект `step`, передаваемый в функцию Inngest, для заданного клиента Inngest и, опционально, триггера события.
 
-Is a small shim over the top of `GetFunctionInput<...>["step"]`.
+Является тонкой обёрткой над `GetFunctionInput<...>["step"]`.
 
 ```ts
 import { type GetStepTools } from "inngest";
@@ -204,9 +204,9 @@ type StepToolsWithTrigger = GetStepTools<typeof inngest, "app/user.created">;
 
 ### Inngest.Any / InngestFunction.Any <VersionBadge version="v3.10.0+" />
 
-Some exported classes have an `Any` type within their namespace that represents any instance of that class without inference or generics.
+Некоторые экспортируемые классы имеют тип `Any` в своём пространстве имён, который представляет любой экземпляр этого класса без вывода типов и дженериков.
 
-This is useful for typing lists of functions or factories that create Inngest primitives.
+Полезно для типизации списков функций или фабрик, создающих примитивы Inngest.
 
 ```ts
 import { type InngestFunction } from "inngest";

@@ -2,15 +2,15 @@ import { ResourceGrid, Resource } from "src/shared/Docs/Resources";
 import { CardGroup, Card } from "src/shared/Docs/mdx";
 import { RiNodejsFill } from "@remixicon/react";
 
-export const description = "Stream updates and enable real-time workflows with Inngest functions.";
+export const description = "Стримите обновления и создавайте real-time рабочие процессы с функциями Inngest.";
 
-# Realtime: Stream updates from Inngest functions
+# Realtime: Стриминг обновлений из функций Inngest
 
-Inngest Realtime enables you to stream updates from your functions, power live UIs, and implement bi-directional workflows such as Human-in-the-Loop. Use channels and topics to broadcast updates, stream logs, or await user input.
+Inngest Realtime позволяет стримить обновления из ваших функций, поддерживать живые UI и реализовывать двунаправленные рабочие процессы, такие как «Человек в цикле». Используйте каналы и топики для трансляции обновлений, стриминга логов или ожидания пользовательского ввода.
 
-## Pattern: Stream updates from a single function run
+## Паттерн: Стриминг обновлений из одного запуска функции
 
-Enable users to follow the progress of a long-running task by streaming updates from a dedicated channel. Here's how to trigger a function and subscribe to its updates:
+Дайте пользователям возможность следить за прогрессом длительной задачи, стримя обновления из выделенного канала. Вот как запустить функцию и подписаться на её обновления:
 
 ```ts { title: "app/api/hello-world/route.ts" }
 import crypto from "crypto";
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 }
 ```
 
-Your function can then publish updates to this channel:
+Затем ваша функция может публиковать обновления в этот канал:
 
 ```ts { title: "src/inngest/functions/hello-world.ts" }
 import { Inngest } from "inngest";
@@ -66,25 +66,25 @@ export const someTask = inngest.createFunction(
 );
 ```
 
-By creating a channel with a unique identifier, you can stream updates for a specific run to the end user.
+Создавая канал с уникальным идентификатором, вы можете стримить обновления для конкретного запуска конечному пользователю.
 
 
 <CardGroup cols={2}>
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/realtime/nodejs/realtime-single-run-subscription"
-    title={"Explore the full source code"}
+    title={"Изучить полный исходный код"}
     icon={<RiNodejsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this example locally to run it and explore the full source code.
+   Клонируйте этот пример локально для запуска и изучения полного исходного кода.
   </Card>
 
 </CardGroup>
 
-## Pattern: Stream updates from multiple function runs
+## Паттерн: Стриминг обновлений из нескольких запусков функций
 
-A Realtime channel can be used to stream updates from multiple function runs. Here, we'll define two channels: one global channel and one post-specific channel:
+Realtime-канал можно использовать для стриминга обновлений из нескольких запусков функций. Здесь определим два канала: один глобальный и один для конкретного поста:
 
 ```ts {{ filename: "src/inngest/channels.ts" }}
 import {
@@ -114,7 +114,7 @@ export const postChannel = channel((postId: string) => `post:${postId}`)
   );
 ```
 
-Our `likePost` function will publish updates to both channels:
+Наша функция `likePost` будет публиковать обновления в оба канала:
 
 ```ts {{ filename: "src/inngest/functions/likePost.ts" }}
 import {
@@ -163,7 +163,7 @@ export const likePost = app.createFunction(
 );
 ```
 
-The `globalChannel` will be used to stream updates for all posts, and the `postChannel` will be used to stream updates for specific posts.
+`globalChannel` будет использоваться для стриминга обновлений для всех постов, а `postChannel` — для стриминга обновлений конкретных постов.
 
 
 
@@ -171,18 +171,18 @@ The `globalChannel` will be used to stream updates for all posts, and the `postC
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/realtime/nodejs/realtime-across-multiple-channels"
-    title={"Explore the full source code"}
+    title={"Изучить полный исходный код"}
     icon={<RiNodejsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this example locally to run it and explore the full source code.
+   Клонируйте этот пример локально для запуска и изучения полного исходного кода.
   </Card>
 
 </CardGroup>
 
-## Human in the loop: Bi-directional workflows
+## Человек в цикле: Двунаправленные рабочие процессы
 
-Combine Realtime with `waitForEvent()` to enable workflows that require user input, such as [review or approval steps](/docs/ai-patterns/human-in-the-loop). Here's how to send a message to the user and wait for their confirmation:
+Объедините Realtime с `waitForEvent()` для создания рабочих процессов, требующих пользовательского ввода, например [шагов проверки или согласования](/docs/ai-patterns/human-in-the-loop). Вот как отправить сообщение пользователю и ожидать его подтверждения:
 
 ```ts { title: "src/inngest/functions/agentic-workflow.ts" }
 import crypto from "crypto";
@@ -224,37 +224,37 @@ export const agenticWorkflow = inngest.createFunction(
 );
 ```
 
-The `confirmationUUid` links the published message to the reply event, ensuring the correct user response is handled.
+`confirmationUUid` связывает опубликованное сообщение с ответным событием, обеспечивая обработку правильного ответа пользователя.
 
 <CardGroup cols={2}>
 
   <Card
     href="https://github.com/inngest/inngest-js/tree/main/examples/realtime/nodejs/realtime-human-in-the-loop"
-    title={"Explore the full source code"}
+    title={"Изучить полный исходный код"}
     icon={<RiNodejsFill className="text-basis h-8 w-8"/>}
     iconPlacement="top"
   >
-   Clone this example locally to run it and explore the full source code.
+   Клонируйте этот пример локально для запуска и изучения полного исходного кода.
   </Card>
 
 </CardGroup>
 
 
-## Learn more
+## Узнать больше
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
   href: "/docs/features/realtime",
-  name: "Realtime documentation",
-  description: "Learn more about streaming updates and real-time workflows with Inngest.",
+  name: "Документация Realtime",
+  description: "Узнайте больше о стриминге обновлений и real-time рабочих процессах с Inngest.",
   pattern: 1,
 }}/>
 
 <Resource resource={{
   href: "/docs/features/realtime/react-hooks",
-  name: "Using Realtime with Next.js",
-  description: "Learn how to use Realtime with Next.js.",
+  name: "Использование Realtime с Next.js",
+  description: "Узнайте, как использовать Realtime с Next.js.",
   pattern: 2,
 }}/>
 

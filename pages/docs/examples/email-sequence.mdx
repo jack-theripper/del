@@ -4,23 +4,23 @@ import { Example } from 'src/shared/Docs/Examples';
 import { BookOpenIcon, VideoCameraIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 
-export const description = "See how to implement an email sequence with Inngest"
+export const description = "Посмотрите, как реализовать серию писем с помощью Inngest"
 
-# Email Sequence
+# Серия писем
 
-A drip campaign is usually based on your user's behavior.
+Drip-кампания обычно основана на поведении пользователя.
 
-Let's say you want to create the following campaign:
+Допустим, вы хотите создать следующую кампанию:
 
-- Send every user a welcome email when they join.
-  - If a user received an email: wait a day and then follow-up with pro user tips meant for highly engaged users.
-  - Otherwise: wait for up to three days and then send them the default trial offer, but only if the user hasn't already upgraded their plan in the meantime.
+- Отправлять каждому пользователю приветственное письмо при регистрации.
+  - Если пользователь открыл письмо: подождать день и затем отправить продвинутые советы для активных пользователей.
+  - В противном случае: подождать до трёх дней и затем отправить стандартное предложение пробного периода, но только если пользователь не перешёл на более высокий тариф за это время.
 
-This page provides an overview on how to use Inngest to build reliable marketing campaigns, as well as all the related materials to this feature.
+На этой странице дан обзор того, как использовать Inngest для создания надёжных маркетинговых кампаний, а также все сопутствующие материалы по этой теме.
 
-## Quick Snippet
+## Быстрый пример
 
-Below is an example of how such a campaign would look like:
+Ниже показан пример того, как такая кампания могла бы выглядеть:
 
 ```javascript
 const signupDripCampaign = inngest.createFunction(
@@ -83,9 +83,9 @@ const signupDripCampaign = inngest.createFunction(
 );
 ```
 
-## Code examples
+## Примеры кода
 
-Here are apps which use Inngest to power email campaigns.
+Вот приложения, использующие Inngest для email-кампаний.
 
 <Example wide example={{
   title: "Integrate email events with Resend webhooks",
@@ -99,9 +99,9 @@ Here are apps which use Inngest to power email campaigns.
   authorSocial: "https://twitter.com/jhooks"
 }}/>
 
-## More context
+## Дополнительный контекст
 
-Check the resources below to learn more about building email sequences with Inngest.
+Ознакомьтесь с материалами ниже, чтобы узнать больше о создании серий писем с Inngest.
 
 <ResourceGrid cols={2}>
 
@@ -139,17 +139,17 @@ Check the resources below to learn more about building email sequences with Inng
 
 </ResourceGrid>
 
-## How it works
+## Как это работает
 
-With Inngest, you define functions or workflows using its SDK right in your own codebase and serve them through an HTTP endpoint in your application. Inngest uses this endpoint to download the function definitions and to execute them.
+С Inngest вы определяете функции или рабочие процессы с помощью SDK прямо в своём коде и обслуживаете их через HTTP-эндпоинт в приложении. Inngest использует этот эндпоинт для загрузки определений функций и их выполнения.
 
-When a specific event is triggered, Inngest takes care of reliably executing the function (or functions).
+При срабатывании определённого события Inngest обеспечивает надёжное выполнение функции (или функций).
 
-In case of failure, Inngest will retry until it succeeds or you will see the failure on the Inngest dashboard, which you can debug and then retrigger so no data is lost.
+В случае сбоя Inngest будет повторять попытки до успеха, или вы увидите ошибку на дашборде Inngest, где сможете её отладить и повторно запустить — без потери данных.
 
-## Related concepts
+## Связанные концепции
 
-- [Steps](/docs/learn/inngest-steps)
-- [Fan-out jobs](/docs/guides/fan-out-jobs)
-- [Delayed functions](/docs/guides/delayed-functions#delaying-jobs)
-- [Scheduled functions](/docs/guides/scheduled-functions)
+- [Шаги](/docs/learn/inngest-steps)
+- [Fan-out задачи](/docs/guides/fan-out-jobs)
+- [Отложенные функции](/docs/guides/delayed-functions#delaying-jobs)
+- [Запланированные функции](/docs/guides/scheduled-functions)

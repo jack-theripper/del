@@ -2,20 +2,20 @@ import { ResourceGrid, Resource } from 'src/shared/Docs/Resources';
 import { Callout } from "src/shared/Docs/mdx";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-export const description = "Schedule a function to run at a specific time in the future."
+export const description = "Запланируйте выполнение функции на определённое время в будущем."
 
-# Scheduling a one-off function
+# Планирование разовой функции
 
-Inngest provides a way to delay a function run to a specific time in the future. This is useful when:
+Inngest предоставляет способ отложить запуск функции до определённого момента в будущем. Это полезно когда:
 
-* You want to schedule work in the future based on user input.
-* You want to slightly delay execution of a non-urgent function for a few seconds or minutes.
+* Вы хотите запланировать работу в будущем на основе пользовательского ввода.
+* Вы хотите немного задержать выполнение несрочной функции на несколько секунд или минут.
 
-This page provides a quick example of how to delay a function run to a specific time in the future using the [event payload's](/docs/events#event-payload-format) `ts` field.
+На этой странице приведён быстрый пример того, как отложить запуск функции до определённого момента в будущем, используя поле `ts` [полезной нагрузки события](/docs/events#event-payload-format).
 
-## Quick Snippet
+## Быстрый пример
 
-Here is a basic function that sends a reminder to a user at a given email.
+Вот базовая функция, которая отправляет напоминание пользователю на указанный email.
 
 ```typescript
 const sendReminder = inngest.createFunction(
@@ -34,9 +34,9 @@ const sendReminder = inngest.createFunction(
 );
 ```
 
-### Triggering the function with a timestamp
+### Запуск функции с временной меткой
 
-To trigger this function, you will send an event `"notifications/reminder.scheduled"` using `inngest.send()` with the necessary data. The `ts` field in the [event payload](/docs/events#event-payload-format) should be set to the time you want the function to run, in milliseconds since the Unix epoch. For example, to schedule a reminder for 5 minutes in the future:
+Для запуска этой функции отправьте событие `"notifications/reminder.scheduled"` с помощью `inngest.send()` с необходимыми данными. Поле `ts` в [полезной нагрузке события](/docs/events#event-payload-format) должно быть установлено на время, в которое вы хотите запустить функцию, в миллисекундах с начала эпохи Unix. Например, для планирования напоминания через 5 минут:
 
 ```typescript
 await inngest.send({
@@ -51,31 +51,31 @@ await inngest.send({
 ```
 
 <Callout variant="warning">
-  ⚠️ Providing a timestamp in the event only applies for starting function runs. Functions waiting for a matching event will immediately resume, regardless of the timestamp.
+  ⚠️ Указание временной метки в событии применяется только для запуска новых запусков функций. Функции, ожидающие подходящего события, немедленно возобновятся независимо от временной метки.
 </Callout>
 
-### Alternatives
+### Альтернативы
 
-Depending on your use case, you may want to consider using [scheduled functions (cron jobs)](/docs/guides/scheduled-functions) for scheduling periodic work or use [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until) to add mid-function delays for a layer time.
+В зависимости от вашего случая использования вы можете рассмотреть [запланированные функции (cron-задачи)](/docs/guides/scheduled-functions) для периодических задач или использовать [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until) для добавления задержек внутри функции.
 
-## More context
+## Дополнительный контекст
 
-Check the resources below to learn more about scheduling functions with Inngest.
+Ознакомьтесь с материалами ниже, чтобы узнать больше о планировании функций с Inngest.
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
   href: "/docs/events",
-  name: "Guide: Sending events",
+  name: "Руководство: Отправка событий",
   icon: PencilSquareIcon,
-  description: "Learn how to send events to trigger functions in Inngest.",
+  description: "Узнайте, как отправлять события для запуска функций в Inngest.",
   pattern: 1,
 }}/>
 
 </ResourceGrid>
 
-## Related concepts
+## Связанные концепции
 
-- [Scheduled functions (cron jobs)](/docs/guides/scheduled-functions)
+- [Запланированные функции (cron-задачи)](/docs/guides/scheduled-functions)
 - [`step.sleepUntil()`](/docs/reference/functions/step-sleep-until)
 

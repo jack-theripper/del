@@ -3,17 +3,17 @@ import { ResourceGrid, Resource } from 'src/shared/Docs/Resources';
 import { RiBracesFill, RiErrorWarningFill } from "@remixicon/react";
 
 
-export const description = "Create a function that handles all function failures in an Inngest environment and forwards them to Datadog.";
+export const description = "Создайте функцию, которая обрабатывает все сбои функций в окружении Inngest и перенаправляет их в Datadog.";
 
-# Track all function failures in Datadog
+# Отслеживание всех сбоев функций в Datadog
 
-Your functions may fail from time to time. Inngest provides a way to handle all failed functions in a single place. This can enable you to send metrics, alerts, or events to external systems like Datadog or Sentry for all of your Inngest functions.
+Ваши функции могут время от времени завершаться с ошибками. Inngest предоставляет способ централизованной обработки всех завершившихся с ошибками функций. Это позволяет отправлять метрики, оповещения или события во внешние системы, такие как Datadog или Sentry, для всех ваших функций Inngest.
 
-This page provides an example of tracking all function failures using [Datadog's Events API](https://docs.datadoghq.com/api/latest/events/) to send all failures the Datadog event stream. You could replace Datadog with whatever system you use for monitoring and alerting.
+На этой странице приведён пример отслеживания всех сбоев функций с помощью [Events API Datadog](https://docs.datadoghq.com/api/latest/events/) для отправки всех сбоев в поток событий Datadog. Вы можете заменить Datadog на любую систему мониторинга и оповещений, которую используете.
 
-## Quick Snippet
+## Быстрый пример
 
-Here is a basic function that uses the internal [`"inngest/function.failed"`](/docs/reference/system-events/inngest-function-failed) event. This event is triggered whenever any single function fails in your [Inngest environment](/docs/platform/environments).
+Вот базовая функция, использующая внутреннее событие [`"inngest/function.failed"`](/docs/reference/system-events/inngest-function-failed). Это событие срабатывает каждый раз, когда любая функция завершается с ошибкой в вашем [окружении Inngest](/docs/platform/environments).
 
 ```ts
 import { client, v1 } from "@datadog/datadog-api-client";
@@ -84,25 +84,25 @@ An example failure event payload:
 }
 ```
 
-## More context
+## Дополнительный контекст
 
-Check the resources below to learn more about building email sequences with Inngest.
+Ознакомьтесь с материалами ниже, чтобы узнать больше об обработке сбоев в Inngest.
 
 <ResourceGrid cols={2}>
 
 <Resource resource={{
   href: "/docs/reference/system-events/inngest-function-failed",
-  name: "Reference: inngest/function.failed system event",
+  name: "Справочник: системное событие inngest/function.failed",
   icon: RiBracesFill,
-  description: "Learn more about the system event.",
+  description: "Узнайте больше о системном событии.",
   pattern: 1,
 }}/>
 
 <Resource resource={{
   href: "/docs/reference/functions/handling-failures",
-  name: "Reference: TypeScript SDK failure handlers",
+  name: "Справочник: обработчики сбоев TypeScript SDK",
   icon: RiErrorWarningFill,
-  description: "Learn how to use the onFailure handler to handle failures for a specific function.",
+  description: "Узнайте, как использовать обработчик onFailure для обработки сбоев конкретной функции.",
   pattern: 2,
 }}/>
 

@@ -2,51 +2,51 @@ import { Callout, CodeGroup, Properties, Property, Row, Col, VersionBadge } from
 
 # `inngest/function.failed` {{ className: "not-prose" }}
 
-The `inngest/function.failed` event is sent whenever any single function fails in your [Inngest environment](/docs/platform/environments).
+Событие `inngest/function.failed` отправляется каждый раз, когда какая-либо функция завершается с ошибкой в вашем [окружении Inngest](/docs/platform/environments).
 
-This event can be used to track all function failures in a single place, enabling you to send metrics, alerts, or events to [external systems like Datadog or Sentry](/docs/examples/track-failures-in-datadog) for all of your Inngest functions.
+Это событие можно использовать для централизованного отслеживания всех сбоев функций, что позволяет отправлять метрики, оповещения или события во [внешние системы, такие как Datadog или Sentry](/docs/examples/track-failures-in-datadog), для всех ваших функций Inngest.
 
-Our SDKs offer shorthand ["on failure"](#related-resources) handler options that can be used to handle this event for a specific function.
+Наши SDK предлагают сокращённые варианты обработчика [«при сбое»](#related-resources), которые можно использовать для обработки этого события для конкретной функции.
 
-## The event payload
+## Полезная нагрузка события
 
 <Row>
 <Col>
 
 <Properties>
   <Property name="name" type={`string: "inngest/function.failed"`} attribute>
-    The `inngest/` event prefix is reserved for system events in each environment.
+    Префикс события `inngest/` зарезервирован для системных событий в каждом окружении.
   </Property>
   <Property name="data" type="object" attribute>
-    The event payload data.
+    Данные полезной нагрузки события.
     <Properties nested>
       <Property name="error" type="object" attribute>
-        Data about the error payload as returned from the failed function.
+        Данные об ошибке, возвращённой завершившейся с ошибкой функцией.
         <Properties nested>
           <Property name="message" type="string" attribute>
-            The error message when an error is caught.
+            Сообщение об ошибке при её перехвате.
           </Property>
           <Property name="name" type="string" attribute>
-            The name of the error, defaulting to "Error" if unspecified.
+            Название ошибки, по умолчанию "Error", если не указано иное.
           </Property>
           <Property name="stack" type="string">
-            The stack trace of the error, if supported by the language SDK.
+            Трассировка стека ошибки, если поддерживается SDK языка.
           </Property>
         </Properties>
       </Property>
       <Property name="event" type="string" attribute>
-        The failed function's original event payload.
+        Исходная полезная нагрузка события завершившейся с ошибкой функции.
       </Property>
       <Property name="function_id" type="string" attribute>
-        The failed function's [`id`](/docs/reference/functions/create#configuration).
+        [`id`](/docs/reference/functions/create#configuration) завершившейся с ошибкой функции.
       </Property>
       <Property name="run_id" type="string" attribute>
-        The failed function's [run ID](/docs/reference/functions/create#run-id).
+        [ID запуска](/docs/reference/functions/create#run-id) завершившейся с ошибкой функции.
       </Property>
     </Properties>
   </Property>
   <Property name="ts" type="number" attribute>
-    The timestamp integer in milliseconds at which the failure occurred.
+    Целое число временной метки в миллисекундах, в момент которой произошёл сбой.
   </Property>
 </Properties>
 
@@ -83,8 +83,8 @@ Our SDKs offer shorthand ["on failure"](#related-resources) handler options that
 </Col>
 </Row>
 
-## Related resources
+## Связанные ресурсы
 
-* [TypeScript SDK: onFailure handler](/docs/reference/functions/handling-failures)
-* [Python SDK: on_failure handler](/docs/reference/python/functions/create#on_failure)
-* [Example: Track all function failures in Datadog](/docs/examples/track-failures-in-datadog)
+* [TypeScript SDK: обработчик onFailure](/docs/reference/functions/handling-failures)
+* [Python SDK: обработчик on_failure](/docs/reference/python/functions/create#on_failure)
+* [Пример: Отслеживание всех сбоев функций в Datadog](/docs/examples/track-failures-in-datadog)

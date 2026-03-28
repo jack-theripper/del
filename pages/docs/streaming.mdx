@@ -1,21 +1,21 @@
 import { Callout, CodeGroup } from "src/shared/Docs/mdx";
 
-# Streaming
+# Стриминг
 
-In select environments, the SDK allows streaming responses back to Inngest, hugely increasing maximum timeouts on many serverless platforms up to 15 minutes.
+В некоторых окружениях SDK позволяет передавать ответы обратно в Inngest через стриминг, что значительно увеличивает максимальные таймауты на многих serverless-платформах — до 15 минут.
 
-While we add wider support for streaming to other platforms, we currently support the following:
+Пока мы расширяем поддержку стриминга для других платформ, на данный момент поддерживаются следующие:
 
 - [Cloudflare Workers](/docs/learn/serving-inngest-functions#framework-cloudflare-workers)
 - [Express](/docs/learn/serving-inngest-functions#framework-express)
-- [Next.js on Vercel Fluid Compute or Edge Functions](/docs/learn/serving-inngest-functions#framework-next-js)
-- [Remix on Vercel Edge Functions](/docs/learn/serving-inngest-functions#framework-remix)
+- [Next.js на Vercel Fluid Compute или Edge Functions](/docs/learn/serving-inngest-functions#framework-next-js)
+- [Remix на Vercel Edge Functions](/docs/learn/serving-inngest-functions#framework-remix)
 
-## Enabling streaming
+## Включение стриминга
 
-Select your platform above and follow the relevant "Streaming" section to enable streaming for your application.
+Выберите свою платформу выше и следуйте соответствующему разделу «Стриминг», чтобы включить его для вашего приложения.
 
-Every Inngest serve handler provides a `streaming` option, for example:
+Каждый обработчик serve в Inngest предоставляет параметр `streaming`, например:
 
 <CodeGroup>
 ```ts
@@ -27,7 +27,7 @@ serve({
 ```
 </CodeGroup>
 
-This can be one of the following values:
+Он может принимать одно из следующих значений:
 
-- `false` - Streaming will never be used. This is the default.
-- `true` - Streaming will be used if the serve handler supports it.
+- `false` — стриминг никогда не используется. Это значение по умолчанию.
+- `true` — стриминг используется, если обработчик serve его поддерживает.
